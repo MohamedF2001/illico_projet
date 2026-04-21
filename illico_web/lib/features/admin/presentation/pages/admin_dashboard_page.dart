@@ -1,13 +1,88 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/api/api_client.dart';
 import '../../../../core/config/app_theme.dart';
-import '../../../../core/errors/failures.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../colis/presentation/providers/colis_provider.dart';
+import '../../../livraison/presentation/providers/livraison_provider.dart';
+import '../../../livreur/presentation/providers/livreur_provider.dart';
+import '../../../transaction/presentation/providers/transaction_provider.dart';
+import '../../../point_illico/presentation/providers/point_illico_provider.dart';
 
-final _kpiProvider = FutureProvider<Map<String, dynamic>>((ref) async {
-  final r = await apiClient.dio.get('/admin/kpi');
-  return r.data['data'] as Map<String, dynamic>;
+final _dashboardStatsProvider = Provider<AsyncValue<Map<String, dynamic>>>((ref) {
+  final livraisonsState = ref.watch(livraisonListProvider);
+  final livreursState = ref.watch(livreurListProvider);
+  final transactionsState = ref.watch(transactionListProvider);
+  final colisState = ref.watch(colisListProvider);
+  final pointsState = ref.watch(pointIllicoListProvider);
+
+  if (livraisonsState.isLoading || livreursState.isLoading || transactionsState.isLoading || colisState.isLoading || pointsState.isLoading) {
+    return const AsyncValue.loading();
+  }
+
+  if (livraisonsState.error != null) return AsyncValue.error(livraisonsState.error!, StackTrace.current);
+  if (livreursState.error != null) return AsyncValue.error(livreursState.error!, StackTrace.current);
+  if (transactionsState.error != null) return AsyncValue.error(transactionsState.error!, StackTrace.current);
+  if (colisState.error != null) return AsyncValue.error(colisState.error!, StackTrace.current);
+
+  final livraisons = livraisonsState.items;
+  final livreurs = livreursState.items;
+  final transactions = transactionsState.items;
+  final colis = colisState.items;
+
+  // Calcul des revenus
+  double totalRevenus = 0;
+  double moisRevenus = 0;
+  final now = DateTime.now();
+  for (final t in transactions) {
+    final amount = (t['montant'] as num?)?.toDouble() ?? 0;
+    totalRevenus += amount;
+    final dateStr = t['createdAt'] as String?;
+    if (dateStr != null) {
+      final date = DateTime.tryParse(dateStr);
+      if (date != null && date.month == now.month && date.year == now.year) {
+        moisRevenus += amount;
+      }
+    }
+  }
+
+  // Stats Livraisons
+  final totalLivraisons = livraisons.length;
+  final livrees = livraisons.where((l) => l.statut == 'livre' || l.statut == 'termine').length;
+  final enCours = livraisons.where((l) => !['livre', 'annule', 'termine'].contains(l.statut)).length;
+  final tauxReussite = totalLivraisons > 0 ? (livrees / totalLivraisons * 100).round() : 0;
+
+  // Stats Livreurs
+  final enLigne = livreurs.where((l) => l['statut'] == 'en_ligne').length;
+  final enMission = livreurs.where((l) => l['statut'] == 'en_mission').length;
+
+  // Stats Colis
+  final enAttente = colis.where((c) => c['statut'] == 'en_attente').length;
+  final enRetard = colis.where((c) => c['retard'] == true).length;
+
+  final pointsCount = pointsState.items.length;
+
+  return AsyncValue.data({
+    'revenus': {'mois': moisRevenus, 'total': totalRevenus},
+    'livraisons': {
+      'total': totalLivraisons,
+      'enCours': enCours,
+      'tauxReussite': tauxReussite,
+      'livrees': livrees
+    },
+    'utilisateurs': {
+      'clients': livraisons.map((l) => l.client is Map ? l.client['_id'] : l.client).toSet().length,
+      'livreurs': livreurs.length,
+      'points': pointsCount,
+    },
+    'livreurs': {
+      'enLigne': enLigne,
+      'enMission': enMission,
+    },
+    'colis': {
+      'enAttente': enAttente,
+      'enRetard': enRetard,
+    }
+  });
 });
 
 class AdminDashboardPage extends ConsumerWidget {
@@ -15,7 +90,7 @@ class AdminDashboardPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final kpi = ref.watch(_kpiProvider);
+    final kpiAsync = ref.watch(_dashboardStatsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -23,16 +98,38 @@ class AdminDashboardPage extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () => ref.invalidate(_kpiProvider),
+            onPressed: () {
+              ref.read(livraisonListProvider.notifier).load();
+              ref.read(livreurListProvider.notifier).load();
+              ref.read(transactionListProvider.notifier).load();
+              ref.read(colisListProvider.notifier).load();
+              ref.read(pointIllicoListProvider.notifier).load();
+            },
           ),
         ],
       ),
-      body: kpi.when(
+      body: kpiAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
-          child: Text(
-            'Erreur: $e',
-            style: const TextStyle(color: AppColors.danger),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Erreur: $e',
+                style: const TextStyle(color: AppColors.danger),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  ref.read(livraisonListProvider.notifier).load();
+                  ref.read(livreurListProvider.notifier).load();
+                  ref.read(transactionListProvider.notifier).load();
+                  ref.read(colisListProvider.notifier).load();
+                  ref.read(pointIllicoListProvider.notifier).load();
+                },
+                child: const Text('Réessayer'),
+              ),
+            ],
           ),
         ),
         data: (data) => SingleChildScrollView(
