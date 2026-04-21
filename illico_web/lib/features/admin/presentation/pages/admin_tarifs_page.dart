@@ -35,29 +35,79 @@ class AdminTarifsPage extends ConsumerWidget {
               title: 'Aucun tarif',
               icon: Icons.price_change_outlined,
             )
-          : SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: SingleChildScrollView(
-                child: DataTable(
-                  columns: const [
-                    DataColumn(label: Text('Nom')),
-                    DataColumn(label: Text('Prix base')),
-                    DataColumn(label: Text('Km inclus')),
-                    DataColumn(label: Text('Prix/Km sup')),
-                    DataColumn(label: Text('Zone')),
-                  ],
-                  rows: state.items.map((tarif) => DataRow(
-                    cells: [
-                      DataCell(Text(tarif['nom'] ?? '-')),
-                      DataCell(Text(Formatters.currency((tarif['prixBase'] as num?)?.toDouble() ?? 0))),
-                      DataCell(Text('${tarif['distanceInclus'] ?? 0} km')),
-                      DataCell(Text(Formatters.currency((tarif['prixKmSupp'] as num?)?.toDouble() ?? 0))),
-                      DataCell(Text(tarif['zoneId']?.toString() ?? '-')),
-                    ],
-                  )).toList(),
-                ),
-              ),
+          : ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: state.items.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (ctx, i) {
+                final tarif = state.items[i];
+                return Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(Icons.price_change_outlined, color: AppColors.primary),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    tarif['nom'] ?? '-',
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    'Zone: ${tarif['zoneId']?.toString() ?? '-'}',
+                                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Divider(height: 24),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _Info(
+                              label: 'Prix base',
+                              value: Formatters.currency((tarif['prixBase'] as num?)?.toDouble() ?? 0),
+                            ),
+                            _Info(label: 'Km inclus', value: '${tarif['distanceInclus'] ?? 0} km'),
+                            _Info(
+                              label: 'Prix/Km sup',
+                              value: Formatters.currency((tarif['prixKmSupp'] as num?)?.toDouble() ?? 0),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
     );
   }
+}
+
+class _Info extends StatelessWidget {
+  final String label, value;
+  const _Info({required this.label, required this.value});
+  @override
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 10, color: AppColors.textSecondary)),
+          Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+        ],
+      );
 }

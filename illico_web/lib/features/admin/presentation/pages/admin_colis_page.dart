@@ -35,48 +35,95 @@ class AdminColisPage extends ConsumerWidget {
               title: 'Aucun colis',
               icon: Icons.inventory_2_outlined,
             )
-          : SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: SingleChildScrollView(
-                child: DataTable(
-                  columns: const [
-                    DataColumn(label: Text('Référence')),
-                    DataColumn(label: Text('Destinataire')),
-                    DataColumn(label: Text('Statut')),
-                    DataColumn(label: Text('Poids')),
-                    DataColumn(label: Text('Date')),
-                  ],
-                  rows: state.items.map((colis) => DataRow(
-                    cells: [
-                      DataCell(Text(colis['reference'] ?? '-')),
-                      DataCell(Text(colis['destinataire']?['nom'] ?? '-')),
-                      DataCell(_statusBadge(colis['statut'] ?? '')),
-                      DataCell(Text('${colis['poids'] ?? 0} kg')),
-                      DataCell(Text(colis['createdAt'] != null ? Formatters.date(DateTime.parse(colis['createdAt'])) : '-')),
-                    ],
-                  )).toList(),
-                ),
-              ),
+          : ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: state.items.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (ctx, i) {
+                final colis = state.items[i];
+                final status = colis['statut'] ?? '';
+                Color color = AppColors.info;
+                if (status == 'livre') color = AppColors.accent;
+                if (status == 'en_attente') color = AppColors.warning;
+                if (status == 'annule') color = AppColors.danger;
+
+                return Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: color.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(Icons.inventory_2_outlined, color: AppColors.primary),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    colis['reference'] ?? '-',
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    colis['destinataire']?['nom'] ?? '-',
+                                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: color.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                status.toUpperCase(),
+                                style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Divider(height: 24),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _Info(label: 'Poids', value: '${colis['poids'] ?? 0} kg'),
+                            _Info(
+                              label: 'Date',
+                              value: colis['createdAt'] != null
+                                  ? Formatters.date(DateTime.parse(colis['createdAt']))
+                                  : '-',
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
     );
   }
 
-  Widget _statusBadge(String status) {
-    Color color = AppColors.info;
-    if (status == 'livre') color = AppColors.accent;
-    if (status == 'en_attente') color = AppColors.warning;
-    if (status == 'annule') color = AppColors.danger;
+}
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        status.toUpperCase(),
-        style: TextStyle(color: color, fontSize: 12),
-      ),
-    );
-  }
+class _Info extends StatelessWidget {
+  final String label, value;
+  const _Info({required this.label, required this.value});
+  @override
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 10, color: AppColors.textSecondary)),
+          Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+        ],
+      );
 }

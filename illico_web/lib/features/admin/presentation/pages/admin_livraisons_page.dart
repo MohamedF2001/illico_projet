@@ -35,40 +35,74 @@ class AdminLivraisonsPage extends ConsumerWidget {
               title: 'Aucune livraison',
               icon: Icons.local_shipping_outlined,
             )
-          : SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: SingleChildScrollView(
-                child: DataTable(
-                  columns: const [
-                    DataColumn(label: Text('ID')),
-                    DataColumn(label: Text('Client')),
-                    DataColumn(label: Text('Mode')),
-                    DataColumn(label: Text('Statut')),
-                    DataColumn(label: Text('Prix')),
-                    DataColumn(label: Text('Date')),
-                  ],
-                  rows: state.items.map((liv) => DataRow(
-                    cells: [
-                      DataCell(Text(liv.id != null && liv.id!.length >= 6 ? liv.id!.substring(liv.id!.length - 6) : (liv.id ?? '-'))),
-                      DataCell(Text(liv.client is Map ? (liv.client['nom'] ?? '-') : (liv.client?.toString() ?? '-'))),
-                      DataCell(Text(liv.mode.toUpperCase())),
-                      DataCell(Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: _getStatusColor(liv.statut).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(4),
+          : ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: state.items.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (ctx, i) {
+                final liv = state.items[i];
+                final color = _getStatusColor(liv.statut);
+                return Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: color.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(Icons.local_shipping_outlined, color: color),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '#${liv.id != null && liv.id!.length >= 6 ? liv.id!.substring(liv.id!.length - 6) : (liv.id ?? '-')}',
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    liv.client is Map ? (liv.client['nom'] ?? '-') : (liv.client?.toString() ?? '-'),
+                                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: color.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                Formatters.statutLabel(liv.statut),
+                                style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
                         ),
-                        child: Text(
-                          Formatters.statutLabel(liv.statut),
-                          style: TextStyle(color: _getStatusColor(liv.statut), fontSize: 12),
+                        const Divider(height: 24),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _Info(label: 'Prix', value: Formatters.currency(liv.prixEstime)),
+                            _Info(label: 'Mode', value: liv.mode.toUpperCase()),
+                            _Info(
+                              label: 'Date',
+                              value: liv.dateCreation != null ? Formatters.date(liv.dateCreation!) : '-',
+                            ),
+                          ],
                         ),
-                      )),
-                      DataCell(Text(Formatters.currency(liv.prixEstime))),
-                      DataCell(Text(liv.dateCreation != null ? Formatters.date(liv.dateCreation!) : '-')),
-                    ],
-                  )).toList(),
-                ),
-              ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
     );
   }
@@ -86,4 +120,17 @@ class AdminLivraisonsPage extends ConsumerWidget {
         return AppColors.info;
     }
   }
+}
+
+class _Info extends StatelessWidget {
+  final String label, value;
+  const _Info({required this.label, required this.value});
+  @override
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 10, color: AppColors.textSecondary)),
+          Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+        ],
+      );
 }

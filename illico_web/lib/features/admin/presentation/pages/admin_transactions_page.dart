@@ -35,48 +35,98 @@ class AdminTransactionsPage extends ConsumerWidget {
               title: 'Aucune transaction',
               icon: Icons.receipt_long_outlined,
             )
-          : SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: SingleChildScrollView(
-                child: DataTable(
-                  columns: const [
-                    DataColumn(label: Text('Type')),
-                    DataColumn(label: Text('Montant')),
-                    DataColumn(label: Text('Statut')),
-                    DataColumn(label: Text('Référence')),
-                    DataColumn(label: Text('Date')),
-                  ],
-                  rows: state.items.map((tx) => DataRow(
-                    cells: [
-                      DataCell(Text(tx['type']?.toString().toUpperCase() ?? '-')),
-                      DataCell(Text(Formatters.currency((tx['montant'] as num?)?.toDouble() ?? 0))),
-                      DataCell(_statusBadge(tx['statut'] ?? '')),
-                      DataCell(Text(tx['reference'] ?? '-')),
-                      DataCell(Text(tx['createdAt'] != null ? Formatters.date(DateTime.parse(tx['createdAt'])) : '-')),
-                    ],
-                  )).toList(),
-                ),
-              ),
+          : ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: state.items.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (ctx, i) {
+                final tx = state.items[i];
+                final status = tx['statut'] ?? '';
+                Color color = AppColors.info;
+                if (status == 'reussi' || status == 'success' || status == 'complete') color = AppColors.accent;
+                if (status == 'en_attente' || status == 'pending') color = AppColors.warning;
+                if (status == 'echoue' || status == 'failed') color = AppColors.danger;
+
+                return Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: color.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(Icons.receipt_long_outlined, color: AppColors.primary),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    tx['type']?.toString().toUpperCase() ?? '-',
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    tx['reference'] ?? '-',
+                                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: color.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                status.toUpperCase(),
+                                style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Divider(height: 24),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _Info(
+                              label: 'Montant',
+                              value: Formatters.currency((tx['montant'] as num?)?.toDouble() ?? 0),
+                            ),
+                            _Info(
+                              label: 'Date',
+                              value: tx['createdAt'] != null
+                                  ? Formatters.date(DateTime.parse(tx['createdAt']))
+                                  : '-',
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
     );
   }
 
-  Widget _statusBadge(String status) {
-    Color color = AppColors.info;
-    if (status == 'reussi' || status == 'success' || status == 'complete') color = AppColors.accent;
-    if (status == 'en_attente' || status == 'pending') color = AppColors.warning;
-    if (status == 'echoue' || status == 'failed') color = AppColors.danger;
+}
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        status.toUpperCase(),
-        style: TextStyle(color: color, fontSize: 12),
-      ),
-    );
-  }
+class _Info extends StatelessWidget {
+  final String label, value;
+  const _Info({required this.label, required this.value});
+  @override
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 10, color: AppColors.textSecondary)),
+          Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+        ],
+      );
 }

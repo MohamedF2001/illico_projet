@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/config/app_theme.dart';
+import '../../../../core/errors/failures.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../colis/presentation/providers/colis_provider.dart';
 import '../../../livraison/presentation/providers/livraison_provider.dart';
@@ -115,7 +116,7 @@ class AdminDashboardPage extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Erreur: $e',
+                'Erreur: ${e is Failure ? e.displayMessage : e}',
                 style: const TextStyle(color: AppColors.danger),
               ),
               const SizedBox(height: 16),
