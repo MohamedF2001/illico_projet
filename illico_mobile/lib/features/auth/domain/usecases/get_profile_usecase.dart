@@ -1,0 +1,10 @@
+import 'package:fpdart/fpdart.dart';
+import '../../../../core/errors/failures.dart';
+import '../entities/user_entity.dart';
+import '../repositories/auth_repository.dart';
+
+class GetProfileUseCase {
+  final AuthRepository repository;
+  GetProfileUseCase(this.repository);
+  Future<Either<Failure, UserEntity>> execute() => repository.getProfile();
+}
