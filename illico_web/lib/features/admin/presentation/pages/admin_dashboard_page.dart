@@ -1,89 +1,72 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/config/app_theme.dart';
 import '../../../../core/errors/failures.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/api/api_client.dart';
 import '../../../colis/presentation/providers/colis_provider.dart';
 import '../../../livraison/presentation/providers/livraison_provider.dart';
 import '../../../livreur/presentation/providers/livreur_provider.dart';
 import '../../../transaction/presentation/providers/transaction_provider.dart';
 import '../../../point_illico/presentation/providers/point_illico_provider.dart';
 
-final _dashboardStatsProvider = Provider<AsyncValue<Map<String, dynamic>>>((ref) {
-  final livraisonsState = ref.watch(livraisonListProvider);
-  final livreursState = ref.watch(livreurListProvider);
-  final transactionsState = ref.watch(transactionListProvider);
-  final colisState = ref.watch(colisListProvider);
-  final pointsState = ref.watch(pointIllicoListProvider);
+final _dashboardStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
+  // On utilise uniquement les endpoints que l'Admin a le droit d'appeler
+  final results = await Future.wait([
+    apiClient.dio.get('/transactions/admin/stats').catchError((_) => Response(data: {'data': {}}, requestOptions: RequestOptions())),
+    apiClient.dio.get('/livreurs').catchError((_) => Response(data: {'data': []}, requestOptions: RequestOptions())),
+    apiClient.dio.get('/points').catchError((_) => Response(data: {'data': []}, requestOptions: RequestOptions())),
+    apiClient.dio.get('/colis/admin').catchError((_) => Response(data: {'data': []}, requestOptions: RequestOptions())),
+    apiClient.dio.get('/livraisons').catchError((_) => Response(data: {'data': []}, requestOptions: RequestOptions())),
+  ]);
 
-  if (livraisonsState.isLoading || livreursState.isLoading || transactionsState.isLoading || colisState.isLoading || pointsState.isLoading) {
-    return const AsyncValue.loading();
-  }
+  final txStats = (results[0].data?['data'] as Map<String, dynamic>?) ?? {};
+  final livreurs = (results[1].data?['data'] as List?) ?? [];
+  final points = (results[2].data?['data'] as List?) ?? [];
+  final colis = (results[3].data?['data'] as List?) ?? [];
+  final livraisons = (results[4].data?['data'] as List?) ?? [];
 
-  if (livraisonsState.error != null) return AsyncValue.error(livraisonsState.error!, StackTrace.current);
-  if (livreursState.error != null) return AsyncValue.error(livreursState.error!, StackTrace.current);
-  if (transactionsState.error != null) return AsyncValue.error(transactionsState.error!, StackTrace.current);
-  if (colisState.error != null) return AsyncValue.error(colisState.error!, StackTrace.current);
+  // Calcul manuel des revenus si les stats admin échouent
+  double totalRevenus = (txStats['revenusTotal'] as num?)?.toDouble() ?? 0;
+  double moisRevenus = (txStats['revenusMois'] as num?)?.toDouble() ?? 0;
 
-  final livraisons = livraisonsState.items;
-  final livreurs = livreursState.items;
-  final transactions = transactionsState.items;
-  final colis = colisState.items;
-
-  // Calcul des revenus
-  double totalRevenus = 0;
-  double moisRevenus = 0;
-  final now = DateTime.now();
-  for (final t in transactions) {
-    final amount = (t['montant'] as num?)?.toDouble() ?? 0;
-    totalRevenus += amount;
-    final dateStr = t['createdAt'] as String?;
-    if (dateStr != null) {
-      final date = DateTime.tryParse(dateStr);
-      if (date != null && date.month == now.month && date.year == now.year) {
-        moisRevenus += amount;
+  if (totalRevenus == 0) {
+    for (final l in livraisons) {
+      if (l['statut'] == 'livré' || l['statut'] == 'termine') {
+        totalRevenus += (l['prixEstime'] as num?)?.toDouble() ?? 0;
       }
     }
   }
 
-  // Stats Livraisons
-  final totalLivraisons = livraisons.length;
-  final livrees = livraisons.where((l) => l.statut == 'livre' || l.statut == 'termine').length;
-  final enCours = livraisons.where((l) => !['livre', 'annule', 'termine'].contains(l.statut)).length;
-  final tauxReussite = totalLivraisons > 0 ? (livrees / totalLivraisons * 100).round() : 0;
+  final totalLiv = livraisons.length;
+  final livrees = livraisons.where((l) => l['statut'] == 'livré' || l['statut'] == 'termine').length;
 
-  // Stats Livreurs
-  final enLigne = livreurs.where((l) => l['statut'] == 'en_ligne').length;
-  final enMission = livreurs.where((l) => l['statut'] == 'en_mission').length;
-
-  // Stats Colis
-  final enAttente = colis.where((c) => c['statut'] == 'en_attente').length;
-  final enRetard = colis.where((c) => c['retard'] == true).length;
-
-  final pointsCount = pointsState.items.length;
-
-  return AsyncValue.data({
-    'revenus': {'mois': moisRevenus, 'total': totalRevenus},
+  return {
+    'revenus': {
+      'mois': moisRevenus,
+      'total': totalRevenus
+    },
     'livraisons': {
-      'total': totalLivraisons,
-      'enCours': enCours,
-      'tauxReussite': tauxReussite,
-      'livrees': livrees
+      'total': txStats['totalLivraisons'] ?? totalLiv,
+      'enCours': txStats['livraisonsEnCours'] ?? livraisons.where((l) => !['livré', 'annulé', 'termine'].contains(l['statut'])).length,
+      'tauxReussite': txStats['tauxReussite'] ?? (totalLiv > 0 ? (livrees / totalLiv * 100).round() : 0),
+      'livrees': txStats['livraisonsTerminees'] ?? livrees
     },
     'utilisateurs': {
-      'clients': livraisons.map((l) => l.client is Map ? l.client['_id'] : l.client).toSet().length,
+      'clients': txStats['totalClients'] ?? livraisons.map((l) => l['clientId']).toSet().length,
       'livreurs': livreurs.length,
-      'points': pointsCount,
+      'points': points.length,
     },
     'livreurs': {
-      'enLigne': enLigne,
-      'enMission': enMission,
+      'enLigne': livreurs.where((l) => l['statut'] == 'en_ligne').length,
+      'enMission': livreurs.where((l) => l['statut'] == 'en_mission').length,
     },
     'colis': {
-      'enAttente': enAttente,
-      'enRetard': enRetard,
+      'enAttente': colis.where((c) => c['statut'] == 'en_attente' || c['statut'] == 'reçu').length,
+      'enRetard': colis.where((c) => c['retard'] == true).length,
     }
-  });
+  };
 });
 
 class AdminDashboardPage extends ConsumerWidget {
