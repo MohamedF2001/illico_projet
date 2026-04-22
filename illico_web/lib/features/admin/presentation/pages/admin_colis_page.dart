@@ -9,6 +9,32 @@ import '../../../colis/presentation/providers/colis_provider.dart';
 class AdminColisPage extends ConsumerWidget {
   const AdminColisPage({super.key});
 
+  void _deleteColis(BuildContext context, WidgetRef ref, String id) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Supprimer'),
+        content: const Text('Voulez-vous supprimer ce colis ?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Supprimer')),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      ref.read(colisListProvider.notifier).delete(id);
+    }
+  }
+
+  void _showAddColisForm(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (ctx) => _AddColisDialog(onAdded: (body) {
+        ref.read(colisListProvider.notifier).add(body);
+      }),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(colisListProvider);
@@ -20,6 +46,14 @@ class AdminColisPage extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.read(colisListProvider.notifier).load(),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ElevatedButton.icon(
+              onPressed: () => _showAddColisForm(context, ref),
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text('Ajouter'),
+            ),
           ),
         ],
       ),
@@ -89,6 +123,10 @@ class AdminColisPage extends ConsumerWidget {
                                 style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.bold),
                               ),
                             ),
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline, color: AppColors.danger, size: 20),
+                              onPressed: () => _deleteColis(context, ref, colis['_id']),
+                            ),
                           ],
                         ),
                         const Divider(height: 24),
@@ -113,6 +151,46 @@ class AdminColisPage extends ConsumerWidget {
     );
   }
 
+}
+
+class _AddColisDialog extends StatefulWidget {
+  final Function(Map<String, dynamic>) onAdded;
+  const _AddColisDialog({required this.onAdded});
+  @override
+  State<_AddColisDialog> createState() => _AddColisDialogState();
+}
+
+class _AddColisDialogState extends State<_AddColisDialog> {
+  final _refCtrl = TextEditingController();
+  final _livIdCtrl = TextEditingController();
+  final _pointIdCtrl = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+        title: const Text('Ajouter un colis'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: _refCtrl, decoration: const InputDecoration(labelText: 'Référence')),
+            TextField(controller: _livIdCtrl, decoration: const InputDecoration(labelText: 'ID Livraison')),
+            TextField(controller: _pointIdCtrl, decoration: const InputDecoration(labelText: 'ID Point Illico')),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Annuler')),
+          ElevatedButton(
+            onPressed: () {
+              widget.onAdded({
+                'reference': _refCtrl.text,
+                'livraison': _livIdCtrl.text,
+                'pointIllico': _pointIdCtrl.text,
+              });
+              Navigator.pop(context);
+            },
+            child: const Text('Ajouter'),
+          ),
+        ],
+      );
 }
 
 class _Info extends StatelessWidget {

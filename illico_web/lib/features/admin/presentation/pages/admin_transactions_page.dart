@@ -9,6 +9,32 @@ import '../../../transaction/presentation/providers/transaction_provider.dart';
 class AdminTransactionsPage extends ConsumerWidget {
   const AdminTransactionsPage({super.key});
 
+  void _deleteTransaction(BuildContext context, WidgetRef ref, String id) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Supprimer'),
+        content: const Text('Voulez-vous supprimer cette transaction ?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Supprimer')),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      ref.read(transactionListProvider.notifier).delete(id);
+    }
+  }
+
+  void _showAddTransactionForm(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (ctx) => _AddTransactionDialog(onAdded: (body) {
+        ref.read(transactionListProvider.notifier).add(body);
+      }),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(transactionListProvider);
@@ -20,6 +46,14 @@ class AdminTransactionsPage extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.read(transactionListProvider.notifier).load(),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ElevatedButton.icon(
+              onPressed: () => _showAddTransactionForm(context, ref),
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text('Ajouter'),
+            ),
           ),
         ],
       ),
@@ -89,6 +123,10 @@ class AdminTransactionsPage extends ConsumerWidget {
                                 style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.bold),
                               ),
                             ),
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline, color: AppColors.danger, size: 20),
+                              onPressed: () => _deleteTransaction(context, ref, tx['_id']),
+                            ),
                           ],
                         ),
                         const Divider(height: 24),
@@ -116,6 +154,50 @@ class AdminTransactionsPage extends ConsumerWidget {
     );
   }
 
+}
+
+class _AddTransactionDialog extends StatefulWidget {
+  final Function(Map<String, dynamic>) onAdded;
+  const _AddTransactionDialog({required this.onAdded});
+  @override
+  State<_AddTransactionDialog> createState() => _AddTransactionDialogState();
+}
+
+class _AddTransactionDialogState extends State<_AddTransactionDialog> {
+  final _typeCtrl = TextEditingController();
+  final _montantCtrl = TextEditingController();
+  final _clientIdCtrl = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+        title: const Text('Ajouter une transaction'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: _typeCtrl, decoration: const InputDecoration(labelText: 'Type (paiement, commission...)')),
+            TextField(
+              controller: _montantCtrl,
+              decoration: const InputDecoration(labelText: 'Montant'),
+              keyboardType: TextInputType.number,
+            ),
+            TextField(controller: _clientIdCtrl, decoration: const InputDecoration(labelText: 'ID Client')),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Annuler')),
+          ElevatedButton(
+            onPressed: () {
+              widget.onAdded({
+                'type': _typeCtrl.text,
+                'montant': double.tryParse(_montantCtrl.text) ?? 0,
+                'client': _clientIdCtrl.text,
+              });
+              Navigator.pop(context);
+            },
+            child: const Text('Ajouter'),
+          ),
+        ],
+      );
 }
 
 class _Info extends StatelessWidget {

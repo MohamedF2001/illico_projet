@@ -41,4 +41,15 @@ class PointIllicoRemoteDataSource {
     try { await _api.dio.put('/points/$id/activation', data: {'actif': actif}); return const Right(null); }
     on DioException catch (e) { return Left(ApiClient.handleDioError(e)); } catch (_) { return const Left(Failure.unexpectedError()); }
   }
+
+  Future<Either<Failure, void>> delete(String id) async {
+    try {
+      await _api.dio.delete('/points/$id');
+      return const Right(null);
+    } on DioException catch (e) {
+      return Left(ApiClient.handleDioError(e));
+    } catch (_) {
+      return const Left(Failure.unexpectedError());
+    }
+  }
 }

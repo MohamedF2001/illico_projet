@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/api/api_client.dart';
+import '../../../auth/data/datasources/auth_remote_datasource.dart';
 import '../../../../core/config/app_theme.dart';
 import '../../../../core/errors/failures.dart';
 import '../../../../core/widgets/empty_state.dart';
@@ -10,6 +11,32 @@ import '../../../point_illico/presentation/providers/point_illico_provider.dart'
 
 class AdminPointsPage extends ConsumerWidget {
   const AdminPointsPage({super.key});
+
+  void _deletePoint(BuildContext context, WidgetRef ref, String id) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Supprimer'),
+        content: const Text('Voulez-vous supprimer ce point ILLICO ?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Supprimer')),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      ref.read(pointIllicoListProvider.notifier).delete(id);
+    }
+  }
+
+  void _showAddPointForm(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (ctx) => _AddPointDialog(onAdded: () {
+        ref.read(pointIllicoListProvider.notifier).load();
+      }),
+    );
+  }
 
   void _toggleActivation(BuildContext context, WidgetRef ref, String id, bool val) async {
     final ds = PointIllicoRemoteDataSource(apiClient);
@@ -31,6 +58,14 @@ class AdminPointsPage extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.read(pointIllicoListProvider.notifier).load(),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ElevatedButton.icon(
+              onPressed: () => _showAddPointForm(context, ref),
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text('Ajouter'),
+            ),
           ),
         ],
       ),
@@ -89,6 +124,10 @@ class AdminPointsPage extends ConsumerWidget {
                               onChanged: (val) => _toggleActivation(context, ref, point['_id'], val),
                               activeColor: AppColors.accent,
                             ),
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline, color: AppColors.danger, size: 20),
+                              onPressed: () => _deletePoint(context, ref, point['_id']),
+                            ),
                           ],
                         ),
                         const Divider(height: 24),
@@ -110,6 +149,62 @@ class AdminPointsPage extends ConsumerWidget {
             ),
     );
   }
+}
+
+class _AddPointDialog extends StatefulWidget {
+  final VoidCallback onAdded;
+  const _AddPointDialog({required this.onAdded});
+  @override
+  State<_AddPointDialog> createState() => _AddPointDialogState();
+}
+
+class _AddPointDialogState extends State<_AddPointDialog> {
+  final _nomCtrl = TextEditingController();
+  final _telCtrl = TextEditingController();
+  final _passCtrl = TextEditingController();
+  final _addrCtrl = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+        title: const Text('Ajouter un Point ILLICO'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(controller: _nomCtrl, decoration: const InputDecoration(labelText: 'Nom')),
+              TextField(controller: _telCtrl, decoration: const InputDecoration(labelText: 'Téléphone')),
+              TextField(
+                controller: _passCtrl,
+                decoration: const InputDecoration(labelText: 'Mot de passe'),
+                obscureText: true,
+              ),
+              TextField(controller: _addrCtrl, decoration: const InputDecoration(labelText: 'Adresse')),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Annuler')),
+          ElevatedButton(
+            onPressed: () async {
+              final ds = AuthRemoteDataSource(apiClient);
+              final r = await ds.registerPoint({
+                'nom': _nomCtrl.text,
+                'telephone': _telCtrl.text,
+                'motDePasse': _passCtrl.text,
+                'adresse': _addrCtrl.text,
+              });
+              r.fold(
+                (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.displayMessage))),
+                (_) {
+                  widget.onAdded();
+                  Navigator.pop(context);
+                },
+              );
+            },
+            child: const Text('Ajouter'),
+          ),
+        ],
+      );
 }
 
 class _Info extends StatelessWidget {

@@ -45,6 +45,10 @@ class PointIllicoListNotifier extends StateNotifier<PointIllicoListState> {
     r.fold((f) => state = state.copyWith(isLoading: false, error: f),
            (items) => state = state.copyWith(isLoading: false, items: items));
   }
+  Future<void> delete(String id) async {
+    final r = await _ds.delete(id);
+    r.fold((_) {}, (_) => load());
+  }
 }
 
 final pointIllicoListProvider = StateNotifierProvider<PointIllicoListNotifier, PointIllicoListState>((ref) =>

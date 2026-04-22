@@ -9,6 +9,32 @@ import '../../../tarif/presentation/providers/tarif_provider.dart';
 class AdminTarifsPage extends ConsumerWidget {
   const AdminTarifsPage({super.key});
 
+  void _deleteTarif(BuildContext context, WidgetRef ref, String id) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Supprimer'),
+        content: const Text('Voulez-vous supprimer ce tarif ?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Supprimer')),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      ref.read(tarifListProvider.notifier).delete(id);
+    }
+  }
+
+  void _showAddTarifForm(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (ctx) => _AddTarifDialog(onAdded: (body) {
+        ref.read(tarifListProvider.notifier).add(body);
+      }),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(tarifListProvider);
@@ -20,6 +46,14 @@ class AdminTarifsPage extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.read(tarifListProvider.notifier).load(),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ElevatedButton.icon(
+              onPressed: () => _showAddTarifForm(context, ref),
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text('Ajouter'),
+            ),
           ),
         ],
       ),
@@ -72,6 +106,10 @@ class AdminTarifsPage extends ConsumerWidget {
                                 ],
                               ),
                             ),
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline, color: AppColors.danger, size: 20),
+                              onPressed: () => _deleteTarif(context, ref, tarif['_id']),
+                            ),
                           ],
                         ),
                         const Divider(height: 24),
@@ -97,6 +135,57 @@ class AdminTarifsPage extends ConsumerWidget {
             ),
     );
   }
+}
+
+class _AddTarifDialog extends StatefulWidget {
+  final Function(Map<String, dynamic>) onAdded;
+  const _AddTarifDialog({required this.onAdded});
+  @override
+  State<_AddTarifDialog> createState() => _AddTarifDialogState();
+}
+
+class _AddTarifDialogState extends State<_AddTarifDialog> {
+  final _nomCtrl = TextEditingController();
+  final _baseCtrl = TextEditingController();
+  final _kmCtrl = TextEditingController();
+  final _zoneIdCtrl = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+        title: const Text('Ajouter un tarif'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: _nomCtrl, decoration: const InputDecoration(labelText: 'Nom')),
+            TextField(
+              controller: _baseCtrl,
+              decoration: const InputDecoration(labelText: 'Prix base'),
+              keyboardType: TextInputType.number,
+            ),
+            TextField(
+              controller: _kmCtrl,
+              decoration: const InputDecoration(labelText: 'Prix/Km sup'),
+              keyboardType: TextInputType.number,
+            ),
+            TextField(controller: _zoneIdCtrl, decoration: const InputDecoration(labelText: 'ID Zone')),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Annuler')),
+          ElevatedButton(
+            onPressed: () {
+              widget.onAdded({
+                'nom': _nomCtrl.text,
+                'prixBase': double.tryParse(_baseCtrl.text) ?? 0,
+                'prixKmSupp': double.tryParse(_kmCtrl.text) ?? 0,
+                'zoneId': _zoneIdCtrl.text,
+              });
+              Navigator.pop(context);
+            },
+            child: const Text('Ajouter'),
+          ),
+        ],
+      );
 }
 
 class _Info extends StatelessWidget {

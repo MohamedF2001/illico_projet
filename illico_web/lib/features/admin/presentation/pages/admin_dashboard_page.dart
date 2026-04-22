@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/api/api_client.dart';
 import '../../../../core/config/app_theme.dart';
 import '../../../../core/errors/failures.dart';
 import '../../../../core/utils/formatters.dart';
@@ -10,28 +12,27 @@ import '../../../transaction/presentation/providers/transaction_provider.dart';
 import '../../../point_illico/presentation/providers/point_illico_provider.dart';
 
 final _dashboardStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
-  // On utilise apiClient.dio directement pour avoir un contrôle total et éviter les erreurs de middleware Client
   // On enveloppe chaque appel pour éviter que le dashboard ne crash si un endpoint échoue (ex: 500 sur /colis/admin)
-  final results = await Future.wait([
+  final results = await Future.wait<Response>([
     apiClient.dio.get('/transactions/admin/stats').catchError((e) {
       debugPrint('Error fetching tx stats: $e');
-      return Response(data: {'data': {}}, requestOptions: RequestOptions());
+      return Response(data: {'data': {}}, requestOptions: RequestOptions(path: ''));
     }),
     apiClient.dio.get('/livreurs').catchError((e) {
       debugPrint('Error fetching livreurs: $e');
-      return Response(data: {'data': []}, requestOptions: RequestOptions());
+      return Response(data: {'data': []}, requestOptions: RequestOptions(path: ''));
     }),
     apiClient.dio.get('/points').catchError((e) {
       debugPrint('Error fetching points: $e');
-      return Response(data: {'data': []}, requestOptions: RequestOptions());
+      return Response(data: {'data': []}, requestOptions: RequestOptions(path: ''));
     }),
     apiClient.dio.get('/colis/admin').catchError((e) {
       debugPrint('Error fetching colis: $e');
-      return Response(data: {'data': []}, requestOptions: RequestOptions());
+      return Response(data: {'data': []}, requestOptions: RequestOptions(path: ''));
     }),
     apiClient.dio.get('/livraisons').catchError((e) {
       debugPrint('Error fetching livraisons: $e');
-      return Response(data: {'data': []}, requestOptions: RequestOptions());
+      return Response(data: {'data': []}, requestOptions: RequestOptions(path: ''));
     }),
   ]);
 

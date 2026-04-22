@@ -9,6 +9,34 @@ import '../../../livraison/presentation/providers/livraison_provider.dart';
 class AdminLivraisonsPage extends ConsumerWidget {
   const AdminLivraisonsPage({super.key});
 
+  void _showAddLivraisonForm(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (ctx) => _AddLivraisonDialog(onAdded: (body) {
+        ref.read(livraisonFormProvider.notifier).create(body).then((success) {
+          if (success) ref.read(livraisonListProvider.notifier).load();
+        });
+      }),
+    );
+  }
+
+  void _deleteLivraison(BuildContext context, WidgetRef ref, String id) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Supprimer'),
+        content: const Text('Voulez-vous supprimer cette livraison ?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Supprimer')),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      ref.read(livraisonListProvider.notifier).delete(id);
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(livraisonListProvider);
@@ -20,6 +48,14 @@ class AdminLivraisonsPage extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.read(livraisonListProvider.notifier).load(),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ElevatedButton.icon(
+              onPressed: () => _showAddLivraisonForm(context, ref),
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text('Ajouter'),
+            ),
           ),
         ],
       ),
@@ -84,6 +120,10 @@ class AdminLivraisonsPage extends ConsumerWidget {
                                 style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.bold),
                               ),
                             ),
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline, color: AppColors.danger, size: 20),
+                              onPressed: () => _deleteLivraison(context, ref, liv.id!),
+                            ),
                           ],
                         ),
                         const Divider(height: 24),
@@ -120,6 +160,55 @@ class AdminLivraisonsPage extends ConsumerWidget {
         return AppColors.info;
     }
   }
+}
+
+class _AddLivraisonDialog extends StatefulWidget {
+  final Function(Map<String, dynamic>) onAdded;
+  const _AddLivraisonDialog({required this.onAdded});
+  @override
+  State<_AddLivraisonDialog> createState() => _AddLivraisonDialogState();
+}
+
+class _AddLivraisonDialogState extends State<_AddLivraisonDialog> {
+  final _clientCtrl = TextEditingController();
+  final _departCtrl = TextEditingController();
+  final _arriveeCtrl = TextEditingController();
+  final _poidsCtrl = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+        title: const Text('Nouvelle livraison'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: _clientCtrl, decoration: const InputDecoration(labelText: 'ID Client')),
+            TextField(controller: _departCtrl, decoration: const InputDecoration(labelText: 'Adresse Départ')),
+            TextField(controller: _arriveeCtrl, decoration: const InputDecoration(labelText: 'Adresse Arrivée')),
+            TextField(
+              controller: _poidsCtrl,
+              decoration: const InputDecoration(labelText: 'Poids (kg)'),
+              keyboardType: TextInputType.number,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Annuler')),
+          ElevatedButton(
+            onPressed: () {
+              widget.onAdded({
+                'client': _clientCtrl.text,
+                'pointDepart': {'adresse': _departCtrl.text, 'coordinates': [0.0, 0.0]},
+                'pointArrivee': {'adresse': _arriveeCtrl.text, 'coordinates': [0.0, 0.0]},
+                'mode': 'express',
+                'poids': double.tryParse(_poidsCtrl.text) ?? 1,
+                'vehicule': 'moto', // Default
+              });
+              Navigator.pop(context);
+            },
+            child: const Text('Créer'),
+          ),
+        ],
+      );
 }
 
 class _Info extends StatelessWidget {

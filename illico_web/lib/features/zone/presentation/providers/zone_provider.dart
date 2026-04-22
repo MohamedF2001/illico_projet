@@ -21,6 +21,14 @@ class ZoneListNotifier extends StateNotifier<ZoneListState> {
     r.fold((f) => state = state.copyWith(isLoading: false, error: f),
            (items) => state = state.copyWith(isLoading: false, items: items.cast<ZoneEntity>()));
   }
+  Future<void> delete(String id) async {
+    final r = await _ds.delete(id);
+    r.fold((_) {}, (_) => load());
+  }
+  Future<void> add(Map<String, dynamic> body) async {
+    final r = await _ds.create(body);
+    r.fold((_) {}, (_) => load());
+  }
 }
 final zoneListProvider = StateNotifierProvider<ZoneListNotifier, ZoneListState>((ref) =>
     ZoneListNotifier(ZoneRemoteDataSource(apiClient)));

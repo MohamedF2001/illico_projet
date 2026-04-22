@@ -19,13 +19,19 @@ class LivraisonListState {
 
 class LivraisonListNotifier extends StateNotifier<LivraisonListState> {
   final GetLivraisonsUseCase _uc;
-  LivraisonListNotifier(this._uc) : super(const LivraisonListState(isLoading: true)) { load(); }
+  final LivraisonRemoteDataSource _ds;
+  LivraisonListNotifier(this._uc, this._ds) : super(const LivraisonListState(isLoading: true)) { load(); }
 
   Future<void> load({Map<String, dynamic>? filters}) async {
     state = state.copyWith(isLoading: true, error: null);
     final r = await _uc.execute(filters: filters);
     r.fold((f) => state = state.copyWith(isLoading: false, error: f),
            (items) => state = state.copyWith(isLoading: false, items: items));
+  }
+
+  Future<void> delete(String id) async {
+    final r = await _ds.delete(id);
+    r.fold((_) {}, (_) => load());
   }
 }
 
@@ -62,8 +68,10 @@ class LivraisonFormNotifier extends StateNotifier<LivraisonFormState> {
 // ── Providers ─────────────────────────────────────────────
 LivraisonRepositoryImpl _buildRepo() => LivraisonRepositoryImpl(LivraisonRemoteDataSource(apiClient));
 
-final livraisonListProvider = StateNotifierProvider<LivraisonListNotifier, LivraisonListState>((ref) =>
-    LivraisonListNotifier(GetLivraisonsUseCase(_buildRepo())));
+final livraisonListProvider = StateNotifierProvider<LivraisonListNotifier, LivraisonListState>((ref) {
+  final ds = LivraisonRemoteDataSource(apiClient);
+  return LivraisonListNotifier(GetLivraisonsUseCase(LivraisonRepositoryImpl(ds)), ds);
+});
 
 final livraisonFormProvider = StateNotifierProvider<LivraisonFormNotifier, LivraisonFormState>((ref) =>
     LivraisonFormNotifier(_buildRepo()));
