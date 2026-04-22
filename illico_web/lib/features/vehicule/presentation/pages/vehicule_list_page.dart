@@ -63,15 +63,6 @@ class _VehiculeCard extends StatelessWidget {
   final VoidCallback onRefresh;
   const _VehiculeCard({required this.vehicule, required this.onRefresh});
 
-  void _toggleActivation(BuildContext context, bool val) async {
-    final ds = VehiculeRemoteDataSource(apiClient);
-    final r = await ds.update(vehicule.id!, {'actif': val});
-    r.fold(
-      (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.displayMessage))),
-      (_) => onRefresh(),
-    );
-  }
-
   IconData get _icon => switch (vehicule.type) {
     'velo' => Icons.pedal_bike, 'moto' => Icons.two_wheeler, 'voiture' => Icons.directions_car,
     'camionnette' => Icons.local_shipping, _ => Icons.trip_origin,
@@ -95,11 +86,14 @@ class _VehiculeCard extends StatelessWidget {
             Text('Commission: ${vehicule.commission.toStringAsFixed(0)}%',
                 style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
           ])),
-          Switch(
-            value: vehicule.actif,
-            onChanged: (val) => _toggleActivation(context, val),
-            activeColor: AppColors.accent,
-          ),
+          Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: vehicule.actif ? AppColors.accent.withOpacity(0.1) : AppColors.danger.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(vehicule.actif ? 'Actif' : 'Inactif',
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600,
+                    color: vehicule.actif ? AppColors.accent : AppColors.danger))),
         ]),
       ),
     );

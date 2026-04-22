@@ -1,10 +1,8 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/config/app_theme.dart';
 import '../../../../core/errors/failures.dart';
 import '../../../../core/utils/formatters.dart';
-import '../../../../core/api/api_client.dart';
 import '../../../colis/presentation/providers/colis_provider.dart';
 import '../../../livraison/presentation/providers/livraison_provider.dart';
 import '../../../livreur/presentation/providers/livreur_provider.dart';
@@ -12,13 +10,29 @@ import '../../../transaction/presentation/providers/transaction_provider.dart';
 import '../../../point_illico/presentation/providers/point_illico_provider.dart';
 
 final _dashboardStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
-  // On utilise uniquement les endpoints que l'Admin a le droit d'appeler
+  // On utilise apiClient.dio directement pour avoir un contrôle total et éviter les erreurs de middleware Client
+  // On enveloppe chaque appel pour éviter que le dashboard ne crash si un endpoint échoue (ex: 500 sur /colis/admin)
   final results = await Future.wait([
-    apiClient.dio.get('/transactions/admin/stats').catchError((_) => Response(data: {'data': {}}, requestOptions: RequestOptions())),
-    apiClient.dio.get('/livreurs').catchError((_) => Response(data: {'data': []}, requestOptions: RequestOptions())),
-    apiClient.dio.get('/points').catchError((_) => Response(data: {'data': []}, requestOptions: RequestOptions())),
-    apiClient.dio.get('/colis/admin').catchError((_) => Response(data: {'data': []}, requestOptions: RequestOptions())),
-    apiClient.dio.get('/livraisons').catchError((_) => Response(data: {'data': []}, requestOptions: RequestOptions())),
+    apiClient.dio.get('/transactions/admin/stats').catchError((e) {
+      debugPrint('Error fetching tx stats: $e');
+      return Response(data: {'data': {}}, requestOptions: RequestOptions());
+    }),
+    apiClient.dio.get('/livreurs').catchError((e) {
+      debugPrint('Error fetching livreurs: $e');
+      return Response(data: {'data': []}, requestOptions: RequestOptions());
+    }),
+    apiClient.dio.get('/points').catchError((e) {
+      debugPrint('Error fetching points: $e');
+      return Response(data: {'data': []}, requestOptions: RequestOptions());
+    }),
+    apiClient.dio.get('/colis/admin').catchError((e) {
+      debugPrint('Error fetching colis: $e');
+      return Response(data: {'data': []}, requestOptions: RequestOptions());
+    }),
+    apiClient.dio.get('/livraisons').catchError((e) {
+      debugPrint('Error fetching livraisons: $e');
+      return Response(data: {'data': []}, requestOptions: RequestOptions());
+    }),
   ]);
 
   final txStats = (results[0].data?['data'] as Map<String, dynamic>?) ?? {};
@@ -33,14 +47,14 @@ final _dashboardStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async
 
   if (totalRevenus == 0) {
     for (final l in livraisons) {
-      if (l['statut'] == 'livré' || l['statut'] == 'termine') {
+      if (['livré', 'termine', 'livre'].contains(l['statut'])) {
         totalRevenus += (l['prixEstime'] as num?)?.toDouble() ?? 0;
       }
     }
   }
 
-  final totalLiv = livraisons.length;
-  final livrees = livraisons.where((l) => l['statut'] == 'livré' || l['statut'] == 'termine').length;
+  final totalLiv = (txStats['totalLivraisons'] as num?)?.toInt() ?? livraisons.length;
+  final livrees = (txStats['livraisonsTerminees'] as num?)?.toInt() ?? livraisons.where((l) => ['livré', 'termine', 'livre'].contains(l['statut'])).length;
 
   return {
     'revenus': {
@@ -48,23 +62,23 @@ final _dashboardStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async
       'total': totalRevenus
     },
     'livraisons': {
-      'total': txStats['totalLivraisons'] ?? totalLiv,
-      'enCours': txStats['livraisonsEnCours'] ?? livraisons.where((l) => !['livré', 'annulé', 'termine'].contains(l['statut'])).length,
-      'tauxReussite': txStats['tauxReussite'] ?? (totalLiv > 0 ? (livrees / totalLiv * 100).round() : 0),
-      'livrees': txStats['livraisonsTerminees'] ?? livrees
+      'total': totalLiv,
+      'enCours': (txStats['livraisonsEnCours'] as num?)?.toInt() ?? livraisons.where((l) => !['livré', 'annulé', 'termine', 'livre', 'annule'].contains(l['statut'])).length,
+      'tauxReussite': (txStats['tauxReussite'] as num?)?.toInt() ?? (totalLiv > 0 ? (livrees / totalLiv * 100).round() : 0),
+      'livrees': livrees
     },
     'utilisateurs': {
-      'clients': txStats['totalClients'] ?? livraisons.map((l) => l['clientId']).toSet().length,
+      'clients': (txStats['totalClients'] as num?)?.toInt() ?? livraisons.map((l) => l['clientId']).toSet().length,
       'livreurs': livreurs.length,
       'points': points.length,
     },
     'livreurs': {
-      'enLigne': livreurs.where((l) => l['statut'] == 'en_ligne').length,
-      'enMission': livreurs.where((l) => l['statut'] == 'en_mission').length,
+      'enLigne': livreurs.where((l) => (l as Map)['statut'] == 'en_ligne').length,
+      'enMission': livreurs.where((l) => (l as Map)['statut'] == 'en_mission').length,
     },
     'colis': {
-      'enAttente': colis.where((c) => c['statut'] == 'en_attente' || c['statut'] == 'reçu').length,
-      'enRetard': colis.where((c) => c['retard'] == true).length,
+      'enAttente': colis.where((c) => ['en_attente', 'receptionné', 'reçu'].contains((c as Map)['statut'])).length,
+      'enRetard': 0,
     }
   };
 });

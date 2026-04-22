@@ -7,7 +7,7 @@ class ColisRemoteDataSource {
   ColisRemoteDataSource(this._api);
   Future<Either<Failure, List<Map<String, dynamic>>>> getAll({Map<String, dynamic>? params}) async {
     try {
-      final r = await _api.dio.get('/colis/admin', queryParameters: params);
+      final r = await _api.dio.get('/colis', queryParameters: params);
       final raw = r.data['data'];
       if (raw is List) return Right(raw.cast<Map<String, dynamic>>());
       return Right([]);
