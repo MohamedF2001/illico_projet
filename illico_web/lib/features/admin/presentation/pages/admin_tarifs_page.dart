@@ -41,19 +41,16 @@ class AdminTarifsPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text('Tarifs'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh,color: Colors.green,),
             onPressed: () => ref.read(tarifListProvider.notifier).load(),
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ElevatedButton.icon(
-              onPressed: () => _showAddTarifForm(context, ref),
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text('Ajouter'),
-            ),
+          IconButton(
+            icon: const Icon(Icons.add, size: 18,color: Colors.black,),
+            onPressed: () => _showAddTarifForm(context, ref),
           ),
         ],
       ),

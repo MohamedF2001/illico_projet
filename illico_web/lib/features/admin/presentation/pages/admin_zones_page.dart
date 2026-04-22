@@ -53,19 +53,16 @@ class AdminZonesPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text('Zones'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.read(zoneListProvider.notifier).load(),
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ElevatedButton.icon(
-              onPressed: () => _showAddZoneForm(context, ref),
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text('Ajouter'),
-            ),
+          IconButton(
+            icon: const Icon(Icons.add, size: 18),
+            onPressed: () => _showAddZoneForm(context, ref),
           ),
         ],
       ),

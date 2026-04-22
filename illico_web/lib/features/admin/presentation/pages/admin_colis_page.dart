@@ -47,14 +47,14 @@ class AdminColisPage extends ConsumerWidget {
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.read(colisListProvider.notifier).load(),
           ),
-          Padding(
+          /*Padding(
             padding: const EdgeInsets.only(right: 8),
             child: ElevatedButton.icon(
               onPressed: () => _showAddColisForm(context, ref),
               icon: const Icon(Icons.add, size: 18),
               label: const Text('Ajouter'),
             ),
-          ),
+          ),*/
         ],
       ),
       body: state.isLoading

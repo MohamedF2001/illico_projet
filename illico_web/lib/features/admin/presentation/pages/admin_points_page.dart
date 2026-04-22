@@ -59,13 +59,9 @@ class AdminPointsPage extends ConsumerWidget {
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.read(pointIllicoListProvider.notifier).load(),
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ElevatedButton.icon(
-              onPressed: () => _showAddPointForm(context, ref),
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text('Ajouter'),
-            ),
+          IconButton(
+            icon: const Icon(Icons.add, size: 18),
+            onPressed: () => _showAddPointForm(context, ref),
           ),
         ],
       ),

@@ -44,20 +44,16 @@ class AdminLivraisonsPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Livraisons'),
-        actions: [
+        /*actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.read(livraisonListProvider.notifier).load(),
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ElevatedButton.icon(
-              onPressed: () => _showAddLivraisonForm(context, ref),
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text('Ajouter'),
-            ),
+          IconButton(
+            icon: const Icon(Icons.add, size: 18),
+            onPressed: () => _showAddLivraisonForm(context, ref),
           ),
-        ],
+        ],*/
       ),
       body: state.isLoading
           ? const Center(child: CircularProgressIndicator())

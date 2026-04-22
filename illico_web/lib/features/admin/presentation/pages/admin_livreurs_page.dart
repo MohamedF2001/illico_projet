@@ -31,15 +31,6 @@ class AdminLivreursPage extends ConsumerWidget {
     }
   }
 
-  void _showAddLivreurForm(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (ctx) => _AddLivreurDialog(onAdded: () {
-        ref.read(livreurListProvider.notifier).load();
-      }),
-    );
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(livreurListProvider);
@@ -51,14 +42,6 @@ class AdminLivreursPage extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.read(livreurListProvider.notifier).load(),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ElevatedButton.icon(
-              onPressed: () => _showAddLivreurForm(context, ref),
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text('Ajouter'),
-            ),
           ),
         ],
       ),
