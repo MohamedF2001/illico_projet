@@ -8,18 +8,19 @@ import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/error_display.dart';
 import '../../../../core/widgets/loading_button.dart';
 import '../../../zone/data/datasources/zone_remote_datasource.dart';
+import '../../../zone/domain/entities/zone_entity.dart';
 import '../../../zone/presentation/providers/zone_provider.dart';
 
 class AdminZonesPage extends ConsumerWidget {
   const AdminZonesPage({super.key});
 
-  void _deleteZone(BuildContext context, WidgetRef ref, String id) async {
+  void _deleteZone(BuildContext context, WidgetRef ref, String id, String nom) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Désactiver cette zone ?'),
-        content: const Text(
-            'La zone sera désactivée. Elle ne peut pas être supprimée si des tarifs actifs l\'utilisent.'),
+        content: Text(
+            '"$nom" sera désactivée. Impossible si des tarifs actifs l\'utilisent.'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
@@ -42,9 +43,22 @@ class AdminZonesPage extends ConsumerWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => _AddZoneDialog(onAdded: () {
+      builder: (ctx) => _ZoneDialog(onSaved: () {
         ref.read(zoneListProvider.notifier).load();
       }),
+    );
+  }
+
+  void _showEditZoneForm(BuildContext context, WidgetRef ref, ZoneEntity zone) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => _ZoneDialog(
+        zone: zone,
+        onSaved: () {
+          ref.read(zoneListProvider.notifier).load();
+        },
+      ),
     );
   }
 
@@ -118,8 +132,7 @@ class AdminZonesPage extends ConsumerWidget {
           : ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: state.items.length,
-        separatorBuilder: (_, _) =>
-        const SizedBox(height: 12),
+        separatorBuilder: (_, _) => const SizedBox(height: 12),
         itemBuilder: (ctx, i) {
           final zone = state.items[i];
           return Card(
@@ -132,10 +145,8 @@ class AdminZonesPage extends ConsumerWidget {
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: AppColors.info
-                              .withOpacity(0.1),
-                          borderRadius:
-                          BorderRadius.circular(12),
+                          color: AppColors.info.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(Icons.map_outlined,
                             color: AppColors.info),
@@ -143,8 +154,7 @@ class AdminZonesPage extends ConsumerWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               zone.nom,
@@ -158,29 +168,23 @@ class AdminZonesPage extends ConsumerWidget {
                                 zone.description!,
                                 style: const TextStyle(
                                     fontSize: 12,
-                                    color:
-                                    AppColors.textSecondary),
+                                    color: AppColors.textSecondary),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
                           ],
                         ),
                       ),
-                      // Supplément badge
                       if (zone.supplement > 0)
                         Container(
-                          margin:
-                          const EdgeInsets.only(right: 8),
+                          margin: const EdgeInsets.only(right: 4),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: AppColors.warning
-                                .withOpacity(0.1),
-                            borderRadius:
-                            BorderRadius.circular(20),
+                            color: AppColors.warning.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                                color: AppColors.warning
-                                    .withOpacity(0.3)),
+                                color: AppColors.warning.withOpacity(0.3)),
                           ),
                           child: Text(
                             '+${Formatters.currency(zone.supplement)}',
@@ -190,6 +194,14 @@ class AdminZonesPage extends ConsumerWidget {
                                 fontWeight: FontWeight.w600),
                           ),
                         ),
+                      // Bouton éditer
+                      IconButton(
+                        icon: const Icon(Icons.edit_outlined,
+                            color: AppColors.info, size: 20),
+                        tooltip: 'Modifier',
+                        onPressed: () =>
+                            _showEditZoneForm(context, ref, zone),
+                      ),
                       Switch(
                         value: zone.actif,
                         onChanged: (val) => _toggleActivation(
@@ -199,23 +211,28 @@ class AdminZonesPage extends ConsumerWidget {
                       IconButton(
                         icon: const Icon(Icons.delete_outline,
                             color: AppColors.danger, size: 20),
+                        tooltip: 'Désactiver',
                         onPressed: () => _deleteZone(
-                            context, ref, zone.id!),
+                            context, ref, zone.id!, zone.nom),
                       ),
                     ],
                   ),
                   const Divider(height: 20),
                   Row(
-                    mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       _Info(
                           label: 'Supplément',
-                          value: Formatters.currency(
-                              zone.supplement)),
+                          value: Formatters.currency(zone.supplement)),
                       _Info(
                         label: 'Statut',
                         value: zone.actif ? 'ACTIVE' : 'INACTIVE',
+                      ),
+                      _Info(
+                        label: 'ID',
+                        value: zone.id != null
+                            ? zone.id!.substring(zone.id!.length - 6)
+                            : '-',
                       ),
                     ],
                   ),
@@ -230,26 +247,41 @@ class AdminZonesPage extends ConsumerWidget {
 }
 
 // ════════════════════════════════════════════════════════════
-//  DIALOG CRÉATION ZONE
-//  Champs conformes à l'API:
-//  POST /api/zones → { nom, description, supplement }
+//  DIALOG CRÉATION / ÉDITION ZONE
+//  POST /api/zones  →  { nom, description, supplement }
+//  PUT  /api/zones/:id → mêmes champs + actif
 // ════════════════════════════════════════════════════════════
-class _AddZoneDialog extends StatefulWidget {
-  final VoidCallback onAdded;
-  const _AddZoneDialog({required this.onAdded});
+class _ZoneDialog extends StatefulWidget {
+  final ZoneEntity? zone; // null = création, non-null = édition
+  final VoidCallback onSaved;
+  const _ZoneDialog({this.zone, required this.onSaved});
 
   @override
-  State<_AddZoneDialog> createState() => _AddZoneDialogState();
+  State<_ZoneDialog> createState() => _ZoneDialogState();
 }
 
-class _AddZoneDialogState extends State<_AddZoneDialog> {
+class _ZoneDialogState extends State<_ZoneDialog> {
   final _formKey = GlobalKey<FormState>();
-  final _nomCtrl = TextEditingController();
-  final _descCtrl = TextEditingController();
-  final _suppCtrl = TextEditingController(text: '0');
+  late final TextEditingController _nomCtrl;
+  late final TextEditingController _descCtrl;
+  late final TextEditingController _suppCtrl;
+  late bool _actif;
 
   bool _isLoading = false;
   String? _error;
+
+  bool get _isEditing => widget.zone != null;
+
+  @override
+  void initState() {
+    super.initState();
+    _nomCtrl = TextEditingController(text: widget.zone?.nom ?? '');
+    _descCtrl =
+        TextEditingController(text: widget.zone?.description ?? '');
+    _suppCtrl = TextEditingController(
+        text: widget.zone?.supplement.toString() ?? '0');
+    _actif = widget.zone?.actif ?? true;
+  }
 
   @override
   void dispose() {
@@ -269,11 +301,16 @@ class _AddZoneDialogState extends State<_AddZoneDialog> {
 
     try {
       final ds = ZoneRemoteDataSource(apiClient);
-      final result = await ds.create({
+      final body = {
         'nom': _nomCtrl.text.trim(),
         'description': _descCtrl.text.trim(),
         'supplement': double.tryParse(_suppCtrl.text) ?? 0,
-      });
+        if (_isEditing) 'actif': _actif,
+      };
+
+      final result = _isEditing
+          ? await ds.update(widget.zone!.id!, body)
+          : await ds.create(body);
 
       result.fold(
             (failure) => setState(() {
@@ -282,7 +319,7 @@ class _AddZoneDialogState extends State<_AddZoneDialog> {
         }),
             (_) {
           Navigator.pop(context);
-          widget.onAdded();
+          widget.onSaved();
         },
       );
     } catch (e) {
@@ -298,7 +335,7 @@ class _AddZoneDialogState extends State<_AddZoneDialog> {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 400),
+        constraints: const BoxConstraints(maxWidth: 420),
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Form(
@@ -316,13 +353,20 @@ class _AddZoneDialogState extends State<_AddZoneDialog> {
                         color: AppColors.info.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(Icons.map_outlined,
-                          color: AppColors.info, size: 20),
+                      child: Icon(
+                        _isEditing
+                            ? Icons.edit_location_outlined
+                            : Icons.add_location_outlined,
+                        color: AppColors.info,
+                        size: 20,
+                      ),
                     ),
                     const SizedBox(width: 12),
-                    const Text('Nouvelle zone',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w700)),
+                    Text(
+                      _isEditing ? 'Modifier la zone' : 'Nouvelle zone',
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.w700),
+                    ),
                     const Spacer(),
                     IconButton(
                       icon: const Icon(Icons.close),
@@ -330,32 +374,43 @@ class _AddZoneDialogState extends State<_AddZoneDialog> {
                     ),
                   ],
                 ),
+                if (_isEditing) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    'ID: ...${widget.zone!.id!.substring(widget.zone!.id!.length - 8)}',
+                    style: const TextStyle(
+                        fontSize: 10,
+                        color: AppColors.textSecondary,
+                        fontFamily: 'monospace'),
+                  ),
+                ],
                 const SizedBox(height: 20),
 
-                // ── Nom ─────────────────────────────────────
+                // Nom
                 _Label('Nom de la zone *'),
                 TextFormField(
                   controller: _nomCtrl,
                   textCapitalization: TextCapitalization.words,
                   decoration: _inputDeco(
-                      hint: 'ex: Cotonou Centre', icon: Icons.location_on_outlined),
-                  validator: (v) => (v == null || v.trim().isEmpty)
-                      ? 'Nom requis'
-                      : null,
+                      hint: 'ex: Cotonou Centre',
+                      icon: Icons.location_on_outlined),
+                  validator: (v) =>
+                  (v == null || v.trim().isEmpty) ? 'Nom requis' : null,
                 ),
                 const SizedBox(height: 14),
 
-                // ── Description ──────────────────────────────
+                // Description
                 _Label('Description (optionnel)'),
                 TextFormField(
                   controller: _descCtrl,
                   maxLines: 2,
                   decoration: _inputDeco(
-                      hint: 'ex: Zone urbaine dense', icon: Icons.notes_outlined),
+                      hint: 'ex: Zone urbaine dense',
+                      icon: Icons.notes_outlined),
                 ),
                 const SizedBox(height: 14),
 
-                // ── Supplément ───────────────────────────────
+                // Supplément
                 _Label('Supplément tarifaire (FCFA)'),
                 TextFormField(
                   controller: _suppCtrl,
@@ -373,39 +428,51 @@ class _AddZoneDialogState extends State<_AddZoneDialog> {
                 const SizedBox(height: 4),
                 const Text(
                   'Montant ajouté automatiquement au tarif dans cette zone.',
-                  style: TextStyle(
-                      fontSize: 11, color: AppColors.textSecondary),
+                  style:
+                  TextStyle(fontSize: 11, color: AppColors.textSecondary),
                 ),
 
-                // ── Erreur ───────────────────────────────────
-                if (_error != null) ...[
-                  const SizedBox(height: 12),
+                // Toggle actif (édition uniquement)
+                if (_isEditing) ...[
+                  const SizedBox(height: 14),
                   Container(
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
-                      color: AppColors.danger.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                          color: AppColors.danger.withOpacity(0.3)),
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColors.divider),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.error_outline,
-                            color: AppColors.danger, size: 16),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(_error!,
-                              style: const TextStyle(
-                                  color: AppColors.danger, fontSize: 13)),
+                        const Icon(Icons.toggle_on_outlined,
+                            size: 18, color: AppColors.textSecondary),
+                        const SizedBox(width: 10),
+                        const Expanded(
+                          child: Text('Zone active',
+                              style: TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.textPrimary)),
+                        ),
+                        Switch(
+                          value: _actif,
+                          onChanged: (v) => setState(() => _actif = v),
+                          activeThumbColor: AppColors.accent,
                         ),
                       ],
                     ),
                   ),
                 ],
 
+                // Erreur
+                if (_error != null) ...[
+                  const SizedBox(height: 12),
+                  _ErrorBox(message: _error!),
+                ],
+
                 const SizedBox(height: 24),
 
-                // ── Actions ──────────────────────────────────
+                // Actions
                 Row(
                   children: [
                     Expanded(
@@ -419,9 +486,11 @@ class _AddZoneDialogState extends State<_AddZoneDialog> {
                     Expanded(
                       child: LoadingButton(
                         onPressed: _submit,
-                        label: 'Créer la zone',
+                        label: _isEditing ? 'Enregistrer' : 'Créer la zone',
                         isLoading: _isLoading,
-                        icon: Icons.add_location_outlined,
+                        icon: _isEditing
+                            ? Icons.save_outlined
+                            : Icons.add_location_outlined,
                       ),
                     ),
                   ],
@@ -433,8 +502,14 @@ class _AddZoneDialogState extends State<_AddZoneDialog> {
       ),
     );
   }
+}
 
-  Widget _Label(String text) => Padding(
+// ── Widgets communs ─────────────────────────────────────────
+class _Label extends StatelessWidget {
+  final String text;
+  const _Label(this.text);
+  @override
+  Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.only(bottom: 6),
     child: Text(text,
         style: const TextStyle(
@@ -442,36 +517,59 @@ class _AddZoneDialogState extends State<_AddZoneDialog> {
             fontWeight: FontWeight.w500,
             color: AppColors.textPrimary)),
   );
-
-  InputDecoration _inputDeco(
-      {required String hint, required IconData icon}) =>
-      InputDecoration(
-        hintText: hint,
-        prefixIcon: Icon(icon, size: 18),
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.divider),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.divider),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide:
-          const BorderSide(color: AppColors.primary, width: 2),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.danger),
-        ),
-        contentPadding:
-        const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        isDense: true,
-      );
 }
+
+class _ErrorBox extends StatelessWidget {
+  final String message;
+  const _ErrorBox({required this.message});
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(10),
+    decoration: BoxDecoration(
+      color: AppColors.danger.withOpacity(0.08),
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(color: AppColors.danger.withOpacity(0.3)),
+    ),
+    child: Row(
+      children: [
+        const Icon(Icons.error_outline, color: AppColors.danger, size: 16),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(message,
+              style: const TextStyle(
+                  color: AppColors.danger, fontSize: 13)),
+        ),
+      ],
+    ),
+  );
+}
+
+InputDecoration _inputDeco({required String hint, required IconData icon}) =>
+    InputDecoration(
+      hintText: hint,
+      prefixIcon: Icon(icon, size: 18),
+      filled: true,
+      fillColor: Colors.white,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: AppColors.divider),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: AppColors.divider),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: AppColors.primary, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: AppColors.danger),
+      ),
+      contentPadding:
+      const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      isDense: true,
+    );
 
 class _Info extends StatelessWidget {
   final String label, value;

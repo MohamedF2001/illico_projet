@@ -192,6 +192,21 @@ class _VehiculeCard extends ConsumerWidget {
                 ],
               ),
             ),
+            IconButton(
+              icon: const Icon(
+                Icons.edit_outlined,
+                color: AppColors.info,
+                size: 20,
+              ),
+              tooltip: 'Modifier',
+              onPressed: () {
+                final parent = context
+                    .findAncestorWidgetOfExactType<AdminVehiculesPage>();
+                if (parent != null) {
+                  parent._showVehiculeForm(context, ref, vehicule);
+                }
+              },
+            ),
             Switch(
               value: vehicule.actif,
               onChanged: (val) => _toggleActivation(context, ref, val),
@@ -203,6 +218,7 @@ class _VehiculeCard extends ConsumerWidget {
                 color: AppColors.danger,
                 size: 20,
               ),
+              tooltip: 'Supprimer',
               onPressed: () {
                 final parent = context
                     .findAncestorWidgetOfExactType<AdminVehiculesPage>();
@@ -233,6 +249,7 @@ class _VehiculeFormSheetState extends State<_VehiculeFormSheet> {
   final _kmCtrl = TextEditingController();
   final _commCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
+  late bool _actif;
   bool _isLoading = false;
   String? _error;
   final _repo = VehiculeRepositoryImpl(VehiculeRemoteDataSource(apiClient));
@@ -247,6 +264,7 @@ class _VehiculeFormSheetState extends State<_VehiculeFormSheet> {
       _commCtrl.text = widget.vehicule!.commission.toString();
       _descCtrl.text = widget.vehicule!.description ?? '';
     }
+    _actif = widget.vehicule?.actif ?? true;
   }
 
   @override
@@ -271,6 +289,7 @@ class _VehiculeFormSheetState extends State<_VehiculeFormSheet> {
         'coutParKm': double.tryParse(_kmCtrl.text) ?? 0,
         'commission': double.tryParse(_commCtrl.text) ?? 0,
         'description': _descCtrl.text.trim(),
+        if (widget.vehicule != null) 'actif': _actif,
       };
       final r = widget.vehicule != null
           ? await _repo.update(widget.vehicule!.id!, body)
@@ -363,6 +382,34 @@ class _VehiculeFormSheetState extends State<_VehiculeFormSheet> {
               labelText: 'Description (optionnel)',
             ),
           ),
+          if (widget.vehicule != null) ...[
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.divider),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.toggle_on_outlined,
+                      size: 18, color: AppColors.textSecondary),
+                  const SizedBox(width: 10),
+                  const Expanded(
+                    child: Text('Véhicule actif',
+                        style: TextStyle(
+                            fontSize: 13, color: AppColors.textPrimary)),
+                  ),
+                  Switch(
+                    value: _actif,
+                    onChanged: (v) => setState(() => _actif = v),
+                    activeThumbColor: AppColors.accent,
+                  ),
+                ],
+              ),
+            ),
+          ],
           if (_error != null)
             Padding(
               padding: const EdgeInsets.only(top: 8),

@@ -42,9 +42,23 @@ class AdminForfaitsPage extends ConsumerWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => _AddForfaitDialog(onAdded: () {
+      builder: (ctx) => _ForfaitDialog(onSaved: () {
         ref.read(forfaitListProvider.notifier).load();
       }),
+    );
+  }
+
+  void _showEditForfaitForm(
+      BuildContext context, WidgetRef ref, Map<String, dynamic> forfait) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => _ForfaitDialog(
+        forfait: forfait,
+        onSaved: () {
+          ref.read(forfaitListProvider.notifier).load();
+        },
+      ),
     );
   }
 
@@ -213,6 +227,14 @@ class AdminForfaitsPage extends ConsumerWidget {
                         ],
                       ),
                       const SizedBox(width: 8),
+                      // Bouton éditer
+                      IconButton(
+                        icon: const Icon(Icons.edit_outlined,
+                            color: AppColors.info, size: 20),
+                        tooltip: 'Modifier',
+                        onPressed: () =>
+                            _showEditForfaitForm(context, ref, forfait),
+                      ),
                       Switch(
                         value: actif,
                         onChanged: (val) => _toggleActivation(
@@ -222,6 +244,7 @@ class AdminForfaitsPage extends ConsumerWidget {
                       IconButton(
                         icon: const Icon(Icons.delete_outline,
                             color: AppColors.danger, size: 20),
+                        tooltip: 'Désactiver',
                         onPressed: () => _deleteForfait(
                             context, ref, forfait['_id']),
                       ),
@@ -300,30 +323,48 @@ class _ForfaitStat extends StatelessWidget {
 }
 
 // ════════════════════════════════════════════════════════════
-//  DIALOG CRÉATION FORFAIT
+//  DIALOG CRÉATION / ÉDITION FORFAIT
 //  Champs conformes à l'API:
 //  POST /api/forfaits → { nom, description, prix,
 //                         dureeJours, livraisonsIncluses, remise }
+//  PUT /api/forfaits/:id → mêmes champs + actif
 // ════════════════════════════════════════════════════════════
-class _AddForfaitDialog extends StatefulWidget {
-  final VoidCallback onAdded;
-  const _AddForfaitDialog({required this.onAdded});
+class _ForfaitDialog extends StatefulWidget {
+  final Map<String, dynamic>? forfait; // null = création
+  final VoidCallback onSaved;
+  const _ForfaitDialog({this.forfait, required this.onSaved});
 
   @override
-  State<_AddForfaitDialog> createState() => _AddForfaitDialogState();
+  State<_ForfaitDialog> createState() => _ForfaitDialogState();
 }
 
-class _AddForfaitDialogState extends State<_AddForfaitDialog> {
+class _ForfaitDialogState extends State<_ForfaitDialog> {
   final _formKey = GlobalKey<FormState>();
-  final _nomCtrl = TextEditingController();
-  final _descCtrl = TextEditingController();
-  final _prixCtrl = TextEditingController();
-  final _dureeJoursCtrl = TextEditingController();
-  final _livraisonsCtrl = TextEditingController();
-  final _remiseCtrl = TextEditingController(text: '0');
+  late final TextEditingController _nomCtrl;
+  late final TextEditingController _descCtrl;
+  late final TextEditingController _prixCtrl;
+  late final TextEditingController _dureeJoursCtrl;
+  late final TextEditingController _livraisonsCtrl;
+  late final TextEditingController _remiseCtrl;
+  late bool _actif;
 
   bool _isLoading = false;
   String? _error;
+
+  bool get _isEditing => widget.forfait != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final f = widget.forfait;
+    _nomCtrl = TextEditingController(text: f?['nom'] ?? '');
+    _descCtrl = TextEditingController(text: f?['description'] ?? '');
+    _prixCtrl = TextEditingController(text: f?['prix']?.toString() ?? '');
+    _dureeJoursCtrl = TextEditingController(text: f?['dureeJours']?.toString() ?? '');
+    _livraisonsCtrl = TextEditingController(text: f?['livraisonsIncluses']?.toString() ?? '');
+    _remiseCtrl = TextEditingController(text: f?['remise']?.toString() ?? '0');
+    _actif = f?['actif'] as bool? ?? true;
+  }
 
   @override
   void dispose() {
@@ -346,14 +387,19 @@ class _AddForfaitDialogState extends State<_AddForfaitDialog> {
 
     try {
       final ds = ForfaitRemoteDataSource(apiClient);
-      final result = await ds.create({
+      final body = {
         'nom': _nomCtrl.text.trim(),
         'description': _descCtrl.text.trim(),
         'prix': double.tryParse(_prixCtrl.text) ?? 0,
         'dureeJours': int.tryParse(_dureeJoursCtrl.text) ?? 0,
         'livraisonsIncluses': int.tryParse(_livraisonsCtrl.text) ?? 0,
         'remise': double.tryParse(_remiseCtrl.text) ?? 0,
-      });
+        if (_isEditing) 'actif': _actif,
+      };
+
+      final result = _isEditing
+          ? await ds.update(widget.forfait!['_id'] as String, body)
+          : await ds.create(body);
 
       result.fold(
             (failure) => setState(() {
@@ -362,7 +408,7 @@ class _AddForfaitDialogState extends State<_AddForfaitDialog> {
         }),
             (_) {
           Navigator.pop(context);
-          widget.onAdded();
+          widget.onSaved();
         },
       );
     } catch (e) {
@@ -396,12 +442,13 @@ class _AddForfaitDialogState extends State<_AddForfaitDialog> {
                         color: AppColors.primary.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(Icons.card_membership_outlined,
+                      child: Icon(
+                          _isEditing ? Icons.edit_outlined : Icons.card_membership_outlined,
                           color: AppColors.primary, size: 20),
                     ),
                     const SizedBox(width: 12),
-                    const Text('Nouveau forfait',
-                        style: TextStyle(
+                    Text(_isEditing ? 'Modifier le forfait' : 'Nouveau forfait',
+                        style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w700)),
                     const Spacer(),
                     IconButton(
@@ -517,6 +564,37 @@ class _AddForfaitDialogState extends State<_AddForfaitDialog> {
                   },
                 ),
 
+                // ── Toggle actif (édition uniquement) ──────────
+                if (_isEditing) ...[
+                  const SizedBox(height: 14),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColors.divider),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.toggle_on_outlined,
+                            size: 18, color: AppColors.textSecondary),
+                        const SizedBox(width: 10),
+                        const Expanded(
+                          child: Text('Forfait actif',
+                              style: TextStyle(
+                                  fontSize: 13, color: AppColors.textPrimary)),
+                        ),
+                        Switch(
+                          value: _actif,
+                          onChanged: (v) => setState(() => _actif = v),
+                          activeThumbColor: AppColors.accent,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+
                 // ── Erreur ───────────────────────────────────
                 if (_error != null) ...[
                   const SizedBox(height: 12),
@@ -559,9 +637,9 @@ class _AddForfaitDialogState extends State<_AddForfaitDialog> {
                     Expanded(
                       child: LoadingButton(
                         onPressed: _submit,
-                        label: 'Créer le forfait',
+                        label: _isEditing ? 'Enregistrer' : 'Créer le forfait',
                         isLoading: _isLoading,
-                        icon: Icons.add_circle_outline,
+                        icon: _isEditing ? Icons.save_outlined : Icons.add_circle_outline,
                       ),
                     ),
                   ],
