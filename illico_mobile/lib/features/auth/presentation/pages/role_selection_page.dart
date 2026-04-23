@@ -17,111 +17,113 @@ class RoleSelectionPage extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 28),
-          child: Column(
-            children: [
-              const SizedBox(height: 60),
-
-              // ── Logo ───────────────────────────────────────
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFF6B00),
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                child: const Icon(
-                  Icons.local_shipping_rounded,
-                  size: 44,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'ILLICO',
-                style: TextStyle(
-                  fontSize: 34,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                  letterSpacing: 6,
-                ),
-              ),
-              const Text(
-                'DELIVERY',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w300,
-                  color: Color(0xFFFF6B00),
-                  letterSpacing: 10,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Livré. Maintenant.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white38,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-
-              const Spacer(),
-
-              // ── Titre ──────────────────────────────────────
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Je suis…',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 60),
+            
+                // ── Logo ───────────────────────────────────────
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFF6B00),
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  child: const Icon(
+                    Icons.local_shipping_rounded,
+                    size: 44,
                     color: Colors.white,
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Choisissez votre profil pour continuer',
-                  style: TextStyle(fontSize: 14, color: Colors.white54),
+                const SizedBox(height: 20),
+                const Text(
+                  'ILLICO',
+                  style: TextStyle(
+                    fontSize: 34,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                    letterSpacing: 6,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 32),
-
-              // ── Client ─────────────────────────────────────
-              _RoleCard(
-                icon: Icons.person_rounded,
-                emoji: '👤',
-                title: 'Client',
-                subtitle: 'Commander et suivre mes livraisons',
-                features: const [
-                  'Livraison express ou Point ILLICO',
-                  'Suivi temps réel de mon livreur',
-                  'Historique & factures',
-                ],
-                gradient: const [Color(0xFFFF6B00), Color(0xFFE05A00)],
-                onTap: () => context.go('/auth/client'),
-              ),
-              const SizedBox(height: 16),
-
-              // ── Livreur ────────────────────────────────────
-              _RoleCard(
-                icon: Icons.two_wheeler_rounded,
-                emoji: '🚴',
-                title: 'Livreur',
-                subtitle: 'Gérer mes missions et mes gains',
-                features: const [
-                  'Recevoir des missions en temps réel',
-                  'Navigation GPS intégrée',
-                  'Suivi de mes revenus & commissions',
-                ],
-                gradient: const [Color(0xFF1A1A2E), Color(0xFF2D2D5E)],
-                borderColor: const Color(0xFF4A4A8A),
-                onTap: () => context.go('/auth/livreur'),
-              ),
-
-              const SizedBox(height: 40),
-            ],
+                const Text(
+                  'DELIVERY',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w300,
+                    color: Color(0xFFFF6B00),
+                    letterSpacing: 10,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Livré. Maintenant.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white38,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+            
+                const SizedBox(height: 8),
+            
+                // ── Titre ──────────────────────────────────────
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Je suis…',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Choisissez votre profil pour continuer',
+                    style: TextStyle(fontSize: 14, color: Colors.white54),
+                  ),
+                ),
+                const SizedBox(height: 32),
+            
+                // ── Client ─────────────────────────────────────
+                _RoleCard(
+                  icon: Icons.person_rounded,
+                  emoji: '👤',
+                  title: 'Client',
+                  subtitle: 'Commander et suivre mes livraisons',
+                  features: const [
+                    'Livraison express ou Point ILLICO',
+                    'Suivi temps réel de mon livreur',
+                    'Historique & factures',
+                  ],
+                  gradient: const [Color(0xFFFF6B00), Color(0xFFE05A00)],
+                  onTap: () => context.go('/auth/client'),
+                ),
+                const SizedBox(height: 16),
+            
+                // ── Livreur ────────────────────────────────────
+                _RoleCard(
+                  icon: Icons.two_wheeler_rounded,
+                  emoji: '🚴',
+                  title: 'Livreur',
+                  subtitle: 'Gérer mes missions et mes gains',
+                  features: const [
+                    'Recevoir des missions en temps réel',
+                    'Navigation GPS intégrée',
+                    'Suivi de mes revenus & commissions',
+                  ],
+                  gradient: const [Color(0xFF1A1A2E), Color(0xFF2D2D5E)],
+                  borderColor: const Color(0xFF4A4A8A),
+                  onTap: () => context.go('/auth/livreur'),
+                ),
+            
+                const SizedBox(height: 40),
+              ],
+            ),
           ),
         ),
       ),

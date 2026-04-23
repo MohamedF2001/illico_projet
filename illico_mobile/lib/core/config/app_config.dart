@@ -17,7 +17,9 @@ class AppConfig {
   // Développement Android : http://10.0.2.2:3000/api
   // Développement iOS     : http://localhost:3000/api
   // Production            : https://illico-delivery.vercel.app/api
-  static const String baseUrl = 'http://10.0.2.2:3000/api';
+  //static const String baseUrl = 'http://10.0.2.2:3000/api';
+  //static const String baseUrl = 'http://localhost:3000/api';
+  static const String baseUrl = 'http://192.168.0.189:3000/api';
 
   static const String socketUrl = 'https://illico-delivery.vercel.app';
 
