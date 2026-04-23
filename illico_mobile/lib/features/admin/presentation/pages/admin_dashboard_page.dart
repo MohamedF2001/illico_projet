@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/api/api_client.dart';
 import '../../../../core/config/app_theme.dart';
+import '../../../../core/errors/failures.dart';
 import '../../../../core/utils/formatters.dart';
 
 final _kpiProvider = FutureProvider<Map<String, dynamic>>((ref) async {

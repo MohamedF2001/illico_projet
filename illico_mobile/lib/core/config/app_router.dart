@@ -10,13 +10,17 @@ import 'package:go_router/go_router.dart';
 
 // ── Auth ────────────────────────────────────────────────────
 import '../../features/auth/presentation/pages/client_auth_page.dart';
+import '../../features/auth/presentation/pages/profile_page.dart';
 import '../../features/auth/presentation/pages/livreur_auth_page.dart';
 import '../../features/auth/presentation/pages/role_selection_page.dart';
 import '../../features/auth/presentation/pages/splash_page.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
+import '../../features/main/presentation/pages/main_shell_page.dart';
 import '../../features/livraison/presentation/pages/client_home_page.dart';
+import '../../features/livraison/presentation/pages/create_livraison_page.dart';
 import '../../features/livraison/presentation/pages/livraison_detail_page.dart';
 import '../../features/livraison/presentation/pages/livraison_list_page.dart';
+import '../../features/transaction/presentation/pages/wallet_page.dart';
 import '../../features/livreur/presentation/pages/missions_page.dart';
 import '../../features/point_illico/presentation/pages/point_colis_page.dart';
 
@@ -68,50 +72,68 @@ final mobileRouterProvider = Provider<GoRouter>((ref) {
       // ── Écran de chargement initial ──────────────────────
       GoRoute(
         path: '/splash',
-        builder: (_, _) => const SplashPage(),
+        builder: (_, __) => const SplashPage(),
       ),
 
       // ── Sélection du rôle (Client ou Livreur) ─────────────
       // Premier écran affiché à tout utilisateur non connecté
       GoRoute(
         path: '/role',
-        builder: (_, _) => const RoleSelectionPage(),
+        builder: (_, __) => const RoleSelectionPage(),
       ),
 
       // ── Authentification Client ────────────────────────────
       // Contient connexion (téléphone + PIN) et inscription en 3 étapes
       GoRoute(
         path: '/auth/client',
-        builder: (_, _) => const ClientAuthPage(),
+        builder: (_, __) => const ClientAuthPage(),
       ),
 
       // ── Authentification Livreur ───────────────────────────
       // Contient connexion (téléphone + mot de passe) et inscription
       GoRoute(
         path: '/auth/livreur',
-        builder: (_, _) => const LivreurAuthPage(),
+        builder: (_, __) => const LivreurAuthPage(),
       ),
 
       // ════════════════════════════════════════════════════════
-      //  ESPACE CLIENT
+      //  ESPACE CLIENT (NAVIGATION PERSISTANTE)
       // ════════════════════════════════════════════════════════
+      ShellRoute(
+        builder: (context, state, child) => MainShellPage(child: child),
+        routes: [
+          // Page d'accueil client avec raccourcis et livraisons récentes
+          GoRoute(
+            path: '/home',
+            builder: (_, __) => const ClientHomePage(),
+          ),
 
-      // Page d'accueil client avec raccourcis et livraisons récentes
-      GoRoute(
-        path: '/home',
-        builder: (_, _) => const ClientHomePage(),
+          // Historique complet des livraisons avec filtres
+          GoRoute(
+            path: '/mes-livraisons',
+            builder: (_, __) => const LivraisonsListPage(),
+          ),
+
+          // Page Wallet / Transactions
+          GoRoute(
+            path: '/wallet',
+            builder: (_, __) => const WalletPage(),
+          ),
+
+          // Profil du client
+          GoRoute(
+            path: '/profil',
+            builder: (_, __) => const ProfilePage(),
+          ),
+        ],
       ),
 
-      // Historique complet des livraisons avec filtres
-      GoRoute(
-        path: '/mes-livraisons',
-        builder: (_, _) => const LivraisonsListPage(),
-      ),
+      // ── Routes hors navigation persistante ──────────────────
 
       // Nouvelle commande de livraison
       GoRoute(
         path: '/livraison/new',
-        builder: (_, _) => const CreateLivraisonPlaceholderPage(),
+        builder: (_, __) => const CreateLivraisonPage(),
       ),
 
       // Détail d'une livraison avec validation OTP et annulation
@@ -125,19 +147,13 @@ final mobileRouterProvider = Provider<GoRouter>((ref) {
       // Page colis du client (colis en point ILLICO)
       GoRoute(
         path: '/colis',
-        builder: (_, _) => const ColisClientPlaceholderPage(),
+        builder: (_, __) => const ColisClientPlaceholderPage(),
       ),
 
       // Forfaits et abonnements professionnels
       GoRoute(
         path: '/forfaits',
-        builder: (_, _) => const ForfaitsPlaceholderPage(),
-      ),
-
-      // Profil du client
-      GoRoute(
-        path: '/profil',
-        builder: (_, _) => const ProfilePlaceholderPage(),
+        builder: (_, __) => const ForfaitsPlaceholderPage(),
       ),
 
       // ════════════════════════════════════════════════════════
@@ -147,7 +163,7 @@ final mobileRouterProvider = Provider<GoRouter>((ref) {
       // Tableau de bord des missions avec statut en ligne/hors ligne
       GoRoute(
         path: '/livreur/missions',
-        builder: (_, _) => const MissionsPage(),
+        builder: (_, __) => const MissionsPage(),
       ),
 
       // Détail d'une mission (même page que détail livraison)
@@ -161,7 +177,7 @@ final mobileRouterProvider = Provider<GoRouter>((ref) {
       // Gains, commissions et suivi du cash collecté
       GoRoute(
         path: '/livreur/gains',
-        builder: (_, _) => const GainsPlaceholderPage(),
+        builder: (_, __) => const GainsPlaceholderPage(),
       ),
 
       // ════════════════════════════════════════════════════════
@@ -170,7 +186,7 @@ final mobileRouterProvider = Provider<GoRouter>((ref) {
       // ════════════════════════════════════════════════════════
       GoRoute(
         path: '/point/colis',
-        builder: (_, _) => const PointColisPage(),
+        builder: (_, __) => const PointColisPage(),
       ),
     ],
 
@@ -213,7 +229,7 @@ class _RouterNotifier extends ChangeNotifier {
 
   _RouterNotifier(this._ref) {
     // Écoute les changements d'état d'authentification
-    _ref.listen(authProvider, (_, _) => notifyListeners());
+    _ref.listen(authProvider, (_, __) => notifyListeners());
   }
 }
 
@@ -303,6 +319,16 @@ class ProfilePlaceholderPage extends StatelessWidget {
   Widget build(BuildContext context) => const _PlaceholderPage(
     title: 'Mon profil',
     icon: Icons.person_outline,
+  );
+}
+
+/// Page Wallet
+class WalletPlaceholderPage extends StatelessWidget {
+  const WalletPlaceholderPage({super.key});
+  @override
+  Widget build(BuildContext context) => const _PlaceholderPage(
+    title: 'Wallet',
+    icon: Icons.account_balance_wallet_outlined,
   );
 }
 

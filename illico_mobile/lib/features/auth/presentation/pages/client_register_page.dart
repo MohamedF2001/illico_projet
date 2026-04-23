@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/api/api_client.dart';
 import '../../../../core/config/app_theme.dart';
 import '../../../../core/errors/failures.dart';
+import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/loading_button.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';

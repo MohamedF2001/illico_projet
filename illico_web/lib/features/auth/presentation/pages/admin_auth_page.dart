@@ -198,12 +198,10 @@ class _AdminAuthPageState extends ConsumerState<AdminAuthPage> {
                                   icon: Icons.email_outlined,
                                 ),
                                 validator: (v) {
-                                  if (v == null || v.isEmpty) {
+                                  if (v == null || v.isEmpty)
                                     return 'Email requis';
-                                  }
-                                  if (!v.contains('@')) {
+                                  if (!v.contains('@'))
                                     return 'Email invalide';
-                                  }
                                   return null;
                                 },
                               ),
@@ -233,9 +231,8 @@ class _AdminAuthPageState extends ConsumerState<AdminAuthPage> {
                                   ),
                                 ),
                                 validator: (v) {
-                                  if (v == null || v.isEmpty) {
+                                  if (v == null || v.isEmpty)
                                     return 'Mot de passe requis';
-                                  }
                                   return null;
                                 },
                                 onFieldSubmitted: (_) => _login(),

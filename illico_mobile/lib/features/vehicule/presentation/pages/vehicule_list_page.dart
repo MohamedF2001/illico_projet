@@ -43,7 +43,7 @@ class AdminVehiculesPage extends ConsumerWidget {
                   : ListView.separated(
                       padding: const EdgeInsets.all(16),
                       itemCount: state.items.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 10),
+                      separatorBuilder: (_, __) => const SizedBox(height: 10),
                       itemBuilder: (ctx, i) => _VehiculeCard(vehicule: state.items[i], onRefresh: () => ref.read(vehiculeListProvider.notifier).load()),
                     ),
     );
@@ -157,7 +157,7 @@ class _VehiculeFormSheetState extends State<_VehiculeFormSheet> {
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
         const SizedBox(height: 20),
         DropdownButtonFormField<String>(
-          initialValue: _typeCtrl.text.isEmpty ? null : _typeCtrl.text,
+          value: _typeCtrl.text.isEmpty ? null : _typeCtrl.text,
           decoration: const InputDecoration(labelText: 'Type de véhicule'),
           items: ['velo', 'moto', 'tricycle', 'voiture', 'camionnette']
               .map((t) => DropdownMenuItem(value: t, child: Text(Formatters.vehiculeLabel(t))))

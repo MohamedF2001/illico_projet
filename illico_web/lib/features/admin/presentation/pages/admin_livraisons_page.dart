@@ -44,16 +44,20 @@ class AdminLivraisonsPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Livraisons'),
-        /*actions: [
+        actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.read(livraisonListProvider.notifier).load(),
           ),
-          IconButton(
-            icon: const Icon(Icons.add, size: 18),
-            onPressed: () => _showAddLivraisonForm(context, ref),
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ElevatedButton.icon(
+              onPressed: () => _showAddLivraisonForm(context, ref),
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text('Ajouter'),
+            ),
           ),
-        ],*/
+        ],
       ),
       body: state.isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -70,7 +74,7 @@ class AdminLivraisonsPage extends ConsumerWidget {
           : ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: state.items.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 12),
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (ctx, i) {
                 final liv = state.items[i];
                 final color = _getStatusColor(liv.statut);

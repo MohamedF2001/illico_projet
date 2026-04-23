@@ -131,26 +131,23 @@ class _PointColisPageState extends ConsumerState<PointColisPage>
                 final items = f == 'Tous'
                     ? state.items
                     : state.items.where((c) => c['statut'] == f).toList();
-                if (state.isLoading) {
+                if (state.isLoading)
                   return const Center(child: CircularProgressIndicator());
-                }
-                if (state.error != null) {
+                if (state.error != null)
                   return ErrorDisplay(
                     failure: state.error!,
                     onRetry: () =>
                         ref.read(colisPointProvider.notifier).loadAll(),
                   );
-                }
-                if (items.isEmpty) {
+                if (items.isEmpty)
                   return const EmptyState(
                     title: 'Aucun colis',
                     icon: Icons.inventory_2_outlined,
                   );
-                }
                 return ListView.separated(
                   padding: const EdgeInsets.all(16),
                   itemCount: items.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 10),
+                  separatorBuilder: (_, __) => const SizedBox(height: 10),
                   itemBuilder: (ctx, i) => _ColisCard(
                     colis: items[i],
                     onAction: () =>
@@ -408,7 +405,7 @@ class _ColisCard extends StatelessWidget {
                   colis['_id'] as String,
                   otpCtrl.text.trim(),
                 );
-                if (context.mounted) {
+                if (context.mounted)
                   r.fold(
                     (f) => ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -426,7 +423,6 @@ class _ColisCard extends StatelessWidget {
                       );
                     },
                   );
-                }
               });
             },
             child: const Text('Valider'),

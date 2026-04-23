@@ -704,7 +704,7 @@ class _PointRegisterTabState extends ConsumerState<_PointRegisterTab> {
 
             InputLabel(label: 'Zone'),
             DropdownButtonFormField<String>(
-              initialValue: _zone,
+              value: _zone,
               decoration: inputDeco(hint: '', icon: Icons.map_outlined),
               items: _zones
                   .map((z) => DropdownMenuItem(value: z, child: Text(z)))

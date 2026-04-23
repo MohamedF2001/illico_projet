@@ -28,7 +28,7 @@ class MissionsPage extends ConsumerWidget {
             padding: const EdgeInsets.only(right: 12),
             child: Switch(
               value: state.statut == 'en_ligne',
-              activeThumbColor: AppColors.accent,
+              activeColor: AppColors.accent,
               onChanged: (_) => demoGuard(context, () => ref.read(missionsProvider.notifier).toggleStatut()),
             ),
           ),
