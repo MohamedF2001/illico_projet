@@ -75,4 +75,11 @@ class LivraisonRemoteDataSource {
       return Right(r.data['data'] as Map<String, dynamic>);
     } on DioException catch (e) { return Left(ApiClient.handleDioError(e)); } catch (_) { return const Left(Failure.unexpectedError()); }
   }
+
+  Future<Either<Failure, void>> rateLivreur(String id, double note) async {
+    try {
+      await _api.dio.post('/livraisons/$id/noter', data: {'note': note});
+      return const Right(null);
+    } on DioException catch (e) { return Left(ApiClient.handleDioError(e)); } catch (_) { return const Left(Failure.unexpectedError()); }
+  }
 }

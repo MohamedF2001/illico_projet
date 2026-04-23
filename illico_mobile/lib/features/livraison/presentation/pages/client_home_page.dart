@@ -11,9 +11,7 @@ class ClientHomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final auth = ref.watch(authProvider);
     final state = ref.watch(livraisonListProvider);
-    final user = auth.user;
     final recent = state.items.take(3).toList();
 
     return Scaffold(
@@ -46,7 +44,7 @@ class ClientHomePage extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_none, color: Colors.black),
-            onPressed: () {},
+            onPressed: () => context.push('/notifications'),
           ),
         ],
       ),

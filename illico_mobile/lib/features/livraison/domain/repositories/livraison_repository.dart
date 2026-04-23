@@ -12,4 +12,5 @@ abstract class LivraisonRepository {
   Future<Either<Failure, LivraisonEntity>> updateStatut(String id, String statut);
   Future<Either<Failure, LivraisonEntity>> assignLivreur(String id, String livreurId);
   Future<Either<Failure, Map<String, dynamic>>> uploadPreuve(String id, dynamic file, bool isWeb);
+  Future<Either<Failure, void>> rateLivreur(String id, double note);
 }
