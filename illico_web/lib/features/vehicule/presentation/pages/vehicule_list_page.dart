@@ -56,12 +56,55 @@ class AdminVehiculesPage extends ConsumerWidget {
       builder: (_) => _VehiculeFormSheet(vehicule: v, onSaved: () => ref.read(vehiculeListProvider.notifier).load()),
     );
   }
+
+  void _deleteVehicule(BuildContext context, WidgetRef ref, String id) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Supprimer'),
+        content: const Text('Voulez-vous supprimer ce véhicule ?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Supprimer')),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      ref.read(vehiculeListProvider.notifier).delete(id);
+    }
+  }
 }
 
-class _VehiculeCard extends StatelessWidget {
+class _VehiculeCard extends ConsumerWidget {
   final VehiculeEntity vehicule;
   final VoidCallback onRefresh;
   const _VehiculeCard({required this.vehicule, required this.onRefresh});
+
+  void _toggleActivation(BuildContext context, WidgetRef ref, bool val) async {
+    final ds = VehiculeRemoteDataSource(apiClient);
+    final r = await ds.update(vehicule.id!, {'actif': val});
+    r.fold(
+      (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.displayMessage))),
+      (_) => onRefresh(),
+    );
+  }
+
+  void _deleteVehicule(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Supprimer'),
+        content: const Text('Voulez-vous supprimer ce véhicule ?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Supprimer')),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      ref.read(vehiculeListProvider.notifier).delete(vehicule.id!);
+    }
+  }
 
   IconData get _icon => switch (vehicule.type) {
     'velo' => Icons.pedal_bike, 'moto' => Icons.two_wheeler, 'voiture' => Icons.directions_car,
@@ -69,7 +112,7 @@ class _VehiculeCard extends StatelessWidget {
   };
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -86,14 +129,20 @@ class _VehiculeCard extends StatelessWidget {
             Text('Commission: ${vehicule.commission.toStringAsFixed(0)}%',
                 style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
           ])),
-          Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: vehicule.actif ? AppColors.accent.withOpacity(0.1) : AppColors.danger.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(vehicule.actif ? 'Actif' : 'Inactif',
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600,
-                    color: vehicule.actif ? AppColors.accent : AppColors.danger))),
+          Switch(
+            value: vehicule.actif,
+            onChanged: (val) => _toggleActivation(context, ref, val),
+            activeColor: AppColors.accent,
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, color: AppColors.danger, size: 20),
+            onPressed: () {
+              final parent = context.findAncestorWidgetOfExactType<AdminVehiculesPage>();
+              if (parent != null) {
+                parent._deleteVehicule(context, ref, vehicule.id!);
+              }
+            },
+          ),
         ]),
       ),
     );

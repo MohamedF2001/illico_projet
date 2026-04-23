@@ -17,7 +17,8 @@ class VehiculeListState {
 
 class VehiculeListNotifier extends StateNotifier<VehiculeListState> {
   final GetVehiculesUseCase _uc;
-  VehiculeListNotifier(this._uc) : super(const VehiculeListState(isLoading: true)) { load(); }
+  final VehiculeRemoteDataSource _ds;
+  VehiculeListNotifier(this._uc, this._ds) : super(const VehiculeListState(isLoading: true)) { load(); }
 
   Future<void> load({bool? actif}) async {
     state = state.copyWith(isLoading: true, error: null);
@@ -27,9 +28,15 @@ class VehiculeListNotifier extends StateNotifier<VehiculeListState> {
       (items) => state = state.copyWith(isLoading: false, items: items),
     );
   }
+
+  Future<void> delete(String id) async {
+    final res = await _ds.delete(id);
+    res.fold((_) {}, (_) => load());
+  }
 }
 
 final vehiculeListProvider = StateNotifierProvider<VehiculeListNotifier, VehiculeListState>((ref) {
-  final repo = VehiculeRepositoryImpl(VehiculeRemoteDataSource(apiClient));
-  return VehiculeListNotifier(GetVehiculesUseCase(repo));
+  final ds = VehiculeRemoteDataSource(apiClient);
+  final repo = VehiculeRepositoryImpl(ds);
+  return VehiculeListNotifier(GetVehiculesUseCase(repo), ds);
 });

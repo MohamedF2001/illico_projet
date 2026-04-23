@@ -1,16 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/config/app_theme.dart';
+import '../../../../core/errors/failures.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/demo_dialog.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/error_display.dart';
+import '../../../auth/data/datasources/auth_remote_datasource.dart';
 import '../../../livreur/data/datasources/livreur_remote_datasource.dart';
 import '../../../livreur/presentation/providers/livreur_provider.dart';
 import '../../../../core/api/api_client.dart';
 
 class AdminLivreursPage extends ConsumerWidget {
   const AdminLivreursPage({super.key});
+
+  void _deleteLivreur(BuildContext context, WidgetRef ref, String id) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Supprimer'),
+        content: const Text('Voulez-vous supprimer ce livreur ?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Supprimer')),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      ref.read(livreurListProvider.notifier).delete(id);
+    }
+  }
+
+  void _showAddLivreurForm(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (ctx) => _AddLivreurDialog(onAdded: () {
+        ref.read(livreurListProvider.notifier).load();
+      }),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,6 +51,14 @@ class AdminLivreursPage extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.read(livreurListProvider.notifier).load(),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ElevatedButton.icon(
+              onPressed: () => _showAddLivreurForm(context, ref),
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text('Ajouter'),
+            ),
           ),
         ],
       ),
@@ -51,13 +87,69 @@ class AdminLivreursPage extends ConsumerWidget {
   }
 }
 
-class _LivreurAdminCard extends StatelessWidget {
+class _AddLivreurDialog extends StatefulWidget {
+  final VoidCallback onAdded;
+  const _AddLivreurDialog({required this.onAdded});
+  @override
+  State<_AddLivreurDialog> createState() => _AddLivreurDialogState();
+}
+
+class _AddLivreurDialogState extends State<_AddLivreurDialog> {
+  final _nomCtrl = TextEditingController();
+  final _telCtrl = TextEditingController();
+  final _passCtrl = TextEditingController();
+  final _vehiculeCtrl = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+        title: const Text('Ajouter un livreur'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(controller: _nomCtrl, decoration: const InputDecoration(labelText: 'Nom complet')),
+              TextField(controller: _telCtrl, decoration: const InputDecoration(labelText: 'Téléphone')),
+              TextField(
+                controller: _passCtrl,
+                decoration: const InputDecoration(labelText: 'Mot de passe'),
+                obscureText: true,
+              ),
+              TextField(controller: _vehiculeCtrl, decoration: const InputDecoration(labelText: 'ID Véhicule')),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Annuler')),
+          ElevatedButton(
+            onPressed: () async {
+              final ds = AuthRemoteDataSource(apiClient);
+              final r = await ds.registerLivreur({
+                'nom': _nomCtrl.text,
+                'telephone': _telCtrl.text,
+                'motDePasse': _passCtrl.text,
+                'vehicule': _vehiculeCtrl.text,
+              });
+              r.fold(
+                (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.displayMessage))),
+                (_) {
+                  widget.onAdded();
+                  Navigator.pop(context);
+                },
+              );
+            },
+            child: const Text('Ajouter'),
+          ),
+        ],
+      );
+}
+
+class _LivreurAdminCard extends ConsumerWidget {
   final Map<String, dynamic> livreur;
   final VoidCallback onAction;
   const _LivreurAdminCard({required this.livreur, required this.onAction});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final valide = livreur['valide'] as bool? ?? false;
     final statut = livreur['statut'] as String? ?? 'hors_ligne';
     final cash =
@@ -114,6 +206,15 @@ class _LivreurAdminCard extends StatelessWidget {
                     ),
                     if (isBloque) _dot(AppColors.danger, 'Bloqué cash'),
                   ],
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, color: AppColors.danger, size: 20),
+                  onPressed: () {
+                    final parent = context.findAncestorWidgetOfExactType<AdminLivreursPage>();
+                    if (parent != null) {
+                      parent._deleteLivreur(context, ref, livreur['_id']);
+                    }
+                  },
                 ),
               ],
             ),

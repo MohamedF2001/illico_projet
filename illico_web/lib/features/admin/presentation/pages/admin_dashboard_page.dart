@@ -1,13 +1,87 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/api/api_client.dart';
 import '../../../../core/config/app_theme.dart';
 import '../../../../core/errors/failures.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../colis/presentation/providers/colis_provider.dart';
+import '../../../livraison/presentation/providers/livraison_provider.dart';
+import '../../../livreur/presentation/providers/livreur_provider.dart';
+import '../../../transaction/presentation/providers/transaction_provider.dart';
+import '../../../point_illico/presentation/providers/point_illico_provider.dart';
 
-final _kpiProvider = FutureProvider<Map<String, dynamic>>((ref) async {
-  final r = await apiClient.dio.get('/admin/kpi');
-  return r.data['data'] as Map<String, dynamic>;
+final _dashboardStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
+  // On enveloppe chaque appel pour éviter que le dashboard ne crash si un endpoint échoue (ex: 500 sur /colis/admin)
+  final results = await Future.wait<Response>([
+    apiClient.dio.get('/transactions/admin/stats').catchError((e) {
+      debugPrint('Error fetching tx stats: $e');
+      return Response(data: {'data': {}}, requestOptions: RequestOptions(path: ''));
+    }),
+    apiClient.dio.get('/livreurs').catchError((e) {
+      debugPrint('Error fetching livreurs: $e');
+      return Response(data: {'data': []}, requestOptions: RequestOptions(path: ''));
+    }),
+    apiClient.dio.get('/points').catchError((e) {
+      debugPrint('Error fetching points: $e');
+      return Response(data: {'data': []}, requestOptions: RequestOptions(path: ''));
+    }),
+    apiClient.dio.get('/colis/admin').catchError((e) {
+      debugPrint('Error fetching colis: $e');
+      return Response(data: {'data': []}, requestOptions: RequestOptions(path: ''));
+    }),
+    apiClient.dio.get('/livraisons').catchError((e) {
+      debugPrint('Error fetching livraisons: $e');
+      return Response(data: {'data': []}, requestOptions: RequestOptions(path: ''));
+    }),
+  ]);
+
+  final txStats = (results[0].data?['data'] as Map<String, dynamic>?) ?? {};
+  final livreurs = (results[1].data?['data'] as List?) ?? [];
+  final points = (results[2].data?['data'] as List?) ?? [];
+  final colis = (results[3].data?['data'] as List?) ?? [];
+  final livraisons = (results[4].data?['data'] as List?) ?? [];
+
+  // Calcul manuel des revenus si les stats admin échouent
+  double totalRevenus = (txStats['revenusTotal'] as num?)?.toDouble() ?? 0;
+  double moisRevenus = (txStats['revenusMois'] as num?)?.toDouble() ?? 0;
+
+  if (totalRevenus == 0) {
+    for (final l in livraisons) {
+      if (['livré', 'termine', 'livre'].contains(l['statut'])) {
+        totalRevenus += (l['prixEstime'] as num?)?.toDouble() ?? 0;
+      }
+    }
+  }
+
+  final totalLiv = (txStats['totalLivraisons'] as num?)?.toInt() ?? livraisons.length;
+  final livrees = (txStats['livraisonsTerminees'] as num?)?.toInt() ?? livraisons.where((l) => ['livré', 'termine', 'livre'].contains(l['statut'])).length;
+
+  return {
+    'revenus': {
+      'mois': moisRevenus,
+      'total': totalRevenus
+    },
+    'livraisons': {
+      'total': totalLiv,
+      'enCours': (txStats['livraisonsEnCours'] as num?)?.toInt() ?? livraisons.where((l) => !['livré', 'annulé', 'termine', 'livre', 'annule'].contains(l['statut'])).length,
+      'tauxReussite': (txStats['tauxReussite'] as num?)?.toInt() ?? (totalLiv > 0 ? (livrees / totalLiv * 100).round() : 0),
+      'livrees': livrees
+    },
+    'utilisateurs': {
+      'clients': (txStats['totalClients'] as num?)?.toInt() ?? livraisons.map((l) => l['clientId']).toSet().length,
+      'livreurs': livreurs.length,
+      'points': points.length,
+    },
+    'livreurs': {
+      'enLigne': livreurs.where((l) => (l as Map)['statut'] == 'en_ligne').length,
+      'enMission': livreurs.where((l) => (l as Map)['statut'] == 'en_mission').length,
+    },
+    'colis': {
+      'enAttente': colis.where((c) => ['en_attente', 'receptionné', 'reçu'].contains((c as Map)['statut'])).length,
+      'enRetard': 0,
+    }
+  };
 });
 
 class AdminDashboardPage extends ConsumerWidget {
@@ -15,7 +89,7 @@ class AdminDashboardPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final kpi = ref.watch(_kpiProvider);
+    final kpiAsync = ref.watch(_dashboardStatsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -23,16 +97,38 @@ class AdminDashboardPage extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () => ref.invalidate(_kpiProvider),
+            onPressed: () {
+              ref.read(livraisonListProvider.notifier).load();
+              ref.read(livreurListProvider.notifier).load();
+              ref.read(transactionListProvider.notifier).load();
+              ref.read(colisListProvider.notifier).load();
+              ref.read(pointIllicoListProvider.notifier).load();
+            },
           ),
         ],
       ),
-      body: kpi.when(
+      body: kpiAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
-          child: Text(
-            'Erreur: $e',
-            style: const TextStyle(color: AppColors.danger),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Erreur: ${e is Failure ? e.displayMessage : e}',
+                style: const TextStyle(color: AppColors.danger),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  ref.read(livraisonListProvider.notifier).load();
+                  ref.read(livreurListProvider.notifier).load();
+                  ref.read(transactionListProvider.notifier).load();
+                  ref.read(colisListProvider.notifier).load();
+                  ref.read(pointIllicoListProvider.notifier).load();
+                },
+                child: const Text('Réessayer'),
+              ),
+            ],
           ),
         ),
         data: (data) => SingleChildScrollView(

@@ -27,5 +27,32 @@ class ColisPointNotifier extends StateNotifier<ColisPointState> {
   }
 }
 
+class PointIllicoListState {
+  final bool isLoading;
+  final List<Map<String, dynamic>> items;
+  final Failure? error;
+  const PointIllicoListState({this.isLoading = false, this.items = const [], this.error});
+  PointIllicoListState copyWith({bool? isLoading, List<Map<String, dynamic>>? items, Failure? error}) =>
+      PointIllicoListState(isLoading: isLoading ?? this.isLoading, items: items ?? this.items, error: error);
+}
+
+class PointIllicoListNotifier extends StateNotifier<PointIllicoListState> {
+  final PointIllicoRemoteDataSource _ds;
+  PointIllicoListNotifier(this._ds) : super(const PointIllicoListState(isLoading: true)) { load(); }
+  Future<void> load({bool? actif}) async {
+    state = state.copyWith(isLoading: true, error: null);
+    final r = await _ds.getAll(actif: actif);
+    r.fold((f) => state = state.copyWith(isLoading: false, error: f),
+           (items) => state = state.copyWith(isLoading: false, items: items));
+  }
+  Future<void> delete(String id) async {
+    final r = await _ds.delete(id);
+    r.fold((_) {}, (_) => load());
+  }
+}
+
+final pointIllicoListProvider = StateNotifierProvider<PointIllicoListNotifier, PointIllicoListState>((ref) =>
+    PointIllicoListNotifier(PointIllicoRemoteDataSource(apiClient)));
+
 final colisPointProvider = StateNotifierProvider<ColisPointNotifier, ColisPointState>((ref) =>
     ColisPointNotifier(PointIllicoRemoteDataSource(apiClient)));

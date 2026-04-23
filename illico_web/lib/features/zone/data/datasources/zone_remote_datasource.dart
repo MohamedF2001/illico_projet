@@ -22,7 +22,13 @@ class ZoneRemoteDataSource {
     on DioException catch (e) { return Left(ApiClient.handleDioError(e)); } catch (_) { return const Left(Failure.unexpectedError()); }
   }
   Future<Either<Failure, void>> delete(String id) async {
-    try { await _api.dio.delete('/zones/$id'); return const Right(null); }
-    on DioException catch (e) { return Left(ApiClient.handleDioError(e)); } catch (_) { return const Left(Failure.unexpectedError()); }
+    try {
+      await _api.dio.delete('/zones/$id');
+      return const Right(null);
+    } on DioException catch (e) {
+      return Left(ApiClient.handleDioError(e));
+    } catch (_) {
+      return const Left(Failure.unexpectedError());
+    }
   }
 }
