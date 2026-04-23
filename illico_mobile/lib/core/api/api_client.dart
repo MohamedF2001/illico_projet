@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/app_config.dart';
 import '../errors/failures.dart';
-import 'package:fpdart/fpdart.dart';
 
 class ApiClient {
   late final Dio dio;

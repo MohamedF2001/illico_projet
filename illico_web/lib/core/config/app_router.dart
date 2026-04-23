@@ -80,35 +80,35 @@ final webRouterProvider = Provider<GoRouter>((ref) {
       // ── Écran de chargement initial ───────────────────────
       GoRoute(
         path: '/splash',
-        builder: (_, __) => const SplashPage(),
+        builder: (_, _) => const SplashPage(),
       ),
 
       // ── Page d'accueil du portail professionnel ────────────
       // Choix entre Admin et Point ILLICO
       GoRoute(
         path: '/',
-        builder: (_, __) => const WebLandingPage(),
+        builder: (_, _) => const WebLandingPage(),
       ),
 
       // ── Connexion Admin ────────────────────────────────────
       // Email + mot de passe, interface desktop
       GoRoute(
         path: '/auth/admin',
-        builder: (_, __) => const AdminAuthPage(),
+        builder: (_, _) => const AdminAuthPage(),
       ),
 
       // ── Connexion Point ILLICO ─────────────────────────────
       // Téléphone + mot de passe + inscription point
       GoRoute(
         path: '/auth/point',
-        builder: (_, __) => const PointAuthPage(),
+        builder: (_, _) => const PointAuthPage(),
       ),
 
       // ── Page colis Point ILLICO ────────────────────────────
       // Interface de gestion des colis sans sidebar admin
       GoRoute(
         path: '/point/colis',
-        builder: (_, __) => const PointColisPage(),
+        builder: (_, _) => const PointColisPage(),
       ),
 
       // ════════════════════════════════════════════════════════
@@ -124,61 +124,61 @@ final webRouterProvider = Provider<GoRouter>((ref) {
           // Tableau de bord KPI (revenus, livraisons, livreurs...)
           GoRoute(
             path: '/admin/dashboard',
-            builder: (_, __) => const AdminDashboardPage(),
+            builder: (_, _) => const AdminDashboardPage(),
           ),
 
           // Liste et suivi de toutes les livraisons
           GoRoute(
             path: '/admin/livraisons',
-            builder: (_, __) => const AdminLivraisonsPage(),
+            builder: (_, _) => const AdminLivraisonsPage(),
           ),
 
           // Gestion des livreurs (validation, suspension, cash)
           GoRoute(
             path: '/admin/livreurs',
-            builder: (_, __) => const AdminLivreursPage(),
+            builder: (_, _) => const AdminLivreursPage(),
           ),
 
           // Activation/désactivation des Points ILLICO
           GoRoute(
             path: '/admin/points',
-            builder: (_, __) => const AdminPointsPage(),
+            builder: (_, _) => const AdminPointsPage(),
           ),
 
           // Alertes colis en retard (>48h, >7j)
           GoRoute(
             path: '/admin/colis',
-            builder: (_, __) => const AdminColisPage(),
+            builder: (_, _) => const AdminColisPage(),
           ),
 
           // CRUD des types de véhicules et leurs tarifs de base
           GoRoute(
             path: '/admin/vehicules',
-            builder: (_, __) => const AdminVehiculesPage(),
+            builder: (_, _) => const AdminVehiculesPage(),
           ),
 
           // Gestion des zones géographiques avec suppléments
           GoRoute(
             path: '/admin/zones',
-            builder: (_, __) => const AdminZonesPage(),
+            builder: (_, _) => const AdminZonesPage(),
           ),
 
           // Grilles tarifaires par véhicule et zone
           GoRoute(
             path: '/admin/tarifs',
-            builder: (_, __) => const AdminTarifsPage(),
+            builder: (_, _) => const AdminTarifsPage(),
           ),
 
           // Historique des transactions financières
           GoRoute(
             path: '/admin/transactions',
-            builder: (_, __) => const AdminTransactionsPage(),
+            builder: (_, _) => const AdminTransactionsPage(),
           ),
 
           // Gestion des forfaits clients professionnels
           GoRoute(
             path: '/admin/forfaits',
-            builder: (_, __) => const AdminForfaitsPage(),
+            builder: (_, _) => const AdminForfaitsPage(),
           ),
         ],
       ),
@@ -235,6 +235,6 @@ class _RouterNotifier extends ChangeNotifier {
 
   _RouterNotifier(this._ref) {
     // Se déclenche à chaque changement de l'état auth
-    _ref.listen(authProvider, (_, __) => notifyListeners());
+    _ref.listen(authProvider, (_, _) => notifyListeners());
   }
 }

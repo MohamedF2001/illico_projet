@@ -48,7 +48,7 @@ class AdminVehiculesPage extends ConsumerWidget {
           : ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: state.items.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              separatorBuilder: (_, _) => const SizedBox(height: 10),
               itemBuilder: (ctx, i) => _VehiculeCard(
                 vehicule: state.items[i],
                 onRefresh: () => ref.read(vehiculeListProvider.notifier).load(),
@@ -195,7 +195,7 @@ class _VehiculeCard extends ConsumerWidget {
             Switch(
               value: vehicule.actif,
               onChanged: (val) => _toggleActivation(context, ref, val),
-              activeColor: AppColors.accent,
+              activeThumbColor: AppColors.accent,
             ),
             IconButton(
               icon: const Icon(
@@ -309,7 +309,7 @@ class _VehiculeFormSheetState extends State<_VehiculeFormSheet> {
           ),
           const SizedBox(height: 20),
           DropdownButtonFormField<String>(
-            value: _typeCtrl.text.isEmpty ? null : _typeCtrl.text,
+            initialValue: _typeCtrl.text.isEmpty ? null : _typeCtrl.text,
             decoration: const InputDecoration(labelText: 'Type de véhicule'),
             items: ['velo', 'moto', 'tricycle', 'voiture', 'camionnette']
                 .map(

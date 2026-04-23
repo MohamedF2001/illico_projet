@@ -98,7 +98,7 @@ class _ClientAuthPageState extends ConsumerState<ClientAuthPage>
 // ════════════════════════════════════════════════════════════
 
 class ClientLoginTab extends ConsumerStatefulWidget {
-  const ClientLoginTab();
+  const ClientLoginTab({super.key});
 
   @override
   ConsumerState<ClientLoginTab> createState() => _ClientLoginTabState();

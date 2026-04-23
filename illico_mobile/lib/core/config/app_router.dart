@@ -68,28 +68,28 @@ final mobileRouterProvider = Provider<GoRouter>((ref) {
       // ── Écran de chargement initial ──────────────────────
       GoRoute(
         path: '/splash',
-        builder: (_, __) => const SplashPage(),
+        builder: (_, _) => const SplashPage(),
       ),
 
       // ── Sélection du rôle (Client ou Livreur) ─────────────
       // Premier écran affiché à tout utilisateur non connecté
       GoRoute(
         path: '/role',
-        builder: (_, __) => const RoleSelectionPage(),
+        builder: (_, _) => const RoleSelectionPage(),
       ),
 
       // ── Authentification Client ────────────────────────────
       // Contient connexion (téléphone + PIN) et inscription en 3 étapes
       GoRoute(
         path: '/auth/client',
-        builder: (_, __) => const ClientAuthPage(),
+        builder: (_, _) => const ClientAuthPage(),
       ),
 
       // ── Authentification Livreur ───────────────────────────
       // Contient connexion (téléphone + mot de passe) et inscription
       GoRoute(
         path: '/auth/livreur',
-        builder: (_, __) => const LivreurAuthPage(),
+        builder: (_, _) => const LivreurAuthPage(),
       ),
 
       // ════════════════════════════════════════════════════════
@@ -99,19 +99,19 @@ final mobileRouterProvider = Provider<GoRouter>((ref) {
       // Page d'accueil client avec raccourcis et livraisons récentes
       GoRoute(
         path: '/home',
-        builder: (_, __) => const ClientHomePage(),
+        builder: (_, _) => const ClientHomePage(),
       ),
 
       // Historique complet des livraisons avec filtres
       GoRoute(
         path: '/mes-livraisons',
-        builder: (_, __) => const LivraisonsListPage(),
+        builder: (_, _) => const LivraisonsListPage(),
       ),
 
       // Nouvelle commande de livraison
       GoRoute(
         path: '/livraison/new',
-        builder: (_, __) => const CreateLivraisonPlaceholderPage(),
+        builder: (_, _) => const CreateLivraisonPlaceholderPage(),
       ),
 
       // Détail d'une livraison avec validation OTP et annulation
@@ -125,19 +125,19 @@ final mobileRouterProvider = Provider<GoRouter>((ref) {
       // Page colis du client (colis en point ILLICO)
       GoRoute(
         path: '/colis',
-        builder: (_, __) => const ColisClientPlaceholderPage(),
+        builder: (_, _) => const ColisClientPlaceholderPage(),
       ),
 
       // Forfaits et abonnements professionnels
       GoRoute(
         path: '/forfaits',
-        builder: (_, __) => const ForfaitsPlaceholderPage(),
+        builder: (_, _) => const ForfaitsPlaceholderPage(),
       ),
 
       // Profil du client
       GoRoute(
         path: '/profil',
-        builder: (_, __) => const ProfilePlaceholderPage(),
+        builder: (_, _) => const ProfilePlaceholderPage(),
       ),
 
       // ════════════════════════════════════════════════════════
@@ -147,7 +147,7 @@ final mobileRouterProvider = Provider<GoRouter>((ref) {
       // Tableau de bord des missions avec statut en ligne/hors ligne
       GoRoute(
         path: '/livreur/missions',
-        builder: (_, __) => const MissionsPage(),
+        builder: (_, _) => const MissionsPage(),
       ),
 
       // Détail d'une mission (même page que détail livraison)
@@ -161,7 +161,7 @@ final mobileRouterProvider = Provider<GoRouter>((ref) {
       // Gains, commissions et suivi du cash collecté
       GoRoute(
         path: '/livreur/gains',
-        builder: (_, __) => const GainsPlaceholderPage(),
+        builder: (_, _) => const GainsPlaceholderPage(),
       ),
 
       // ════════════════════════════════════════════════════════
@@ -170,7 +170,7 @@ final mobileRouterProvider = Provider<GoRouter>((ref) {
       // ════════════════════════════════════════════════════════
       GoRoute(
         path: '/point/colis',
-        builder: (_, __) => const PointColisPage(),
+        builder: (_, _) => const PointColisPage(),
       ),
     ],
 
@@ -213,7 +213,7 @@ class _RouterNotifier extends ChangeNotifier {
 
   _RouterNotifier(this._ref) {
     // Écoute les changements d'état d'authentification
-    _ref.listen(authProvider, (_, __) => notifyListeners());
+    _ref.listen(authProvider, (_, _) => notifyListeners());
   }
 }
 

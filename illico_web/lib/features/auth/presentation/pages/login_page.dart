@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/errors/failures.dart';
 import '../providers/auth_provider.dart';
 import '../../../../core/config/app_theme.dart';
-import '../../../../core/config/app_config.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/loading_button.dart';
 

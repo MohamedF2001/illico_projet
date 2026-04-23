@@ -99,15 +99,17 @@ class _LivraisonDetailPageState extends ConsumerState<LivraisonDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading)
+    if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    if (_error != null)
+    }
+    if (_error != null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Détail')),
         body: Center(
           child: Text(_error!, style: const TextStyle(color: AppColors.danger)),
         ),
       );
+    }
 
     final l = _livraison!;
     return Scaffold(

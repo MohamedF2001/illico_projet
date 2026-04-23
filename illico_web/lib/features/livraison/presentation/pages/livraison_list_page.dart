@@ -46,7 +46,7 @@ class _LivraisonsListPageState extends ConsumerState<LivraisonsListPage> {
                     : ListView.separated(
                         padding: const EdgeInsets.all(16),
                         itemCount: filtered.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 10),
+                        separatorBuilder: (_, _) => const SizedBox(height: 10),
                         itemBuilder: (ctx, i) => _LivraisonCard(livraison: filtered[i]),
                       )),
       ]),

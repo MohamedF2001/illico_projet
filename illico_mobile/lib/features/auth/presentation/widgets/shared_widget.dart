@@ -14,7 +14,7 @@ class AuthHeader extends StatelessWidget {
   final Color color;
   final VoidCallback onBack;
 
-  const AuthHeader({
+  const AuthHeader({super.key, 
     required this.emoji,
     required this.title,
     required this.subtitle,
@@ -83,7 +83,7 @@ class StepIndicator extends StatelessWidget {
   final int currentStep;
   final Color color;
 
-  const StepIndicator({
+  const StepIndicator({super.key, 
     required this.steps,
     required this.currentStep,
     required this.color,
@@ -171,7 +171,7 @@ class StepIndicator extends StatelessWidget {
 // ── Label de champ ──────────────────────────────────────────
 class InputLabel extends StatelessWidget {
   final String label;
-  const InputLabel({required this.label});
+  const InputLabel({super.key, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -233,7 +233,7 @@ class PrimaryButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final Color color;
 
-  const PrimaryButton({
+  const PrimaryButton({super.key, 
     required this.label,
     this.icon,
     required this.isLoading,
@@ -287,7 +287,7 @@ class PrimaryButton extends StatelessWidget {
 // ── Bannière d'erreur ───────────────────────────────────────
 class ErrorBanner extends StatelessWidget {
   final String message;
-  const ErrorBanner({required this.message});
+  const ErrorBanner({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -321,7 +321,7 @@ class ErrorBanner extends StatelessWidget {
 
 // ── Séparateur OU ───────────────────────────────────────────
 class OrDivider extends StatelessWidget {
-  const OrDivider();
+  const OrDivider({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -351,7 +351,7 @@ class TypeChip extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const TypeChip({
+  const TypeChip({super.key, 
     required this.label,
     required this.icon,
     required this.selected,

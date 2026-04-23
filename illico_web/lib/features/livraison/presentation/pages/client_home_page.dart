@@ -5,8 +5,6 @@ import '../../../../core/config/app_theme.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/statut_badge.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
-import '../../../notification/data/datasources/notification_remote_datasource.dart';
-import '../../../../core/api/api_client.dart';
 import '../providers/livraison_provider.dart';
 
 class ClientHomePage extends ConsumerWidget {

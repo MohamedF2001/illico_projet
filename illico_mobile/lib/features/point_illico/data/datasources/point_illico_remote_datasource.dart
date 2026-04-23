@@ -27,7 +27,7 @@ class PointIllicoRemoteDataSource {
 
   Future<Either<Failure, Map<String, dynamic>>> retrieveColis(String id, String otp, {String? signatureUrl}) async {
     try { final r = await _api.dio.post('/points/colis/$id/retrait',
-          data: {'otpRetrait': otp, if (signatureUrl != null) 'signatureUrl': signatureUrl});
+          data: {'otpRetrait': otp, 'signatureUrl': ?signatureUrl});
       return Right(r.data['data'] as Map<String, dynamic>); }
     on DioException catch (e) { return Left(ApiClient.handleDioError(e)); } catch (_) { return const Left(Failure.unexpectedError()); }
   }
