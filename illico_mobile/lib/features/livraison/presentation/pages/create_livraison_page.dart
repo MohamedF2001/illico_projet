@@ -54,12 +54,35 @@ class _CreateLivraisonPageState extends ConsumerState<CreateLivraisonPage> {
 
     setState(() => _isEstimating = true);
 
-    final r = await _repo.estimatePrice({
+    /*final r = await _repo.estimatePrice({
       'vehicule': _selectedVehicule!.id,
       'coordDepart': [_departCoords!.longitude, _departCoords!.latitude],
       'coordArrivee': [_arriveeCoords!.longitude, _arriveeCoords!.latitude],
       'mode': _selectedMode,
       'poids': 1.0,
+    });*/
+
+    final r = await _repo.estimatePrice({
+      'vehicule': _selectedVehicule!.id,
+      'coordDepart': [_departCoords!.longitude, _departCoords!.latitude],
+      'coordArrivee': [_arriveeCoords!.longitude, _arriveeCoords!.latitude],
+      'mode': _selectedMode,
+      'poids': 2.5,
+
+      // 🔥 AJOUTE ÇA
+      'urgent': false,
+      'nuit': false,
+      'pointIllico': _selectedMode == 'point_illico' ? 'string' : null,
+    });
+
+    print({
+      'vehicule': _selectedVehicule!.id,
+      'coordDepart': [_departCoords!.longitude, _departCoords!.latitude],
+      'coordArrivee': [_arriveeCoords!.longitude, _arriveeCoords!.latitude],
+      'mode': _selectedMode,
+      'poids': 2.5,
+      'urgent': false,
+      'nuit': false,
     });
 
     r.fold(
