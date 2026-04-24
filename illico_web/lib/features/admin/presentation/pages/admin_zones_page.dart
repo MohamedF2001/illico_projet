@@ -6,21 +6,31 @@ import '../../../../core/errors/failures.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/error_display.dart';
+import '../../../../core/widgets/loading_button.dart';
 import '../../../zone/data/datasources/zone_remote_datasource.dart';
+import '../../../zone/domain/entities/zone_entity.dart';
 import '../../../zone/presentation/providers/zone_provider.dart';
 
 class AdminZonesPage extends ConsumerWidget {
   const AdminZonesPage({super.key});
 
-  void _deleteZone(BuildContext context, WidgetRef ref, String id) async {
+  void _deleteZone(BuildContext context, WidgetRef ref, String id, String nom) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Supprimer'),
-        content: const Text('Voulez-vous supprimer cette zone ?'),
+        title: const Text('Désactiver cette zone ?'),
+        content: Text(
+            '"$nom" sera désactivée. Impossible si des tarifs actifs l\'utilisent.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler')),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Supprimer')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Annuler')),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.danger),
+            child:
+            const Text('Désactiver', style: TextStyle(color: Colors.white)),
+          ),
         ],
       ),
     );
@@ -32,18 +42,34 @@ class AdminZonesPage extends ConsumerWidget {
   void _showAddZoneForm(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
-      builder: (ctx) => _AddZoneDialog(onAdded: (body) {
-        ref.read(zoneListProvider.notifier).add(body);
+      barrierDismissible: false,
+      builder: (ctx) => _ZoneDialog(onSaved: () {
+        ref.read(zoneListProvider.notifier).load();
       }),
     );
   }
 
-  void _toggleActivation(BuildContext context, WidgetRef ref, String id, bool val) async {
+  void _showEditZoneForm(BuildContext context, WidgetRef ref, ZoneEntity zone) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => _ZoneDialog(
+        zone: zone,
+        onSaved: () {
+          ref.read(zoneListProvider.notifier).load();
+        },
+      ),
+    );
+  }
+
+  void _toggleActivation(
+      BuildContext context, WidgetRef ref, String id, bool val) async {
     final ds = ZoneRemoteDataSource(apiClient);
     final r = await ds.update(id, {'actif': val});
     r.fold(
-      (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.displayMessage))),
-      (_) => ref.read(zoneListProvider.notifier).load(),
+          (f) => ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(f.displayMessage))),
+          (_) => ref.read(zoneListProvider.notifier).load(),
     );
   }
 
@@ -53,18 +79,38 @@ class AdminZonesPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Zones'),
+        centerTitle: false,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Zones de livraison'),
+            Text(
+              '${state.items.length} zone(s)',
+              style: const TextStyle(
+                  fontSize: 11,
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w400),
+            ),
+          ],
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh, color: AppColors.accent),
             onPressed: () => ref.read(zoneListProvider.notifier).load(),
           ),
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: ElevatedButton.icon(
               onPressed: () => _showAddZoneForm(context, ref),
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text('Ajouter'),
+              icon: const Icon(Icons.add, size: 16, color: Colors.white),
+              label:
+              const Text('Nouvelle', style: TextStyle(color: Colors.white)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                minimumSize: const Size(0, 36),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
+              ),
             ),
           ),
         ],
@@ -73,136 +119,471 @@ class AdminZonesPage extends ConsumerWidget {
           ? const Center(child: CircularProgressIndicator())
           : state.error != null
           ? ErrorDisplay(
-              failure: state.error!,
-              onRetry: () => ref.read(zoneListProvider.notifier).load(),
-            )
+        failure: state.error!,
+        onRetry: () => ref.read(zoneListProvider.notifier).load(),
+      )
           : state.items.isEmpty
           ? const EmptyState(
-              title: 'Aucune zone',
-              icon: Icons.map_outlined,
-            )
+        title: 'Aucune zone',
+        subtitle:
+        'Créez des zones géographiques pour configurer les tarifs.',
+        icon: Icons.map_outlined,
+      )
           : ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: state.items.length,
+        separatorBuilder: (_, _) => const SizedBox(height: 12),
+        itemBuilder: (ctx, i) {
+          final zone = state.items[i];
+          return Card(
+            child: Padding(
               padding: const EdgeInsets.all(16),
-              itemCount: state.items.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (ctx, i) {
-                final zone = state.items[i];
-                return Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        Row(
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: AppColors.info.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.map_outlined,
+                            color: AppColors.info),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: AppColors.primary.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
+                            Text(
+                              zone.nom,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15),
+                            ),
+                            if (zone.description != null &&
+                                zone.description!.isNotEmpty)
+                              Text(
+                                zone.description!,
+                                style: const TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.textSecondary),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              child: const Icon(Icons.map_outlined, color: AppColors.primary),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    zone.nom,
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    zone.description ?? '-',
-                                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Switch(
-                              value: zone.actif,
-                              onChanged: (val) => _toggleActivation(context, ref, zone.id!, val),
-                              activeColor: AppColors.accent,
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete_outline, color: AppColors.danger, size: 20),
-                              onPressed: () => _deleteZone(context, ref, zone.id!),
-                            ),
                           ],
                         ),
-                        const Divider(height: 24),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _Info(label: 'Supplément', value: Formatters.currency(zone.supplement)),
-                            _Info(
-                              label: 'Statut',
-                              value: zone.actif ? 'ACTIF' : 'INACTIF',
-                            ),
-                          ],
+                      ),
+                      if (zone.supplement > 0)
+                        Container(
+                          margin: const EdgeInsets.only(right: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.warning.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                                color: AppColors.warning.withOpacity(0.3)),
+                          ),
+                          child: Text(
+                            '+${Formatters.currency(zone.supplement)}',
+                            style: const TextStyle(
+                                fontSize: 11,
+                                color: AppColors.warning,
+                                fontWeight: FontWeight.w600),
+                          ),
                         ),
-                      ],
-                    ),
+                      // Bouton éditer
+                      IconButton(
+                        icon: const Icon(Icons.edit_outlined,
+                            color: AppColors.info, size: 20),
+                        tooltip: 'Modifier',
+                        onPressed: () =>
+                            _showEditZoneForm(context, ref, zone),
+                      ),
+                      Switch(
+                        value: zone.actif,
+                        onChanged: (val) => _toggleActivation(
+                            context, ref, zone.id!, val),
+                        activeThumbColor: AppColors.accent,
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline,
+                            color: AppColors.danger, size: 20),
+                        tooltip: 'Désactiver',
+                        onPressed: () => _deleteZone(
+                            context, ref, zone.id!, zone.nom),
+                      ),
+                    ],
                   ),
-                );
-              },
+                  const Divider(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _Info(
+                          label: 'Supplément',
+                          value: Formatters.currency(zone.supplement)),
+                      _Info(
+                        label: 'Statut',
+                        value: zone.actif ? 'ACTIVE' : 'INACTIVE',
+                      ),
+                      _Info(
+                        label: 'ID',
+                        value: zone.id != null
+                            ? zone.id!.substring(zone.id!.length - 6)
+                            : '-',
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
+          );
+        },
+      ),
     );
   }
 }
 
-class _AddZoneDialog extends StatefulWidget {
-  final Function(Map<String, dynamic>) onAdded;
-  const _AddZoneDialog({required this.onAdded});
+// ════════════════════════════════════════════════════════════
+//  DIALOG CRÉATION / ÉDITION ZONE
+//  POST /api/zones  →  { nom, description, supplement }
+//  PUT  /api/zones/:id → mêmes champs + actif
+// ════════════════════════════════════════════════════════════
+class _ZoneDialog extends StatefulWidget {
+  final ZoneEntity? zone; // null = création, non-null = édition
+  final VoidCallback onSaved;
+  const _ZoneDialog({this.zone, required this.onSaved});
+
   @override
-  State<_AddZoneDialog> createState() => _AddZoneDialogState();
+  State<_ZoneDialog> createState() => _ZoneDialogState();
 }
 
-class _AddZoneDialogState extends State<_AddZoneDialog> {
-  final _nomCtrl = TextEditingController();
-  final _descCtrl = TextEditingController();
-  final _suppCtrl = TextEditingController();
+class _ZoneDialogState extends State<_ZoneDialog> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _nomCtrl;
+  late final TextEditingController _descCtrl;
+  late final TextEditingController _suppCtrl;
+  late bool _actif;
+
+  bool _isLoading = false;
+  String? _error;
+
+  bool get _isEditing => widget.zone != null;
 
   @override
-  Widget build(BuildContext context) => AlertDialog(
-        title: const Text('Ajouter une zone'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(controller: _nomCtrl, decoration: const InputDecoration(labelText: 'Nom')),
-            TextField(controller: _descCtrl, decoration: const InputDecoration(labelText: 'Description')),
-            TextField(
-              controller: _suppCtrl,
-              decoration: const InputDecoration(labelText: 'Supplément (FCFA)'),
-              keyboardType: TextInputType.number,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Annuler')),
-          ElevatedButton(
-            onPressed: () {
-              widget.onAdded({
-                'nom': _nomCtrl.text,
-                'description': _descCtrl.text,
-                'supplement': double.tryParse(_suppCtrl.text) ?? 0,
-              });
-              Navigator.pop(context);
-            },
-            child: const Text('Ajouter'),
-          ),
-        ],
+  void initState() {
+    super.initState();
+    _nomCtrl = TextEditingController(text: widget.zone?.nom ?? '');
+    _descCtrl =
+        TextEditingController(text: widget.zone?.description ?? '');
+    _suppCtrl = TextEditingController(
+        text: widget.zone?.supplement.toString() ?? '0');
+    _actif = widget.zone?.actif ?? true;
+  }
+
+  @override
+  void dispose() {
+    _nomCtrl.dispose();
+    _descCtrl.dispose();
+    _suppCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final ds = ZoneRemoteDataSource(apiClient);
+      final body = {
+        'nom': _nomCtrl.text.trim(),
+        'description': _descCtrl.text.trim(),
+        'supplement': double.tryParse(_suppCtrl.text) ?? 0,
+        if (_isEditing) 'actif': _actif,
+      };
+
+      final result = _isEditing
+          ? await ds.update(widget.zone!.id!, body)
+          : await ds.create(body);
+
+      result.fold(
+            (failure) => setState(() {
+          _isLoading = false;
+          _error = failure.displayMessage;
+        }),
+            (_) {
+          Navigator.pop(context);
+          widget.onSaved();
+        },
       );
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _error = 'Erreur inattendue.';
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 420),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // En-tête
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.info.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(
+                        _isEditing
+                            ? Icons.edit_location_outlined
+                            : Icons.add_location_outlined,
+                        color: AppColors.info,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      _isEditing ? 'Modifier la zone' : 'Nouvelle zone',
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.w700),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+                if (_isEditing) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    'ID: ...${widget.zone!.id!.substring(widget.zone!.id!.length - 8)}',
+                    style: const TextStyle(
+                        fontSize: 10,
+                        color: AppColors.textSecondary,
+                        fontFamily: 'monospace'),
+                  ),
+                ],
+                const SizedBox(height: 20),
+
+                // Nom
+                _Label('Nom de la zone *'),
+                TextFormField(
+                  controller: _nomCtrl,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: _inputDeco(
+                      hint: 'ex: Cotonou Centre',
+                      icon: Icons.location_on_outlined),
+                  validator: (v) =>
+                  (v == null || v.trim().isEmpty) ? 'Nom requis' : null,
+                ),
+                const SizedBox(height: 14),
+
+                // Description
+                _Label('Description (optionnel)'),
+                TextFormField(
+                  controller: _descCtrl,
+                  maxLines: 2,
+                  decoration: _inputDeco(
+                      hint: 'ex: Zone urbaine dense',
+                      icon: Icons.notes_outlined),
+                ),
+                const SizedBox(height: 14),
+
+                // Supplément
+                _Label('Supplément tarifaire (FCFA)'),
+                TextFormField(
+                  controller: _suppCtrl,
+                  keyboardType: TextInputType.number,
+                  decoration: _inputDeco(
+                      hint: '0', icon: Icons.add_circle_outline),
+                  validator: (v) {
+                    if (v == null || v.isEmpty) return null;
+                    final n = double.tryParse(v);
+                    if (n == null) return 'Nombre invalide';
+                    if (n < 0) return 'Doit être ≥ 0';
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'Montant ajouté automatiquement au tarif dans cette zone.',
+                  style:
+                  TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                ),
+
+                // Toggle actif (édition uniquement)
+                if (_isEditing) ...[
+                  const SizedBox(height: 14),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColors.divider),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.toggle_on_outlined,
+                            size: 18, color: AppColors.textSecondary),
+                        const SizedBox(width: 10),
+                        const Expanded(
+                          child: Text('Zone active',
+                              style: TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.textPrimary)),
+                        ),
+                        Switch(
+                          value: _actif,
+                          onChanged: (v) => setState(() => _actif = v),
+                          activeThumbColor: AppColors.accent,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+
+                // Erreur
+                if (_error != null) ...[
+                  const SizedBox(height: 12),
+                  _ErrorBox(message: _error!),
+                ],
+
+                const SizedBox(height: 24),
+
+                // Actions
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed:
+                        _isLoading ? null : () => Navigator.pop(context),
+                        child: const Text('Annuler'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: LoadingButton(
+                        onPressed: _submit,
+                        label: _isEditing ? 'Enregistrer' : 'Créer la zone',
+                        isLoading: _isLoading,
+                        icon: _isEditing
+                            ? Icons.save_outlined
+                            : Icons.add_location_outlined,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
+
+// ── Widgets communs ─────────────────────────────────────────
+class _Label extends StatelessWidget {
+  final String text;
+  const _Label(this.text);
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 6),
+    child: Text(text,
+        style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: AppColors.textPrimary)),
+  );
+}
+
+class _ErrorBox extends StatelessWidget {
+  final String message;
+  const _ErrorBox({required this.message});
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(10),
+    decoration: BoxDecoration(
+      color: AppColors.danger.withOpacity(0.08),
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(color: AppColors.danger.withOpacity(0.3)),
+    ),
+    child: Row(
+      children: [
+        const Icon(Icons.error_outline, color: AppColors.danger, size: 16),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(message,
+              style: const TextStyle(
+                  color: AppColors.danger, fontSize: 13)),
+        ),
+      ],
+    ),
+  );
+}
+
+InputDecoration _inputDeco({required String hint, required IconData icon}) =>
+    InputDecoration(
+      hintText: hint,
+      prefixIcon: Icon(icon, size: 18),
+      filled: true,
+      fillColor: Colors.white,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: AppColors.divider),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: AppColors.divider),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: AppColors.primary, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: AppColors.danger),
+      ),
+      contentPadding:
+      const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      isDense: true,
+    );
 
 class _Info extends StatelessWidget {
   final String label, value;
   const _Info({required this.label, required this.value});
   @override
   Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: const TextStyle(fontSize: 10, color: AppColors.textSecondary)),
-          Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-        ],
-      );
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(label,
+          style: const TextStyle(
+              fontSize: 10, color: AppColors.textSecondary)),
+      Text(value,
+          style: const TextStyle(
+              fontSize: 12, fontWeight: FontWeight.w600)),
+    ],
+  );
 }

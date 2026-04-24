@@ -23,6 +23,7 @@ import '../../features/livraison/presentation/pages/livraison_list_page.dart';
 import '../../features/transaction/presentation/pages/wallet_page.dart';
 import '../../features/livreur/presentation/pages/missions_page.dart';
 import '../../features/point_illico/presentation/pages/point_colis_page.dart';
+import '../../features/notification/presentation/pages/notifications_list_page.dart';
 
 // ─────────────────────────────────────────────────────────────
 //  Provider principal du routeur mobile
@@ -142,6 +143,12 @@ final mobileRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, state) => LivraisonDetailPage(
           id: state.pathParameters['id']!,
         ),
+      ),
+
+      // Liste des notifications
+      GoRoute(
+        path: '/notifications',
+        builder: (_, __) => const NotificationsListPage(),
       ),
 
       // Page colis du client (colis en point ILLICO)

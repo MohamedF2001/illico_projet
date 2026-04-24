@@ -6,6 +6,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'core/config/app_config.dart';
 import 'core/config/app_theme.dart';
 import 'core/config/app_router.dart';
@@ -14,8 +15,11 @@ import 'core/config/app_router.dart';
 /// - ProviderScope encapsule toute l'app pour Riverpod.
 /// - Le flavor est fixé à [AppFlavor.client] par défaut ;
 ///   il sera écrasé dynamiquement selon le rôle choisi.
-void main() {
+void main() async {
   // Déclare le flavor courant (utile pour la logique conditionnelle)
+  WidgetsFlutterBinding.ensureInitialized(); // 👈 AJOUT
+
+  await initializeDateFormatting(); // ✅ CORRECT
   currentFlavor = AppFlavor.client;
 
   runApp(
@@ -45,6 +49,8 @@ class IllicoMobileApp extends ConsumerWidget {
 
       // Thème global de l'application (couleurs, typographie, etc.)
       theme: AppTheme.light,
+
+      locale: const Locale('fr', 'FR'), // 👈 AJOUT
 
       // Configuration du router (GoRouter)
       routerConfig: router,
