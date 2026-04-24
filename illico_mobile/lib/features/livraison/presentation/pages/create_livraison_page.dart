@@ -21,6 +21,10 @@ class CreateLivraisonPage extends ConsumerStatefulWidget {
 }
 
 class _CreateLivraisonPageState extends ConsumerState<CreateLivraisonPage> {
+  double _poids = 1.0;
+  bool _urgent = false;
+  bool _nuit = false;
+  String _modePaiement = 'cash';
   int _currentStep = 0;
 
   // Step 1: Mode
@@ -62,7 +66,7 @@ class _CreateLivraisonPageState extends ConsumerState<CreateLivraisonPage> {
       'poids': 1.0,
     });*/
 
-    final r = await _repo.estimatePrice({
+    /*final r = await _repo.estimatePrice({
       'vehicule': _selectedVehicule!.id,
       'coordDepart': [_departCoords!.longitude, _departCoords!.latitude],
       'coordArrivee': [_arriveeCoords!.longitude, _arriveeCoords!.latitude],
@@ -73,6 +77,17 @@ class _CreateLivraisonPageState extends ConsumerState<CreateLivraisonPage> {
       'urgent': false,
       'nuit': false,
       'pointIllico': _selectedMode == 'point_illico' ? 'string' : null,
+    });*/
+
+    final r = await _repo.estimatePrice({
+      'vehicule': _selectedVehicule!.id,
+      'coordDepart': [_departCoords!.longitude, _departCoords!.latitude],
+      'coordArrivee': [_arriveeCoords!.longitude, _arriveeCoords!.latitude],
+      'mode': _selectedMode,
+      'poids': _poids,
+      'urgent': _urgent,
+      'nuit': _nuit,
+      'pointIllico': _selectedMode == 'point_illico' ? 'true' : null,
     });
 
     print({
@@ -81,8 +96,8 @@ class _CreateLivraisonPageState extends ConsumerState<CreateLivraisonPage> {
       'coordArrivee': [_arriveeCoords!.longitude, _arriveeCoords!.latitude],
       'mode': _selectedMode,
       'poids': 2.5,
-      'urgent': false,
-      'nuit': false,
+      'urgent': _urgent,
+      'nuit': _nuit,
     });
 
     r.fold(
@@ -102,7 +117,7 @@ class _CreateLivraisonPageState extends ConsumerState<CreateLivraisonPage> {
 
   Future<void> _createLivraison() async {
     setState(() => _isCreating = true);
-    final r = await _repo.create({
+    /*final r = await _repo.create({
       'pointDepart': {
         'adresse': _departController.text,
         'coordinates': [_departCoords!.longitude, _departCoords!.latitude],
@@ -115,6 +130,23 @@ class _CreateLivraisonPageState extends ConsumerState<CreateLivraisonPage> {
       'mode': _selectedMode,
       'poids': 1.0,
       'modePaiement': 'cash',
+    });*/
+
+    final r = await _repo.create({
+      'pointDepart': {
+        'adresse': _departController.text,
+        'coordinates': [_departCoords!.longitude, _departCoords!.latitude],
+      },
+      'pointArrivee': {
+        'adresse': _arriveeController.text,
+        'coordinates': [_arriveeCoords!.longitude, _arriveeCoords!.latitude],
+      },
+      'vehicule': _selectedVehicule!.id,
+      'mode': _selectedMode,
+      'poids': _poids,
+      'modePaiement': _modePaiement,
+      'urgent': _urgent,
+      'nuit': _nuit,
     });
 
     r.fold(
@@ -274,9 +306,74 @@ class _CreateLivraisonPageState extends ConsumerState<CreateLivraisonPage> {
             if (res != null) setState(() { _arriveeCoords = res; _arriveeController.text = '${res.latitude}, ${res.longitude}'; });
           },
         ),
+        const SizedBox(height: 24),
+
+        const Text(
+          'Options de livraison',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+        ),
+
+        const SizedBox(height: 16),
+
+// 🔥 POIDS
+        Text('Poids: ${_poids.toStringAsFixed(1)} kg'),
+        Slider(
+          min: 1,
+          max: 20,
+          divisions: 38,
+          value: _poids,
+          onChanged: (value) {
+            setState(() => _poids = value);
+          },
+        ),
+
+        const SizedBox(height: 12),
+
+// 🔥 URGENT
+        SwitchListTile(
+          title: const Text('Livraison urgente'),
+          value: _urgent,
+          onChanged: (val) {
+            setState(() => _urgent = val);
+          },
+        ),
+
+// 🔥 NUIT
+        SwitchListTile(
+          title: const Text('Livraison de nuit'),
+          value: _nuit,
+          onChanged: (val) {
+            setState(() => _nuit = val);
+          },
+        ),
+
+        const SizedBox(height: 12),
+
+// 🔥 MODE PAIEMENT
+        DropdownButtonFormField<String>(
+          value: _modePaiement,
+          decoration: InputDecoration(
+            labelText: 'Mode de paiement',
+            filled: true,
+            fillColor: const Color(0xFFF1F1F1),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+          ),
+          items: const [
+            DropdownMenuItem(value: 'cash', child: Text('Cash')),
+            DropdownMenuItem(value: 'mobile_money', child: Text('Mobile Money')),
+          ],
+          onChanged: (val) {
+            setState(() => _modePaiement = val!);
+          },
+        ),
       ],
     );
   }
+
+
 
   Widget _buildAddressField({required String label, required TextEditingController controller, required VoidCallback onMapPick, required bool isDepart}) {
     return Column(
@@ -363,6 +460,39 @@ class _CreateLivraisonPageState extends ConsumerState<CreateLivraisonPage> {
               _PriceRow(label: 'Frais de zone', value: '${details['supplementZone']} XOF'),
               if ((details['supplementUrgent'] ?? 0) > 0) _PriceRow(label: 'Major Urgence', value: '${details['supplementUrgent']} XOF'),
               const Divider(height: 32),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8F9FA),
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Résumé de la livraison', style: TextStyle(fontWeight: FontWeight.w900)),
+                    const SizedBox(height: 12),
+
+                    Text('Départ: ${_departController.text}'),
+                    Text('Arrivée: ${_arriveeController.text}'),
+
+                    const SizedBox(height: 8),
+
+                    Text('Véhicule: ${_selectedVehicule?.type ?? ''}'),
+                    Text('Mode: ${_selectedMode == 'express' ? 'Express' : 'Point ILLICO'}'),
+
+                    const SizedBox(height: 8),
+
+                    Text('Poids: $_poids kg'),
+                    Text('Paiement: $_modePaiement'),
+
+                    const SizedBox(height: 8),
+
+                    Text('Urgent: ${_urgent ? 'Oui' : 'Non'}'),
+                    Text('Nuit: ${_nuit ? 'Oui' : 'Non'}'),
+                  ],
+                ),
+              ),
               _PriceRow(label: 'Total estimé', value: '${_estimation!['prixEstime']} XOF', isTotal: true),
             ],
           ),
