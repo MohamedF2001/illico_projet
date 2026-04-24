@@ -6,6 +6,7 @@ import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/usecases/login_usecase.dart';
+import '../../domain/usecases/register_usecase.dart';
 
 // ── State ─────────────────────────────────────────────────
 class AuthState {
@@ -26,8 +27,12 @@ class AuthState {
 // ── Notifier ──────────────────────────────────────────────
 class AuthNotifier extends StateNotifier<AuthState> {
   final LoginUseCase _login;
+  final RegisterUseCase _register;
   final AuthRepositoryImpl _repo;
-  AuthNotifier(this._login, this._repo) : super(const AuthState()) { _restoreSession(); }
+  AuthNotifier(this._login, this._register, this._repo)
+      : super(const AuthState()) {
+    _restoreSession();
+  }
 
   Future<void> _restoreSession() async {
     final prefs = await SharedPreferences.getInstance();
@@ -41,7 +46,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
   }
 
-  Future<bool> login({required String role, String? email, String? telephone, String? motDePasse, String? codePin}) async {
+  Future<bool> login({
+    required String role,
+    String? email,
+    String? telephone,
+    String? motDePasse,
+    String? codePin,
+  }) async {
     state = state.copyWith(isLoading: true, error: null);
     final result = await _login.execute(
       role: role, email: email, telephone: telephone,
@@ -51,7 +62,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       (f) async { state = state.copyWith(isLoading: false, error: f); return false; },
       (data) async {
         final token = data['token'] as String;
-        final userJson = data['user'] as Map<String, dynamic>;
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
         final userResult = await _repo.getProfile();
@@ -70,6 +80,39 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = AuthState();
   }
 
+  Future<bool> initRegisterClient({required String telephone}) async {
+    state = state.copyWith(isLoading: true, error: null);
+    final result = await _repo.initClientRegister(telephone: telephone);
+    return result.fold(
+      (f) {
+        state = state.copyWith(isLoading: false, error: f);
+        return false;
+      },
+      (data) {
+        state = state.copyWith(isLoading: false);
+        return true;
+      },
+    );
+  }
+
+  Future<bool> register({
+    required String role,
+    required Map<String, dynamic> body,
+  }) async {
+    state = state.copyWith(isLoading: true, error: null);
+    final result = await _register.execute(role: role, body: body);
+    return result.fold(
+      (f) {
+        state = state.copyWith(isLoading: false, error: f);
+        return false;
+      },
+      (user) {
+        state = state.copyWith(isLoading: false);
+        return true;
+      },
+    );
+  }
+
   Future<void> refreshProfile() async {
     final result = await _repo.getProfile();
     result.fold((_) {}, (u) => state = state.copyWith(user: u));
@@ -79,5 +122,5 @@ class AuthNotifier extends StateNotifier<AuthState> {
 // ── Provider ──────────────────────────────────────────────
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final repo = AuthRepositoryImpl(AuthRemoteDataSource(apiClient));
-  return AuthNotifier(LoginUseCase(repo), repo);
+  return AuthNotifier(LoginUseCase(repo), RegisterUseCase(repo), repo);
 });

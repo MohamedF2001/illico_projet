@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../vehicule/presentation/providers/vehicule_provider.dart';
+import '../providers/auth_provider.dart';
 import '../widgets/shared_widget.dart';
 
 // ─────────────────────────────────────────────────────────────
@@ -122,10 +124,14 @@ class _LivreurLoginTabState extends ConsumerState<_LivreurLoginTab> {
       _error = null;
     });
 
-    // TODO: ref.read(authProvider.notifier).login(role: 'Livreur', ...)
-    await Future.delayed(const Duration(seconds: 1));
+    final ok = await ref.read(authProvider.notifier).login(
+          role: 'Livreur',
+          telephone: _phoneCtrl.text.trim(),
+          motDePasse: _passCtrl.text,
+        );
+
     setState(() => _isLoading = false);
-    if (mounted) context.go('/livreur/missions');
+    if (ok && mounted) context.go('/livreur/missions');
   }
 
   @override
@@ -249,51 +255,29 @@ class _LivreurRegisterTabState extends ConsumerState<_LivreurRegisterTab> {
   final _confirmPassCtrl = TextEditingController();
   bool _obscure = true;
   String? _selectedVehiculeId;
-  String? _selectedVehiculeLabel;
 
-  // Véhicules disponibles (idéalement chargés depuis l'API)
-  final _vehicules = const [
-    _VehiculeOption(
-      id: 'v1',
-      type: 'velo',
-      label: 'Vélo',
-      icon: Icons.pedal_bike_rounded,
-      description: 'Livraisons légères < 10 kg',
-      color: Color(0xFF00C896),
-    ),
-    _VehiculeOption(
-      id: 'v2',
-      type: 'moto',
-      label: 'Moto',
-      icon: Icons.two_wheeler_rounded,
-      description: 'Livraisons urbaines rapides',
-      color: Color(0xFFFF6B00),
-    ),
-    _VehiculeOption(
-      id: 'v3',
-      type: 'tricycle',
-      label: 'Tricycle',
-      icon: Icons.electric_rickshaw_rounded,
-      description: 'Colis volumineux jusqu\'à 50 kg',
-      color: Color(0xFF007AFF),
-    ),
-    _VehiculeOption(
-      id: 'v4',
-      type: 'voiture',
-      label: 'Voiture',
-      icon: Icons.directions_car_rounded,
-      description: 'Confort & polyvalence',
-      color: Color(0xFF1A1A2E),
-    ),
-    _VehiculeOption(
-      id: 'v5',
-      type: 'camionnette',
-      label: 'Camionnette',
-      icon: Icons.local_shipping_rounded,
-      description: 'Grandes quantités > 100 kg',
-      color: Color(0xFF9333EA),
-    ),
-  ];
+  // Map des types de véhicules vers des icônes et couleurs
+  IconData _getIcon(String type) {
+    return switch (type.toLowerCase()) {
+      'velo' => Icons.pedal_bike_rounded,
+      'moto' => Icons.two_wheeler_rounded,
+      'tricycle' => Icons.electric_rickshaw_rounded,
+      'voiture' => Icons.directions_car_rounded,
+      'camionnette' => Icons.local_shipping_rounded,
+      _ => Icons.directions_car_rounded,
+    };
+  }
+
+  Color _getColor(String type) {
+    return switch (type.toLowerCase()) {
+      'velo' => const Color(0xFF00C896),
+      'moto' => const Color(0xFFFF6B00),
+      'tricycle' => const Color(0xFF007AFF),
+      'voiture' => const Color(0xFF1A1A2E),
+      'camionnette' => const Color(0xFF9333EA),
+      _ => const Color(0xFF1A1A2E),
+    };
+  }
 
   @override
   void dispose() {
@@ -334,12 +318,20 @@ class _LivreurRegisterTabState extends ConsumerState<_LivreurRegisterTab> {
         _error = null;
       });
 
-      // TODO: appeler authRepo.registerLivreur(body: {...})
-      await Future.delayed(const Duration(seconds: 1));
-      setState(() {
-        _isLoading = false;
-        _step = 2;
-      });
+      final ok = await ref.read(authProvider.notifier).register(
+        role: 'Livreur',
+        body: {
+          'nom': _nomCtrl.text.trim(),
+          'telephone': _phoneCtrl.text.trim(),
+          'motDePasse': _passCtrl.text,
+          'vehicule': _selectedVehiculeId,
+        },
+      );
+
+      setState(() => _isLoading = false);
+      if (ok) {
+        setState(() => _step = 2);
+      }
     }
   }
 
@@ -380,12 +372,10 @@ class _LivreurRegisterTabState extends ConsumerState<_LivreurRegisterTab> {
                   onToggleObscure: () => setState(() => _obscure = !_obscure),
                 ),
                 1 => _StepVehicule(
-                  vehicules: _vehicules,
                   selected: _selectedVehiculeId,
-                  onSelect: (id, label) => setState(() {
-                    _selectedVehiculeId = id;
-                    _selectedVehiculeLabel = label;
-                  }),
+                  onSelect: (id) => setState(() => _selectedVehiculeId = id),
+                  getIcon: _getIcon,
+                  getColor: _getColor,
                 ),
                 _ => _StepLivreurSuccess(nom: _nomCtrl.text),
               },
@@ -503,19 +493,23 @@ class _StepLivreurInfo extends StatelessWidget {
 }
 
 // ── Étape véhicule ──────────────────────────────────────────
-class _StepVehicule extends StatelessWidget {
-  final List<_VehiculeOption> vehicules;
+class _StepVehicule extends ConsumerWidget {
   final String? selected;
-  final void Function(String id, String label) onSelect;
+  final void Function(String id) onSelect;
+  final IconData Function(String type) getIcon;
+  final Color Function(String type) getColor;
 
   const _StepVehicule({
-    required this.vehicules,
     required this.selected,
     required this.onSelect,
+    required this.getIcon,
+    required this.getColor,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final vehiculeState = ref.watch(vehiculeListProvider);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -533,72 +527,83 @@ class _StepVehicule extends StatelessWidget {
           style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
         ),
         const SizedBox(height: 20),
-        ...vehicules.map(
-          (v) => Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: GestureDetector(
-              onTap: () => onSelect(v.id, v.label),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: selected == v.id
-                      ? v.color.withOpacity(0.08)
-                      : Colors.white,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: selected == v.id ? v.color : const Color(0xFFE5E7EB),
-                    width: selected == v.id ? 2 : 1,
+        if (vehiculeState.isLoading)
+          const Center(child: CircularProgressIndicator())
+        else if (vehiculeState.error != null)
+          const ErrorBanner(message: 'Erreur lors du chargement des véhicules')
+        else if (vehiculeState.items.isEmpty)
+          const Text('Aucun véhicule disponible.')
+        else
+          ...vehiculeState.items.map(
+            (v) {
+              final color = getColor(v.type);
+              final icon = getIcon(v.type);
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: GestureDetector(
+                  onTap: () => onSelect(v.id!),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: selected == v.id
+                          ? color.withOpacity(0.08)
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: selected == v.id ? color : const Color(0xFFE5E7EB),
+                        width: selected == v.id ? 2 : 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: color.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(icon, color: color, size: 24),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                v.type.toUpperCase(),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                  color: selected == v.id
+                                      ? color
+                                      : const Color(0xFF1A1A2E),
+                                ),
+                              ),
+                              Text(
+                                v.description ?? 'Livraisons ILLICO',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xFF6B7280),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (selected == v.id)
+                          Icon(
+                            Icons.check_circle_rounded,
+                            color: color,
+                            size: 22,
+                          ),
+                      ],
+                    ),
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: v.color.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(v.icon, color: v.color, size: 24),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            v.label,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15,
-                              color: selected == v.id
-                                  ? v.color
-                                  : const Color(0xFF1A1A2E),
-                            ),
-                          ),
-                          Text(
-                            v.description,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Color(0xFF6B7280),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (selected == v.id)
-                      Icon(
-                        Icons.check_circle_rounded,
-                        color: v.color,
-                        size: 22,
-                      ),
-                  ],
-                ),
-              ),
-            ),
+              );
+            },
           ),
-        ),
       ],
     );
   }
@@ -701,18 +706,3 @@ class _CheckItem extends StatelessWidget {
   }
 }
 
-// ── Data class véhicule ────────────────────────────────────
-class _VehiculeOption {
-  final String id, type, label, description;
-  final IconData icon;
-  final Color color;
-
-  const _VehiculeOption({
-    required this.id,
-    required this.type,
-    required this.label,
-    required this.description,
-    required this.icon,
-    required this.color,
-  });
-}
