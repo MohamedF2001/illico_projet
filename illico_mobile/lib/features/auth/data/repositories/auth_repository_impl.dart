@@ -19,5 +19,6 @@ class AuthRepositoryImpl implements AuthRepository {
   @override Future<Either<Failure, UserEntity>> registerAdmin({required Map<String, dynamic> body}) async { final r = await _ds.registerAdmin(body); return r.map((m) => m.toEntity()); }
   @override Future<Either<Failure, UserEntity>> registerPoint({required Map<String, dynamic> body}) async { final r = await _ds.registerPoint(body); return r.map((m) => m.toEntity()); }
   @override Future<Either<Failure, UserEntity>> getProfile() async { final r = await _ds.getProfile(); return r.map((m) => m.toEntity()); }
+  @override Future<Either<Failure, UserEntity>> updateProfile({required Map<String, dynamic> body}) async { final r = await _ds.updateProfile(body); return r.map((m) => m.toEntity()); }
   @override Future<Either<Failure, String>> uploadProfilePhoto({required dynamic fileData, bool isWeb = false}) => _ds.uploadProfilePhoto(fileData, isWeb);
 }

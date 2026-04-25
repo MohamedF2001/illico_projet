@@ -23,6 +23,7 @@ import '../../features/livraison/presentation/pages/livraison_detail_page.dart';
 import '../../features/livraison/presentation/pages/livraison_list_page.dart';
 import '../../features/transaction/presentation/pages/wallet_page.dart';
 import '../../features/livreur/presentation/pages/missions_page.dart';
+import '../../features/livreur/presentation/pages/available_deliveries_page.dart';
 import '../../features/livreur/presentation/pages/livreur_stats_page.dart';
 import '../../features/livreur/presentation/pages/livreur_map_page.dart';
 import '../../features/point_illico/presentation/pages/point_colis_page.dart';
@@ -199,6 +200,12 @@ final mobileRouterProvider = Provider<GoRouter>((ref) {
       ),
 
       // ── Routes hors navigation persistante livreur ──────────
+
+      // Liste des livraisons disponibles
+      GoRoute(
+        path: '/livreur/disponibles',
+        builder: (_, __) => const AvailableDeliveriesPage(),
+      ),
 
       // Détail d'une mission (même page que détail livraison)
       GoRoute(

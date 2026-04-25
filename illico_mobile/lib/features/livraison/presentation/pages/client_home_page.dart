@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/config/app_theme.dart';
 import '../../../../core/utils/formatters.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/livraison_provider.dart';
 
 class ClientHomePage extends ConsumerWidget {
@@ -145,7 +144,7 @@ class ClientHomePage extends ConsumerWidget {
               )
             else
               ...recent.map((l) => _RecentItem(
-                    title: 'Colis personnel',
+                    title: l.natureColis!,
                     subtitle: '${Formatters.date(l.dateCreation)} . ${l.pointArrivee.adresse}',
                   )),
           ],

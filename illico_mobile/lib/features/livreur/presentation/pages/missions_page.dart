@@ -24,6 +24,11 @@ class MissionsPage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Mes Missions'),
         automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(Icons.add_task),
+          tooltip: 'Livraisons disponibles',
+          onPressed: () => context.push('/livreur/disponibles'),
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 12),

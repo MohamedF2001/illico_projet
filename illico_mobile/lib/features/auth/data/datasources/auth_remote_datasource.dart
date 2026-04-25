@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:fpdart/fpdart.dart';
 import '../../../../core/api/api_client.dart';
 import '../../../../core/errors/failures.dart';
@@ -15,6 +16,20 @@ class AuthRemoteDataSource {
     try {
       final res = await _api.dio.post(path, data: body);
       return Right(res.data['data'] as Map<String, dynamic>);
+    } on DioException catch (e) {
+      return Left(ApiClient.handleDioError(e));
+    } catch (_) {
+      return const Left(Failure.unexpectedError());
+    }
+  }
+
+  Future<Either<Failure, UserModel>> updateProfile(
+      Map<String, dynamic> body) async {
+    try {
+      final res = await _api.dio.put('/auth/profile', data: body);
+      return Right(
+        UserModel.fromJson(res.data['data'] as Map<String, dynamic>),
+      );
     } on DioException catch (e) {
       return Left(ApiClient.handleDioError(e));
     } catch (_) {
@@ -146,28 +161,37 @@ class AuthRemoteDataSource {
   ) async {
     try {
       final formData = FormData();
+
       if (isWeb) {
-        formData.files.add(
-          MapEntry(
-            'photo',
-            MultipartFile.fromBytes(
-              fileData as List<int>,
-              filename: 'photo.png',
-            ),
+        formData.files.add(MapEntry(
+          'photo',
+          MultipartFile.fromBytes(
+            fileData as List<int>,
+            filename: 'photo.png',
+            contentType: MediaType('image', 'png'),
           ),
-        );
+        ));
       } else {
-        formData.files.add(
-          MapEntry(
-            'photo',
-            await MultipartFile.fromFile(
-              fileData as String,
-              filename: 'photo.jpg',
-            ),
+        formData.files.add(MapEntry(
+          'photo',
+          await MultipartFile.fromFile(
+            fileData as String,
+            filename: 'photo.jpg',
+            contentType: MediaType('image', 'jpeg'),
           ),
-        );
+        ));
       }
-      final res = await _api.dio.post('/auth/profile/photo', data: formData);
+
+      final res = await _api.dio.post(
+        '/auth/profile/photo',
+        data: formData,
+        options: Options(
+          sendTimeout: const Duration(seconds: 60),
+          receiveTimeout: const Duration(seconds: 60),
+          contentType: 'multipart/form-data',
+        ),
+      );
+
       return Right(res.data['data']['photoProfil'] as String);
     } on DioException catch (e) {
       return Left(ApiClient.handleDioError(e));

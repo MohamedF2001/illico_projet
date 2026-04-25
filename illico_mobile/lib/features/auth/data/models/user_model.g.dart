@@ -31,8 +31,23 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
   location: UserModel._locationFromJson(json['location']),
 );
 Map<String, dynamic> _$UserModelToJson(UserModel i) => <String, dynamic>{
-  if (i.id != null) '_id': i.id,
-  'nom': i.nom, 'role': i.role,
-  if (i.telephone != null) 'telephone': i.telephone,
-  if (i.email != null) 'email': i.email,
-};
+      if (i.id != null) '_id': i.id,
+      'nom': i.nom,
+      'role': i.role,
+      if (i.telephone != null) 'telephone': i.telephone,
+      if (i.email != null) 'email': i.email,
+      'typeClient': i.typeClient,
+      'adresse': i.adresse,
+      'soldeIllico': i.soldeIllico,
+      'forfaitActif': i.forfaitActif,
+      'vehicule': UserModel._dynamicToJson(i.vehicule),
+      'statut': i.statut,
+      'scoreNote': i.scoreNote,
+      'cashCollecte': i.cashCollecte,
+      'cashReverse': i.cashReverse,
+      'valide': i.valide,
+      'photoProfil': i.photoProfil,
+      'actif': i.actif,
+      'commissionTotal': i.commissionTotal,
+      'location': UserModel._locationToJson(i.location),
+    };

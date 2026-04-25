@@ -30,6 +30,21 @@ class LivraisonRemoteDataSource {
     } on DioException catch (e) { return Left(ApiClient.handleDioError(e)); } catch (_) { return const Left(Failure.unexpectedError()); }
   }
 
+  Future<Either<Failure, List<LivraisonModel>>> getAvailable() async {
+    try {
+      final r = await _api.dio.get('/livraisons/disponibles');
+      final list = (r.data['data'] as List).map((e) => LivraisonModel.fromJson(e as Map<String, dynamic>)).toList();
+      return Right(list);
+    } on DioException catch (e) { return Left(ApiClient.handleDioError(e)); } catch (_) { return const Left(Failure.unexpectedError()); }
+  }
+
+  Future<Either<Failure, void>> accepter(String id) async {
+    try {
+      await _api.dio.post('/livraisons/$id/accepter');
+      return const Right(null);
+    } on DioException catch (e) { return Left(ApiClient.handleDioError(e)); } catch (_) { return const Left(Failure.unexpectedError()); }
+  }
+
   Future<Either<Failure, LivraisonModel>> getById(String id) async {
     try {
       final r = await _api.dio.get('/livraisons/$id');

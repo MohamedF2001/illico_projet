@@ -67,11 +67,29 @@ class _LivraisonDetailPageState extends ConsumerState<LivraisonDetailPage> {
     demoGuard(context, () async {
       final r = await _repo.rateLivreur(widget.id, _userRating);
       r.fold(
-        (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.displayMessage), backgroundColor: AppColors.danger)),
+        (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(f.displayMessage), backgroundColor: AppColors.danger)),
         (_) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Merci pour votre note !'), backgroundColor: Colors.green));
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Merci pour votre note !'),
+              backgroundColor: Colors.green));
           _load();
         },
+      );
+    });
+  }
+
+  Future<void> _updateStatut(String newStatut) async {
+    demoGuard(context, () async {
+      setState(() => _isLoading = true);
+      final r = await _repo.updateStatut(widget.id, newStatut);
+      r.fold(
+        (f) {
+          setState(() => _isLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(f.displayMessage), backgroundColor: AppColors.danger));
+        },
+        (_) => _load(),
       );
     });
   }
@@ -169,26 +187,64 @@ class _LivraisonDetailPageState extends ConsumerState<LivraisonDetailPage> {
                 title: 'Trajet',
                 child: Column(
                   children: [
-                    _InfoRow(icon: Icons.location_on, color: AppColors.accent, label: 'Départ', value: l.pointDepart.adresse),
+                    _InfoRow(
+                        icon: Icons.location_on,
+                        color: AppColors.accent,
+                        label: 'Départ',
+                        value:
+                            '${l.pointDepart.adresse}\nTél: ${l.pointDepart.telephoneContact}'),
                     const Divider(height: 24),
-                    _InfoRow(icon: Icons.flag_rounded, color: AppColors.primary, label: 'Arrivée', value: l.pointArrivee.adresse),
+                    _InfoRow(
+                        icon: Icons.flag_rounded,
+                        color: AppColors.primary,
+                        label: 'Arrivée',
+                        value:
+                            '${l.pointArrivee.adresse}\nTél: ${l.pointArrivee.telephoneContact}'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              _SectionCard(
+                title: 'Détails du colis',
+                child: Column(
+                  children: [
+                    _InfoRow(
+                        icon: Icons.inventory_2_outlined,
+                        label: 'Nature',
+                        value: l.natureColis ?? 'Non spécifié'),
+                    const SizedBox(height: 8),
+                    _InfoRow(
+                        icon: Icons.monitor_weight_outlined,
+                        label: 'Poids',
+                        value: '${l.poids} kg'),
+                    const SizedBox(height: 8),
+                    _InfoRow(
+                        icon: Icons.speed,
+                        label: 'Mode',
+                        value: l.mode == 'express' ? 'Express' : 'Point ILLICO'),
                   ],
                 ),
               ),
               const SizedBox(height: 12),
 
               if (l.livreur != null) ...[
-                 _SectionCard(
+                _SectionCard(
                   title: 'Livreur',
                   child: Row(
                     children: [
-                      const CircleAvatar(backgroundColor: AppColors.primary, child: Icon(Icons.person, color: Colors.white)),
+                      const CircleAvatar(
+                          backgroundColor: AppColors.primary,
+                          child: Icon(Icons.person, color: Colors.white)),
                       const SizedBox(width: 16),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(l.livreur['nom'] ?? 'Livreur', style: const TextStyle(fontWeight: FontWeight.bold)),
-                          Text(l.livreur['telephone'] ?? '', style: const TextStyle(color: Colors.black54, fontSize: 13)),
+                          Text(l.livreur['nom'] ?? 'Livreur',
+                              style: const TextStyle(fontWeight: FontWeight.bold)),
+                          Text(l.livreur['telephone'] ?? '',
+                              style: const TextStyle(
+                                  color: Colors.black54, fontSize: 13)),
                         ],
                       ),
                     ],
@@ -197,26 +253,90 @@ class _LivraisonDetailPageState extends ConsumerState<LivraisonDetailPage> {
                 const SizedBox(height: 12),
               ],
 
-              if (l.statut == 'en_attente' || l.statut == 'colis_récupéré') ...[
+              if (l.statut == 'en_attente' ||
+                  l.statut == 'colis_récupéré' ||
+                  l.statut == 'arrivé_pickup') ...[
                 const SizedBox(height: 20),
                 _SectionCard(
-                  title: 'Valider OTP',
+                  title: l.statut == 'arrivé_pickup'
+                      ? 'Code de Récupération (OTP)'
+                      : 'Code de Livraison (OTP)',
                   child: Column(
                     children: [
-                      const Text('Entrez le code OTP reçu par SMS', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                      if (l.statut == 'en_attente')
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Text(
+                            'Code de récupération pour le livreur: ${l.otpLivraison ?? '---'}',
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                                fontSize: 16),
+                          ),
+                        ),
+                      if (l.statut == 'colis_récupéré')
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Text(
+                            'Code de livraison à donner au livreur: ${l.otpRetrait ?? '---'}',
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                                fontSize: 16),
+                          ),
+                        ),
+                      const Text(
+                          'Le livreur doit saisir ce code pour valider l\'étape.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: AppColors.textSecondary, fontSize: 13)),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        controller: _otpCtrl,
-                        keyboardType: TextInputType.number,
-                        maxLength: 6,
-                        decoration: const InputDecoration(labelText: 'Code OTP à 6 chiffres', counterText: ''),
-                        style: const TextStyle(fontSize: 22, letterSpacing: 8, fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(height: 12),
-                      LoadingButton(onPressed: _validateOtp, label: 'Valider OTP', isLoading: _otpLoading),
+                      if (l.statut == 'arrivé_pickup' || l.statut == 'colis_récupéré')
+                        Column(
+                          children: [
+                            const Text('Saisie livreur:',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _otpCtrl,
+                              keyboardType: TextInputType.number,
+                              maxLength: 6,
+                              decoration: const InputDecoration(
+                                  labelText: 'Code OTP à 6 chiffres',
+                                  counterText: ''),
+                              style: const TextStyle(
+                                  fontSize: 22,
+                                  letterSpacing: 8,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            const SizedBox(height: 12),
+                            LoadingButton(
+                                onPressed: _validateOtp,
+                                label: 'Valider OTP',
+                                isLoading: _otpLoading),
+                          ],
+                        ),
                     ],
                   ),
                 ),
+              ],
+
+              // ── Actions Livreur ─────────────────────────
+              if (l.livreur != null && l.statut != 'livré' && l.statut != 'annulé') ...[
+                const SizedBox(height: 20),
+                const Text('Actions Livreur',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                if (l.statut == 'affecté')
+                  LoadingButton(
+                    onPressed: () => _updateStatut('arrivé_pickup'),
+                    label: 'Je suis arrivé au ramassage',
+                  ),
+                if (l.statut == 'colis_récupéré')
+                  LoadingButton(
+                    onPressed: () => _updateStatut('livré'),
+                    label: 'Marquer comme livré (Sans OTP)',
+                  ),
               ],
 
               if (l.statut == 'en_attente') ...[
