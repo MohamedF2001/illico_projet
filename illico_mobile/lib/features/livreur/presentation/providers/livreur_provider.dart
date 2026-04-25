@@ -36,21 +36,30 @@ class MissionsState {
 }
 
 class MissionsNotifier extends StateNotifier<MissionsState> {
-  final LivreurRemoteDataSource _ds;
-  MissionsNotifier(this._ds) : super(const MissionsState(isLoading: true)) { loadAll(); }
+  final LivreurRemoteDataSource ds;
+  MissionsNotifier(this.ds) : super(const MissionsState(isLoading: true)) {
+    loadAll();
+  }
 
   Future<void> loadAll() async {
     state = state.copyWith(isLoading: true, error: null);
-    final [mr, sr] = await Future.wait([_ds.getMissions(), _ds.getStats()]);
-    mr.fold((f) => state = state.copyWith(isLoading: false, error: f),
-            (m) => state = state.copyWith(isLoading: false, missions: m as List<Map<String, dynamic>>));
-    sr.fold((_) {}, (s) => state = state.copyWith(stats: s as Map<String, dynamic>));
+    final [mr, sr] = await Future.wait([ds.getMissions(), ds.getStats()]);
+    mr.fold(
+        (f) => state = state.copyWith(isLoading: false, error: f),
+        (m) => state = state.copyWith(
+            isLoading: false, missions: m as List<Map<String, dynamic>>));
+    sr.fold(
+        (_) {}, (s) => state = state.copyWith(stats: s as Map<String, dynamic>));
   }
 
   Future<void> toggleStatut() async {
     final newStatut = state.statut == 'en_ligne' ? 'hors_ligne' : 'en_ligne';
-    final r = await _ds.updateStatut(newStatut);
+    final r = await ds.updateStatut(newStatut);
     r.fold((f) {}, (_) => state = state.copyWith(statut: newStatut));
+  }
+
+  Future<void> updatePosition(List<double> coords) async {
+    await ds.updatePosition(coords);
   }
 }
 
