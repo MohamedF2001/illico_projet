@@ -39,13 +39,41 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
-    final image = await picker.pickImage(source: ImageSource.gallery);
+    final image = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 800,
+      maxHeight: 800,
+      imageQuality: 70,
+    );
     if (image != null) {
+      bool success;
       if (kIsWeb) {
         final bytes = await image.readAsBytes();
-        await ref.read(authProvider.notifier).updatePhoto(bytes, isWeb: true);
+        success =
+            await ref.read(authProvider.notifier).updatePhoto(bytes, isWeb: true);
       } else {
-        await ref.read(authProvider.notifier).updatePhoto(image.path, isWeb: false);
+        success = await ref.read(authProvider.notifier)
+            .updatePhoto(image.path, isWeb: false);
+      }
+
+      if (!mounted) return;
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Photo de profil mise à jour'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        final error = ref.read(authProvider).error;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Échec de l\'upload: ${error?.displayMessage ?? 'Erreur inconnue'}'),
+            backgroundColor: AppColors.danger,
+          ),
+        );
       }
     }
   }
