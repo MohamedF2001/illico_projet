@@ -22,6 +22,20 @@ class AuthRemoteDataSource {
     }
   }
 
+  Future<Either<Failure, UserModel>> updateProfile(
+      Map<String, dynamic> body) async {
+    try {
+      final res = await _api.dio.put('/auth/profile', data: body);
+      return Right(
+        UserModel.fromJson(res.data['data'] as Map<String, dynamic>),
+      );
+    } on DioException catch (e) {
+      return Left(ApiClient.handleDioError(e));
+    } catch (_) {
+      return const Left(Failure.unexpectedError());
+    }
+  }
+
   Future<Either<Failure, Map<String, dynamic>>> loginAdmin({
     required String email,
     required String motDePasse,

@@ -7,7 +7,6 @@ import '../../data/datasources/livraison_remote_datasource.dart';
 import '../../data/repositories/livraison_repository_impl.dart';
 import '../../domain/entities/livraison_entity.dart';
 import '../../domain/usecases/get_livraisons_usecase.dart';
-import '../../domain/usecases/create_livraison_usecase.dart';
 
 // ── List State ─────────────────────────────────────────────
 class LivraisonListState {
@@ -48,12 +47,15 @@ class LivraisonFormState {
   final Failure? error;
   final Map<String, dynamic>? estimation;
 
-  // 🔥 NEW FIELDS
+  // NEW FIELDS
   final String? mode;
   final double poids;
   final bool urgent;
   final bool nuit;
   final String modePaiement;
+  final String natureColis;
+  final String telephoneDepart;
+  final String telephoneArrivee;
 
   const LivraisonFormState({
     this.isLoading = false,
@@ -65,6 +67,9 @@ class LivraisonFormState {
     this.urgent = false,
     this.nuit = false,
     this.modePaiement = 'cash',
+    this.natureColis = '',
+    this.telephoneDepart = '',
+    this.telephoneArrivee = '',
   });
 
   LivraisonFormState copyWith({
@@ -77,6 +82,9 @@ class LivraisonFormState {
     bool? urgent,
     bool? nuit,
     String? modePaiement,
+    String? natureColis,
+    String? telephoneDepart,
+    String? telephoneArrivee,
   }) {
     return LivraisonFormState(
       isLoading: isLoading ?? this.isLoading,
@@ -88,6 +96,9 @@ class LivraisonFormState {
       urgent: urgent ?? this.urgent,
       nuit: nuit ?? this.nuit,
       modePaiement: modePaiement ?? this.modePaiement,
+      natureColis: natureColis ?? this.natureColis,
+      telephoneDepart: telephoneDepart ?? this.telephoneDepart,
+      telephoneArrivee: telephoneArrivee ?? this.telephoneArrivee,
     );
   }
 }
@@ -143,6 +154,17 @@ class LivraisonFormNotifier extends StateNotifier<LivraisonFormState> {
 
   void setPaiement(String v) {
     state = state.copyWith(modePaiement: v);
+  }
+
+  void setNatureColis(String v) {
+    state = state.copyWith(natureColis: v);
+  }
+
+  void setTelephones({String? depart, String? arrivee}) {
+    state = state.copyWith(
+      telephoneDepart: depart ?? state.telephoneDepart,
+      telephoneArrivee: arrivee ?? state.telephoneArrivee,
+    );
   }
 
   void setData({

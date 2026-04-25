@@ -2,6 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/api/api_client.dart';
 import '../../../../core/errors/failures.dart';
 import '../../data/datasources/livreur_remote_datasource.dart';
+import '../../../livraison/data/datasources/livraison_remote_datasource.dart';
+import '../../../livraison/data/repositories/livraison_repository_impl.dart';
+import '../../../livraison/domain/entities/livraison_entity.dart';
 
 class LivreurListState {
   final bool isLoading;
@@ -68,3 +71,68 @@ final livreurListProvider = StateNotifierProvider<LivreurListNotifier, LivreurLi
 
 final missionsProvider = StateNotifierProvider<MissionsNotifier, MissionsState>((ref) =>
     MissionsNotifier(LivreurRemoteDataSource(apiClient)));
+
+// ── Available Deliveries ───────────────────────────────────
+
+class AvailableDeliveriesState {
+  final bool isLoading;
+  final List<LivraisonEntity> items;
+  final Failure? error;
+
+  const AvailableDeliveriesState({
+    this.isLoading = false,
+    this.items = const [],
+    this.error,
+  });
+
+  AvailableDeliveriesState copyWith({
+    bool? isLoading,
+    List<LivraisonEntity>? items,
+    Failure? error,
+  }) {
+    return AvailableDeliveriesState(
+      isLoading: isLoading ?? this.isLoading,
+      items: items ?? this.items,
+      error: error,
+    );
+  }
+}
+
+class AvailableDeliveriesNotifier extends StateNotifier<AvailableDeliveriesState> {
+  final LivraisonRepositoryImpl _repo;
+
+  AvailableDeliveriesNotifier(this._repo) : super(const AvailableDeliveriesState()) {
+    load();
+  }
+
+  Future<void> load() async {
+    state = state.copyWith(isLoading: true, error: null);
+    final r = await _repo.getAvailable();
+    r.fold(
+      (f) => state = state.copyWith(isLoading: false, error: f),
+      (items) => state = state.copyWith(isLoading: false, items: items),
+    );
+  }
+
+  Future<bool> accept(String id) async {
+    state = state.copyWith(isLoading: true, error: null);
+    final r = await _repo.accepter(id);
+    return r.fold(
+      (f) {
+        state = state.copyWith(isLoading: false, error: f);
+        return false;
+      },
+      (_) {
+        load();
+        return true;
+      },
+    );
+  }
+}
+
+final availableDeliveriesProvider =
+    StateNotifierProvider<AvailableDeliveriesNotifier, AvailableDeliveriesState>((ref) {
+  final ds = LivraisonRemoteDataSource(apiClient);
+  final repo = LivraisonRepositoryImpl(ds);
+  return AvailableDeliveriesNotifier(repo);
+});

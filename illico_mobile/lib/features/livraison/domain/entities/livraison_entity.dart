@@ -2,9 +2,15 @@ import 'package:equatable/equatable.dart';
 
 class PointAdresse extends Equatable {
   final String adresse;
+  final String telephoneContact;
   final List<double> coordinates;
-  const PointAdresse({required this.adresse, required this.coordinates});
-  @override List<Object?> get props => [adresse, coordinates];
+  const PointAdresse({
+    required this.adresse,
+    required this.telephoneContact,
+    required this.coordinates,
+  });
+  @override
+  List<Object?> get props => [adresse, telephoneContact, coordinates];
 }
 
 class LivraisonEntity extends Equatable {
@@ -21,6 +27,9 @@ class LivraisonEntity extends Equatable {
   final double? prixFinal;
   final String? modePaiement;
   final bool otpValide;
+  final String? otpLivraison;
+  final String? otpRetrait;
+  final String? natureColis;
   final String? preuveLivraisonUrl;
   final double? noteLivreur;
   final bool urgent;
@@ -30,14 +39,29 @@ class LivraisonEntity extends Equatable {
   final DateTime? dateLivraison;
 
   const LivraisonEntity({
-    this.id, this.client, this.livreur,
-    required this.pointDepart, required this.pointArrivee,
-    this.vehicule, required this.mode, this.pointIllico,
-    this.statut = 'en_attente', required this.prixEstime,
-    this.prixFinal, this.modePaiement, this.otpValide = false,
-    this.preuveLivraisonUrl, this.noteLivreur,
-    this.urgent = false, this.nuit = false, this.poids = 1,
-    this.dateCreation, this.dateLivraison,
+    this.id,
+    this.client,
+    this.livreur,
+    required this.pointDepart,
+    required this.pointArrivee,
+    this.vehicule,
+    required this.mode,
+    this.pointIllico,
+    this.statut = 'en_attente',
+    required this.prixEstime,
+    this.prixFinal,
+    this.modePaiement,
+    this.otpValide = false,
+    this.otpLivraison,
+    this.otpRetrait,
+    this.natureColis,
+    this.preuveLivraisonUrl,
+    this.noteLivreur,
+    this.urgent = false,
+    this.nuit = false,
+    this.poids = 1,
+    this.dateCreation,
+    this.dateLivraison,
   });
 
   bool get isActive => ['affecté','arrivé_pickup','colis_récupéré','déposé_en_point'].contains(statut);

@@ -30,11 +30,16 @@ class _CreateLivraisonPageState extends ConsumerState<CreateLivraisonPage> {
   // Step 1: Mode
   String? _selectedMode;
 
-  // Step 2: Addresses
+  // Step 2: Addresses & Info
   final _departController = TextEditingController();
+  final _departTelController = TextEditingController();
   LatLng? _departCoords;
+
   final _arriveeController = TextEditingController();
+  final _arriveeTelController = TextEditingController();
   LatLng? _arriveeCoords;
+
+  final _natureController = TextEditingController();
 
   // Step 3: Vehicle
   VehiculeEntity? _selectedVehicule;
@@ -49,7 +54,10 @@ class _CreateLivraisonPageState extends ConsumerState<CreateLivraisonPage> {
   @override
   void dispose() {
     _departController.dispose();
+    _departTelController.dispose();
     _arriveeController.dispose();
+    _arriveeTelController.dispose();
+    _natureController.dispose();
     super.dispose();
   }
 
@@ -117,32 +125,21 @@ class _CreateLivraisonPageState extends ConsumerState<CreateLivraisonPage> {
 
   Future<void> _createLivraison() async {
     setState(() => _isCreating = true);
-    /*final r = await _repo.create({
-      'pointDepart': {
-        'adresse': _departController.text,
-        'coordinates': [_departCoords!.longitude, _departCoords!.latitude],
-      },
-      'pointArrivee': {
-        'adresse': _arriveeController.text,
-        'coordinates': [_arriveeCoords!.longitude, _arriveeCoords!.latitude],
-      },
-      'vehicule': _selectedVehicule!.id,
-      'mode': _selectedMode,
-      'poids': 1.0,
-      'modePaiement': 'cash',
-    });*/
 
     final r = await _repo.create({
       'pointDepart': {
         'adresse': _departController.text,
+        'telephoneContact': _departTelController.text,
         'coordinates': [_departCoords!.longitude, _departCoords!.latitude],
       },
       'pointArrivee': {
         'adresse': _arriveeController.text,
+        'telephoneContact': _arriveeTelController.text,
         'coordinates': [_arriveeCoords!.longitude, _arriveeCoords!.latitude],
       },
       'vehicule': _selectedVehicule!.id,
       'mode': _selectedMode,
+      'natureColis': _natureController.text,
       'poids': _poids,
       'modePaiement': _modePaiement,
       'urgent': _urgent,
@@ -285,37 +282,64 @@ class _CreateLivraisonPageState extends ConsumerState<CreateLivraisonPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Où allons-nous ?', style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900)),
+        const Text('Où allons-nous ?',
+            style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900)),
         const SizedBox(height: 32),
         _buildAddressField(
           label: 'Point de départ',
           controller: _departController,
+          telController: _departTelController,
           isDepart: true,
           onMapPick: () async {
-            final res = await Navigator.push<LatLng>(context, MaterialPageRoute(builder: (_) => const MapPickerPage(title: 'Lieu de départ')));
-            if (res != null) setState(() { _departCoords = res; _departController.text = '${res.latitude}, ${res.longitude}'; });
+            final res = await Navigator.push<LatLng>(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const MapPickerPage(title: 'Lieu de départ')));
+            if (res != null) {
+              setState(() {
+                _departCoords = res;
+                _departController.text = '${res.latitude}, ${res.longitude}';
+              });
+            }
           },
         ),
         const SizedBox(height: 24),
         _buildAddressField(
           label: 'Destination',
           controller: _arriveeController,
+          telController: _arriveeTelController,
           isDepart: false,
           onMapPick: () async {
-            final res = await Navigator.push<LatLng>(context, MaterialPageRoute(builder: (_) => const MapPickerPage(title: 'Lieu d\'arrivée')));
-            if (res != null) setState(() { _arriveeCoords = res; _arriveeController.text = '${res.latitude}, ${res.longitude}'; });
+            final res = await Navigator.push<LatLng>(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const MapPickerPage(title: 'Lieu d\'arrivée')));
+            if (res != null) {
+              setState(() {
+                _arriveeCoords = res;
+                _arriveeController.text = '${res.latitude}, ${res.longitude}';
+              });
+            }
           },
         ),
         const SizedBox(height: 24),
-
         const Text(
-          'Options de livraison',
+          'Détails du colis',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
         ),
-
         const SizedBox(height: 16),
-
-// 🔥 POIDS
+        TextField(
+          controller: _natureController,
+          decoration: InputDecoration(
+            labelText: 'Nature du colis (ex: Documents)',
+            filled: true,
+            fillColor: const Color(0xFFF1F1F1),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none),
+          ),
+        ),
+        const SizedBox(height: 16),
         Text('Poids: ${_poids.toStringAsFixed(1)} kg'),
         Slider(
           min: 1,
@@ -375,11 +399,17 @@ class _CreateLivraisonPageState extends ConsumerState<CreateLivraisonPage> {
 
 
 
-  Widget _buildAddressField({required String label, required TextEditingController controller, required VoidCallback onMapPick, required bool isDepart}) {
+  Widget _buildAddressField(
+      {required String label,
+      required TextEditingController controller,
+      required TextEditingController telController,
+      required VoidCallback onMapPick,
+      required bool isDepart}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        Text(label,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
@@ -396,11 +426,29 @@ class _CreateLivraisonPageState extends ConsumerState<CreateLivraisonPage> {
             }
           },
           decoration: InputDecoration(
-            hintText: 'Entrez l\'adresse ou choisissez sur la carte',
-            suffixIcon: IconButton(icon: const Icon(Icons.map, color: AppColors.primary), onPressed: onMapPick),
+            hintText: 'Adresse',
+            suffixIcon: IconButton(
+                icon: const Icon(Icons.map, color: AppColors.primary),
+                onPressed: onMapPick),
             filled: true,
             fillColor: const Color(0xFFF1F1F1),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none),
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: telController,
+          keyboardType: TextInputType.phone,
+          decoration: InputDecoration(
+            hintText: 'Téléphone de contact',
+            prefixIcon: const Icon(Icons.phone, size: 20),
+            filled: true,
+            fillColor: const Color(0xFFF1F1F1),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none),
           ),
         ),
       ],
@@ -473,13 +521,14 @@ class _CreateLivraisonPageState extends ConsumerState<CreateLivraisonPage> {
                     const Text('Résumé de la livraison', style: TextStyle(fontWeight: FontWeight.w900)),
                     const SizedBox(height: 12),
 
-                    Text('Départ: ${_departController.text}'),
-                    Text('Arrivée: ${_arriveeController.text}'),
+                    Text('Départ: ${_departController.text} (${_departTelController.text})'),
+                    Text('Arrivée: ${_arriveeController.text} (${_arriveeTelController.text})'),
 
                     const SizedBox(height: 8),
 
                     Text('Véhicule: ${_selectedVehicule?.type ?? ''}'),
                     Text('Mode: ${_selectedMode == 'express' ? 'Express' : 'Point ILLICO'}'),
+                    Text('Nature: ${_natureController.text}'),
 
                     const SizedBox(height: 8),
 
@@ -509,7 +558,12 @@ class _CreateLivraisonPageState extends ConsumerState<CreateLivraisonPage> {
     if (_currentStep == 0 && _selectedMode != null) {
       canContinue = true;
       onPressed = () => setState(() => _currentStep = 1);
-    } else if (_currentStep == 1 && _departController.text.isNotEmpty && _arriveeController.text.isNotEmpty) {
+    } else if (_currentStep == 1 &&
+        _departController.text.isNotEmpty &&
+        _departTelController.text.isNotEmpty &&
+        _arriveeController.text.isNotEmpty &&
+        _arriveeTelController.text.isNotEmpty &&
+        _natureController.text.isNotEmpty) {
       canContinue = true;
       onPressed = () => setState(() => _currentStep = 2);
     } else if (_currentStep == 2 && _selectedVehicule != null) {

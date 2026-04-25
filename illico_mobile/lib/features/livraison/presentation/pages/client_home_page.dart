@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/config/app_theme.dart';
 import '../../../../core/utils/formatters.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/livraison_provider.dart';
 
 class ClientHomePage extends ConsumerWidget {

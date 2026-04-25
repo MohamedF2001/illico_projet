@@ -117,6 +117,44 @@ class AuthNotifier extends StateNotifier<AuthState> {
     final result = await _repo.getProfile();
     result.fold((_) {}, (u) => state = state.copyWith(user: u));
   }
+
+  Future<bool> updateProfile(Map<String, dynamic> body) async {
+    state = state.copyWith(isLoading: true, error: null);
+    final result = await _repo.updateProfile(body: body);
+    return result.fold(
+      (f) {
+        state = state.copyWith(isLoading: false, error: f);
+        return false;
+      },
+      (u) {
+        state = state.copyWith(isLoading: false, user: u);
+        return true;
+      },
+    );
+  }
+
+  Future<bool> updatePhoto(dynamic fileData, {bool isWeb = false}) async {
+    state = state.copyWith(isLoading: true, error: null);
+    final result = await _repo.uploadProfilePhoto(fileData: fileData, isWeb: isWeb);
+    return result.fold(
+      (f) {
+        state = state.copyWith(isLoading: false, error: f);
+        return false;
+      },
+      (photoUrl) {
+        if (state.user != null) {
+          // Note: On pourrait aussi appeler refreshProfile ici pour être sûr
+          state = state.copyWith(
+            isLoading: false,
+            // On ne peut pas facilement copier l'entité immuable ici sans un copyWith sur UserEntity,
+            // mais refreshProfile est plus propre.
+          );
+          refreshProfile();
+        }
+        return true;
+      },
+    );
+  }
 }
 
 // ── Provider ──────────────────────────────────────────────

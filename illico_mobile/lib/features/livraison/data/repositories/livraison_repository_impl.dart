@@ -17,4 +17,6 @@ class LivraisonRepositoryImpl implements LivraisonRepository {
   @override Future<Either<Failure, LivraisonEntity>> assignLivreur(String id, String livreurId) => _ds.assignLivreur(id, livreurId);
   @override Future<Either<Failure, Map<String, dynamic>>> uploadPreuve(String id, dynamic file, bool isWeb) => _ds.uploadPreuve(id, file, isWeb);
   @override Future<Either<Failure, void>> rateLivreur(String id, double note) => _ds.rateLivreur(id, note);
+  @override Future<Either<Failure, List<LivraisonEntity>>> getAvailable() async { final r = await _ds.getAvailable(); return r.map((l) => l.cast<LivraisonEntity>()); }
+  @override Future<Either<Failure, void>> accepter(String id) => _ds.accepter(id);
 }
