@@ -144,7 +144,7 @@ class ClientHomePage extends ConsumerWidget {
               )
             else
               ...recent.map((l) => _RecentItem(
-                    title: 'Colis personnel',
+                    title: l.natureColis!,
                     subtitle: '${Formatters.date(l.dateCreation)} . ${l.pointArrivee.adresse}',
                   )),
           ],

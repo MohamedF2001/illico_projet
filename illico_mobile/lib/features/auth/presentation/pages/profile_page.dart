@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/config/app_theme.dart';
+import '../../../../core/errors/failures.dart';
 import '../../../../core/utils/formatters.dart';
 import '../providers/auth_provider.dart';
 
