@@ -310,13 +310,18 @@ class _ClientRegisterTabState extends ConsumerState<_ClientRegisterTab> {
       _error = null;
     });
 
-    // TODO: appeler authRepo.initClientRegister(telephone: ...)
-    await Future.delayed(const Duration(seconds: 1));
+    final ok = await ref
+        .read(authProvider.notifier)
+        .initRegisterClient(telephone: _phoneCtrl.text.trim());
 
-    setState(() {
-      _isLoading = false;
-      _step = 1;
-    });
+    if (ok && mounted) {
+      setState(() {
+        _isLoading = false;
+        _step = 1;
+      });
+    } else {
+      setState(() => _isLoading = false);
+    }
   }
 
   // ── Étape 2 : vérification OTP ──────────────────────────
@@ -325,18 +330,9 @@ class _ClientRegisterTabState extends ConsumerState<_ClientRegisterTab> {
       setState(() => _error = 'Entrez les 6 chiffres du code.');
       return;
     }
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-
-    // TODO: vérifier OTP côté backend ou stocker pour l'étape finale
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    setState(() {
-      _isLoading = false;
-      _step = 2;
-    });
+    // L'API ne propose pas de route de vérification seule,
+    // on passe à l'étape suivante pour collecter le reste des infos.
+    setState(() => _step = 2);
   }
 
   // ── Étape 3 : création du compte ────────────────────────
@@ -359,11 +355,20 @@ class _ClientRegisterTabState extends ConsumerState<_ClientRegisterTab> {
       _error = null;
     });
 
-    // TODO: appeler authRepo.registerClient(body: {...})
-    await Future.delayed(const Duration(seconds: 1));
+    final ok = await ref.read(authProvider.notifier).register(
+      role: 'Client',
+      body: {
+        'telephone': _phoneCtrl.text.trim(),
+        'otp': _otpCtrl.text.trim(),
+        'nom': _nomCtrl.text.trim(),
+        'codePin': _pinCtrl.text,
+        'adresse': _adresseCtrl.text.trim(),
+        'typeClient': _typeClient,
+      },
+    );
 
     setState(() => _isLoading = false);
-    if (mounted) {
+    if (ok && mounted) {
       _showSuccessDialog();
     }
   }

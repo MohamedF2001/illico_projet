@@ -16,12 +16,15 @@ import '../../features/auth/presentation/pages/role_selection_page.dart';
 import '../../features/auth/presentation/pages/splash_page.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/main/presentation/pages/main_shell_page.dart';
+import '../../features/main/presentation/pages/livreur_shell_page.dart';
 import '../../features/livraison/presentation/pages/client_home_page.dart';
 import '../../features/livraison/presentation/pages/create_livraison_page.dart';
 import '../../features/livraison/presentation/pages/livraison_detail_page.dart';
 import '../../features/livraison/presentation/pages/livraison_list_page.dart';
 import '../../features/transaction/presentation/pages/wallet_page.dart';
 import '../../features/livreur/presentation/pages/missions_page.dart';
+import '../../features/livreur/presentation/pages/livreur_stats_page.dart';
+import '../../features/livreur/presentation/pages/livreur_map_page.dart';
 import '../../features/point_illico/presentation/pages/point_colis_page.dart';
 import '../../features/notification/presentation/pages/notifications_list_page.dart';
 
@@ -164,14 +167,38 @@ final mobileRouterProvider = Provider<GoRouter>((ref) {
       ),
 
       // ════════════════════════════════════════════════════════
-      //  ESPACE LIVREUR
+      //  ESPACE LIVREUR (NAVIGATION PERSISTANTE)
       // ════════════════════════════════════════════════════════
+      ShellRoute(
+        builder: (context, state, child) => LivreurShellPage(child: child),
+        routes: [
+          // Tableau de bord des missions avec statut en ligne/hors ligne
+          GoRoute(
+            path: '/livreur/missions',
+            builder: (_, __) => const MissionsPage(),
+          ),
 
-      // Tableau de bord des missions avec statut en ligne/hors ligne
-      GoRoute(
-        path: '/livreur/missions',
-        builder: (_, __) => const MissionsPage(),
+          // Statistiques du livreur
+          GoRoute(
+            path: '/livreur/stats',
+            builder: (_, __) => const LivreurStatsPage(),
+          ),
+
+          // Mise à jour position GPS
+          GoRoute(
+            path: '/livreur/map',
+            builder: (_, __) => const LivreurMapPage(),
+          ),
+
+          // Profil du livreur
+          GoRoute(
+            path: '/livreur/profil',
+            builder: (_, __) => const ProfilePage(),
+          ),
+        ],
       ),
+
+      // ── Routes hors navigation persistante livreur ──────────
 
       // Détail d'une mission (même page que détail livraison)
       GoRoute(
@@ -179,12 +206,6 @@ final mobileRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, state) => LivraisonDetailPage(
           id: state.pathParameters['id']!,
         ),
-      ),
-
-      // Gains, commissions et suivi du cash collecté
-      GoRoute(
-        path: '/livreur/gains',
-        builder: (_, __) => const GainsPlaceholderPage(),
       ),
 
       // ════════════════════════════════════════════════════════
@@ -339,13 +360,24 @@ class WalletPlaceholderPage extends StatelessWidget {
   );
 }
 
-/// Page des gains du livreur
-class GainsPlaceholderPage extends StatelessWidget {
-  const GainsPlaceholderPage({super.key});
+/// Page des statistiques du livreur
+class LivreurStatsPlaceholderPage extends StatelessWidget {
+  const LivreurStatsPlaceholderPage({super.key});
   @override
   Widget build(BuildContext context) => const _PlaceholderPage(
-    title: 'Gains & Cash',
-    icon: Icons.payments_outlined,
-    subtitle: 'Suivi de vos commissions et cash collecté',
+    title: 'Statistiques',
+    icon: Icons.bar_chart_rounded,
+    subtitle: 'Suivi de vos performances et gains',
+  );
+}
+
+/// Page de position GPS du livreur
+class LivreurMapPlaceholderPage extends StatelessWidget {
+  const LivreurMapPlaceholderPage({super.key});
+  @override
+  Widget build(BuildContext context) => const _PlaceholderPage(
+    title: 'Position GPS',
+    icon: Icons.my_location_rounded,
+    subtitle: 'Mise à jour de votre position en temps réel',
   );
 }

@@ -16,13 +16,14 @@ class MissionsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state  = ref.watch(missionsProvider);
-    final auth   = ref.watch(authProvider);
-    final user   = auth.user;
+    final state = ref.watch(missionsProvider);
+    final auth = ref.watch(authProvider);
+    final user = auth.user;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mes Missions'),
+        automaticallyImplyLeading: false,
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 12),
