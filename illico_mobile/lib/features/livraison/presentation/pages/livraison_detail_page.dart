@@ -9,6 +9,8 @@ import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/demo_dialog.dart';
 import '../../../../core/widgets/loading_button.dart';
 import '../../../../core/widgets/statut_badge.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../livreur/presentation/providers/livreur_provider.dart';
 import '../../data/datasources/livraison_remote_datasource.dart';
 import '../../data/repositories/livraison_repository_impl.dart';
 import '../../domain/entities/livraison_entity.dart';

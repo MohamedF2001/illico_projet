@@ -219,6 +219,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     const SizedBox(height: 24),
                     const Text('Statistiques financières', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
                     const SizedBox(height: 16),
+                    Text(user!.vehicule['type'].toString()),
                     _InfoRow(label: 'Cash Collecté', value: Formatters.currency(user?.cashCollecte ?? 0)),
                     _InfoRow(label: 'Cash Reversé', value: Formatters.currency(user?.cashReverse ?? 0)),
                     _InfoRow(label: 'Commission Totale', value: Formatters.currency(user?.commissionTotal ?? 0)),
