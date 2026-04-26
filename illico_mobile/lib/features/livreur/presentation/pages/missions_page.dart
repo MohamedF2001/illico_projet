@@ -20,43 +20,153 @@ class MissionsPage extends ConsumerWidget {
     final auth = ref.watch(authProvider);
     final user = auth.user;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mes Missions'),
-        automaticallyImplyLeading: false,
-        leading: IconButton(
-          icon: const Icon(Icons.add_task),
-          tooltip: 'Livraisons disponibles',
-          onPressed: () => context.push('/livreur/disponibles'),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: Switch(
-              value: state.statut == 'en_ligne',
-              activeColor: AppColors.accent,
-              onChanged: (_) => demoGuard(context, () => ref.read(missionsProvider.notifier).toggleStatut()),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Missions ILLICO'),
+          automaticallyImplyLeading: false,
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: Switch(
+                value: state.statut == 'en_ligne',
+                activeColor: AppColors.accent,
+                onChanged: (_) => demoGuard(context, () => ref.read(missionsProvider.notifier).toggleStatut()),
+              ),
             ),
+          ],
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: 'Mes Missions'),
+              Tab(text: 'Disponibles'),
+            ],
+            indicatorColor: AppColors.primary,
+            labelColor: AppColors.primary,
+            unselectedLabelColor: AppColors.textSecondary,
+            labelStyle: TextStyle(fontWeight: FontWeight.bold),
           ),
-        ],
+        ),
+        body: TabBarView(
+          children: [
+            // ── TAB 1: MES MISSIONS ──────────────────────────
+            RefreshIndicator(
+              onRefresh: () => ref.read(missionsProvider.notifier).loadAll(),
+              child: CustomScrollView(slivers: [
+                SliverToBoxAdapter(child: _HeaderCard(user: user, state: state)),
+                state.isLoading
+                    ? const SliverFillRemaining(child: Center(child: CircularProgressIndicator()))
+                    : state.missions.isEmpty
+                        ? SliverFillRemaining(child: EmptyState(
+                            title: state.statut == 'hors_ligne' ? 'Vous êtes hors ligne' : 'Aucune mission en cours',
+                            subtitle: state.statut == 'hors_ligne' ? 'Activez votre statut pour recevoir des missions.' : 'En attente de nouvelles missions.',
+                            icon: Icons.two_wheeler_outlined))
+                        : SliverList(delegate: SliverChildBuilderDelegate(
+                            (ctx, i) => Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                                child: _MissionCard(mission: state.missions[i])),
+                            childCount: state.missions.length)),
+              ]),
+            ),
+
+            // ── TAB 2: DISPONIBLES ───────────────────────────
+            const _AvailableDeliveriesTab(),
+          ],
+        ),
       ),
-      body: RefreshIndicator(
-        onRefresh: () => ref.read(missionsProvider.notifier).loadAll(),
-        child: CustomScrollView(slivers: [
-          SliverToBoxAdapter(child: _HeaderCard(user: user, state: state)),
-          state.isLoading
-              ? const SliverFillRemaining(child: Center(child: CircularProgressIndicator()))
-              : state.missions.isEmpty
-                  ? SliverFillRemaining(child: EmptyState(
-                      title: state.statut == 'hors_ligne' ? 'Vous êtes hors ligne' : 'Aucune mission en cours',
-                      subtitle: state.statut == 'hors_ligne' ? 'Activez votre statut pour recevoir des missions.' : 'En attente de nouvelles missions.',
-                      icon: Icons.two_wheeler_outlined))
-                  : SliverList(delegate: SliverChildBuilderDelegate(
-                      (ctx, i) => Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-                          child: _MissionCard(mission: state.missions[i])),
-                      childCount: state.missions.length)),
-        ]),
-      ),
+    );
+  }
+}
+
+class _AvailableDeliveriesTab extends ConsumerWidget {
+  const _AvailableDeliveriesTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(availableDeliveriesProvider);
+
+    return RefreshIndicator(
+      onRefresh: () => ref.read(availableDeliveriesProvider.notifier).load(),
+      child: state.isLoading && state.items.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : state.error != null
+              ? Center(child: Text(state.error!.displayMessage))
+              : state.items.isEmpty
+                  ? const EmptyState(
+                      title: 'Aucune livraison disponible',
+                      subtitle: 'Revenez plus tard pour de nouvelles missions.',
+                      icon: Icons.inventory_2_outlined,
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: state.items.length,
+                      itemBuilder: (context, index) {
+                        final delivery = state.items[index];
+                        return Card(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          child: InkWell(
+                            onTap: () => context.push('/livraison/${delivery.id}'),
+                            borderRadius: BorderRadius.circular(16),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.primary.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(20),
+                                        ),
+                                        child: Text(
+                                          delivery.mode.toUpperCase(),
+                                          style: const TextStyle(
+                                            color: AppColors.primary,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 11,
+                                          ),
+                                        ),
+                                      ),
+                                      const Icon(Icons.radio_button_unchecked, color: AppColors.textSecondary, size: 20),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  _RouteRow(
+                                    depart: delivery.pointDepart.adresse,
+                                    arrivee: delivery.pointArrivee.adresse,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        Formatters.currency(delivery.prixEstime),
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 16,
+                                          color: AppColors.primary,
+                                        ),
+                                      ),
+                                      const Text(
+                                        'Détails →',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: AppColors.primary,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
     );
   }
 }

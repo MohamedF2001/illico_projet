@@ -37,10 +37,27 @@ class _LivraisonDetailPageState extends ConsumerState<LivraisonDetailPage> {
 
   Future<void> _load() async {
     setState(() { _isLoading = true; _error = null; });
+
+    // Tentative de récupération normale
     final r = await _repo.getById(widget.id);
-    r.fold(
-      (f) => setState(() { _isLoading = false; _error = f.displayMessage; }),
-      (l) => setState(() { _isLoading = false; _livraison = l; }),
+
+    await r.fold(
+      (f) async {
+        final user = ref.read(authProvider).user;
+        if (user?.role == 'Livreur') {
+          // Si erreur 403 et que c'est un livreur, on tente via les livraisons disponibles
+          final rAvail = await _repo.getAvailableById(widget.id);
+          rAvail.fold(
+            (f2) => setState(() { _isLoading = false; _error = f.displayMessage; }),
+            (l) => setState(() { _isLoading = false; _livraison = l; }),
+          );
+        } else {
+          setState(() { _isLoading = false; _error = f.displayMessage; });
+        }
+      },
+      (l) async {
+        setState(() { _isLoading = false; _livraison = l; });
+      },
     );
   }
 
@@ -94,6 +111,26 @@ class _LivraisonDetailPageState extends ConsumerState<LivraisonDetailPage> {
     });
   }
 
+  Future<void> _accepterMission() async {
+    demoGuard(context, () async {
+      setState(() => _isLoading = true);
+      final r = await _repo.accepter(widget.id);
+      r.fold(
+        (f) {
+          setState(() => _isLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(f.displayMessage), backgroundColor: AppColors.danger));
+        },
+        (_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Livraison acceptée !'), backgroundColor: Colors.green));
+          ref.read(missionsProvider.notifier).loadAll();
+          _load();
+        },
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -106,6 +143,8 @@ class _LivraisonDetailPageState extends ConsumerState<LivraisonDetailPage> {
 
     final l = _livraison!;
     final isDone = l.statut == 'livré';
+    final user = ref.read(authProvider).user;
+    final isLivreur = user?.role == 'Livreur';
 
     return Scaffold(
       appBar: AppBar(title: Text('Suivi Livraison #${l.id?.substring(l.id!.length - 6) ?? '-'}')),
@@ -322,11 +361,16 @@ class _LivraisonDetailPageState extends ConsumerState<LivraisonDetailPage> {
               ],
 
               // ── Actions Livreur ─────────────────────────
-              if (l.livreur != null && l.statut != 'livré' && l.statut != 'annulé') ...[
+              if (isLivreur && l.statut != 'livré' && l.statut != 'annulé') ...[
                 const SizedBox(height: 20),
                 const Text('Actions Livreur',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
+                if (l.statut == 'en_attente')
+                  LoadingButton(
+                    onPressed: _accepterMission,
+                    label: 'Accepter la mission',
+                  ),
                 if (l.statut == 'affecté')
                   LoadingButton(
                     onPressed: () => _updateStatut('arrivé_pickup'),
@@ -339,7 +383,7 @@ class _LivraisonDetailPageState extends ConsumerState<LivraisonDetailPage> {
                   ),
               ],
 
-              if (l.statut == 'en_attente') ...[
+              if (!isLivreur && l.statut == 'en_attente') ...[
                 const SizedBox(height: 12),
                  OutlinedButton.icon(
                   onPressed: () => demoGuard(context, () async {
