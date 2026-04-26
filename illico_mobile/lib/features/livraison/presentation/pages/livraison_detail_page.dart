@@ -38,26 +38,11 @@ class _LivraisonDetailPageState extends ConsumerState<LivraisonDetailPage> {
   Future<void> _load() async {
     setState(() { _isLoading = true; _error = null; });
 
-    // Tentative de récupération normale
     final r = await _repo.getById(widget.id);
 
-    await r.fold(
-      (f) async {
-        final user = ref.read(authProvider).user;
-        if (user?.role == 'Livreur') {
-          // Si erreur 403 et que c'est un livreur, on tente via les livraisons disponibles
-          final rAvail = await _repo.getAvailableById(widget.id);
-          rAvail.fold(
-            (f2) => setState(() { _isLoading = false; _error = f.displayMessage; }),
-            (l) => setState(() { _isLoading = false; _livraison = l; }),
-          );
-        } else {
-          setState(() { _isLoading = false; _error = f.displayMessage; });
-        }
-      },
-      (l) async {
-        setState(() { _isLoading = false; _livraison = l; });
-      },
+    r.fold(
+      (f) => setState(() { _isLoading = false; _error = f.displayMessage; }),
+      (l) => setState(() { _isLoading = false; _livraison = l; }),
     );
   }
 
