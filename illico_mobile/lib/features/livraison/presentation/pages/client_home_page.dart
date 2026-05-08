@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -206,6 +207,276 @@ class _RecentItem extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+*/
+
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/config/app_theme.dart';
+import '../../../../core/utils/formatters.dart';
+import '../providers/livraison_provider.dart';
+import '../../domain/entities/livraison_entity.dart';
+
+class ClientHomePage extends ConsumerWidget {
+  const ClientHomePage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(livraisonListProvider);
+    final recent = state.items.take(3).toList();
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFE5E5E5),
+        elevation: 0,
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.flash_on, color: Colors.white, size: 20),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'ILLICO',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w900,
+                fontSize: 24,
+                letterSpacing: 1.2,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_none, color: Colors.black),
+            onPressed: () => context.push('/notifications'),
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Main Promo / Call to Action ─────────────────
+            Container(
+              width: double.infinity,
+              height: 200,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE0E0E0),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    bottom: 20,
+                    left: 20,
+                    right: 20,
+                    child: ElevatedButton(
+                      onPressed: () => context.push('/livraison/new'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: const Text(
+                        'Commander maintenant',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // ── Promo Banner ──────────────────────────────
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '-20%',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Sur votre prochain colis avec le code\npromo ILLICO24',
+                    style: TextStyle(
+                      color: Colors.black.withOpacity(0.8),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
+
+            // ── Récents ──────────────────────────────────
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Récents',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black,
+                  ),
+                ),
+                if (state.items.isNotEmpty)
+                  TextButton(
+                    onPressed: () => context.go('/mes-livraisons'),
+                    child: const Text(
+                      'Voir tout',
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            if (state.isLoading)
+              const Center(child: CircularProgressIndicator())
+            else if (recent.isEmpty)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: Text('Aucune livraison récente'),
+                ),
+              )
+            else
+              ...recent.map((l) => _RecentItem(livraison: l)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RecentItem extends StatelessWidget {
+  final LivraisonEntity livraison;
+
+  const _RecentItem({required this.livraison});
+
+  Color get _statutColor => switch (livraison.statut) {
+    'livré' => AppColors.accent,
+    'affecté' || 'arrivé_pickup' || 'colis_récupéré' => AppColors.info,
+    'annulé' || 'échoué' => AppColors.danger,
+    'en_attente' => AppColors.warning,
+    _ => AppColors.primary,
+  };
+
+  IconData get _statutIcon => switch (livraison.statut) {
+    'livré' => Icons.check_circle_rounded,
+    'affecté' || 'arrivé_pickup' || 'colis_récupéré' => Icons.local_shipping_rounded,
+    'annulé' || 'échoué' => Icons.cancel_rounded,
+    'en_attente' => Icons.hourglass_empty_rounded,
+    _ => Icons.inventory_2_rounded,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.push('/livraison/${livraison.id}'),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFE5E5E5),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          children: [
+            // Icône statut
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: _statutColor.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(_statutIcon, color: _statutColor, size: 24),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    livraison.natureColis ?? 'Colis',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${Formatters.date(livraison.dateCreation)} · ${livraison.pointArrivee.adresse}',
+                    style: const TextStyle(
+                      color: Colors.black54,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  // Badge statut
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: _statutColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      Formatters.statutLabel(livraison.statut),
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: _statutColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            // Flèche de navigation
+            const Icon(Icons.chevron_right_rounded, color: Colors.black38, size: 22),
+          ],
+        ),
       ),
     );
   }
