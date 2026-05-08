@@ -1,16 +1,24 @@
 import 'package:equatable/equatable.dart';
 
 class PointAdresse extends Equatable {
+  final String nomContact;
   final String adresse;
+  final String telephoneContact;
   final List<double> coordinates;
-  const PointAdresse({required this.adresse, required this.coordinates});
-  @override List<Object?> get props => [adresse, coordinates];
+  const PointAdresse({
+    required this.nomContact,
+    required this.adresse,
+    required this.telephoneContact,
+    required this.coordinates,
+  });
+  @override List<Object?> get props => [nomContact, adresse, telephoneContact, coordinates];
 }
 
 class LivraisonEntity extends Equatable {
   final String? id;
   final dynamic client;
   final dynamic livreur;
+  final String? codeSuivi;
   final PointAdresse pointDepart;
   final PointAdresse pointArrivee;
   final dynamic vehicule;
@@ -31,6 +39,7 @@ class LivraisonEntity extends Equatable {
 
   const LivraisonEntity({
     this.id, this.client, this.livreur,
+    this.codeSuivi,
     required this.pointDepart, required this.pointArrivee,
     this.vehicule, required this.mode, this.pointIllico,
     this.statut = 'en_attente', required this.prixEstime,

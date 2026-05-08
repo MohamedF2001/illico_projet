@@ -7,8 +7,23 @@ import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/error_display.dart';
 import '../../../livraison/presentation/providers/livraison_provider.dart';
 
-class AdminLivraisonsPage extends ConsumerWidget {
+class AdminLivraisonsPage extends ConsumerStatefulWidget {
   const AdminLivraisonsPage({super.key});
+
+  @override
+  ConsumerState<AdminLivraisonsPage> createState() => _AdminLivraisonsPageState();
+}
+
+class _AdminLivraisonsPageState extends ConsumerState<AdminLivraisonsPage> {
+  String? _selectedStatut;
+
+  final Map<String, String> _statuts = {
+    'Tous': 'tous',
+    'En attente': 'en_attente',
+    'Affecté': 'affecté',
+    'Livré': 'livré',
+    'Annulé': 'annulé',
+  };
 
   void _showAddLivraisonForm(BuildContext context, WidgetRef ref) {
     showDialog(
@@ -271,8 +286,14 @@ class AdminLivraisonsPage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final state = ref.watch(livraisonListProvider);
+    var livraisons = state.items;
+
+    if (_selectedStatut != null && _selectedStatut != 'tous') {
+      livraisons = livraisons.where((l) => l.statut == _selectedStatut).toList();
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Livraisons'),
@@ -301,25 +322,59 @@ class AdminLivraisonsPage extends ConsumerWidget {
           ),
         ],
       ),
-      body: state.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : state.error != null
-          ? ErrorDisplay(
-        failure: state.error!,
-        onRetry: () =>
-            ref.read(livraisonListProvider.notifier).load(),
-      )
-          : state.items.isEmpty
-          ? const EmptyState(
-        title: 'Aucune livraison',
-        icon: Icons.local_shipping_outlined,
-      )
-          : ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: state.items.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (ctx, i) {
-          final liv = state.items[i];
+      body: Column(
+        children: [
+          // FILTRES DE STATUT
+          Container(
+            height: 60,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            color: Colors.white,
+            child: Row(
+              children: [
+                const Text('Filtrer par statut :', style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: _statuts.entries.map((e) {
+                      final isSelected = (_selectedStatut == null && e.value == 'tous') || _selectedStatut == e.value;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+                        child: ChoiceChip(
+                          label: Text(e.key),
+                          selected: isSelected,
+                          onSelected: (val) {
+                            setState(() => _selectedStatut = val ? e.value : 'tous');
+                          },
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1),
+          Expanded(
+            child: state.isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : state.error != null
+                ? ErrorDisplay(
+              failure: state.error!,
+              onRetry: () =>
+                  ref.read(livraisonListProvider.notifier).load(),
+            )
+                : livraisons.isEmpty
+                ? const EmptyState(
+              title: 'Aucune livraison',
+              icon: Icons.local_shipping_outlined,
+            )
+                : ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: livraisons.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (ctx, i) {
+                final liv = livraisons[i];
           final color = _getStatusColor(liv.statut);
           return Card(
             child: Padding(
@@ -345,9 +400,9 @@ class AdminLivraisonsPage extends ConsumerWidget {
                           CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '#${liv.id != null && liv.id!.length >= 6 ? liv.id!.substring(liv.id!.length - 6) : (liv.id ?? '-')}',
+                              'Code: ${liv.codeSuivi ?? (liv.id != null && liv.id!.length >= 6 ? liv.id!.substring(liv.id!.length - 6) : (liv.id ?? '-'))}',
                               style: const TextStyle(
-                                  fontWeight: FontWeight.bold),
+                                  fontWeight: FontWeight.bold, fontSize: 16),
                             ),
                             Text(
                               liv.client is Map
@@ -390,14 +445,26 @@ class AdminLivraisonsPage extends ConsumerWidget {
                     mainAxisAlignment:
                     MainAxisAlignment.spaceBetween,
                     children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('TRAJET', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
+                            const SizedBox(height: 4),
+                            Text('De: ${liv.pointDepart.nomContact} (${liv.pointDepart.adresse})', style: const TextStyle(fontSize: 12)),
+                            Text('À: ${liv.pointArrivee.nomContact} (${liv.pointArrivee.adresse})', style: const TextStyle(fontSize: 12)),
+                          ],
+                        ),
+                      ),
                       _Info(
                           label: 'Prix',
                           value: Formatters.currency(liv.prixEstime)),
+                      const SizedBox(width: 24),
                       _Info(
                           label: 'Mode', value: liv.mode.toUpperCase()),
+                      const SizedBox(width: 24),
                       _Info(
                         label: 'Date',
-                        // ✅ FIX 2 : Gestion sécurisée de la date
                         value: liv.dateCreation != null
                             ? _safeFormatDate(liv.dateCreation!)
                             : '-',
@@ -407,8 +474,8 @@ class AdminLivraisonsPage extends ConsumerWidget {
                 ],
               ),
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }

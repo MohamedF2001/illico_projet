@@ -1,0 +1,410 @@
+Analyzing 2 items...
+
+warning • Unused import: 'package:fpdart/fpdart.dart' • illico_mobile/lib/core/api/api_client.dart:5:8 • unused_import
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/core/config/app_router.dart:81:22 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/core/config/app_router.dart:88:22 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/core/config/app_router.dart:95:22 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/core/config/app_router.dart:102:22 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/core/config/app_router.dart:114:26 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/core/config/app_router.dart:120:26 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/core/config/app_router.dart:126:26 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/core/config/app_router.dart:132:26 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/core/config/app_router.dart:142:22 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/core/config/app_router.dart:148:22 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/core/config/app_router.dart:162:22 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/core/config/app_router.dart:168:22 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/core/config/app_router.dart:174:22 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/core/config/app_router.dart:186:26 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/core/config/app_router.dart:192:26 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/core/config/app_router.dart:198:26 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/core/config/app_router.dart:204:26 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/core/config/app_router.dart:214:22 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/core/config/app_router.dart:231:22 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/core/config/app_router.dart:274:35 • unnecessary_underscores
+warning • The declaration '_$identity' isn't referenced • illico_mobile/lib/core/errors/failures.freezed.dart:11:3 • unused_element
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/core/widgets/empty_state.dart:26:42 • deprecated_member_use
+warning • The operand can't be 'null', so the condition is always 'true' • illico_mobile/lib/core/widgets/map_picker.dart:47:46 • unnecessary_null_comparison
+warning • The '!' will have no effect because the receiver can't be null • illico_mobile/lib/core/widgets/map_picker.dart:48:61 • unnecessary_non_null_assertion
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/core/widgets/statut_badge.dart:25:23 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/core/widgets/statut_badge.dart:27:42 • deprecated_member_use
+warning • Unused import: '../../../../core/widgets/empty_state.dart' • illico_mobile/lib/features/admin/presentation/pages/admin_colis_page.dart:4:8 • unused_import
+warning • Unused import: '../../../../core/widgets/error_display.dart' • illico_mobile/lib/features/admin/presentation/pages/admin_colis_page.dart:5:8 • unused_import
+warning • Unused import: '../../../../core/errors/failures.dart' • illico_mobile/lib/features/admin/presentation/pages/admin_dashboard_page.dart:5:8 • unused_import
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/admin/presentation/pages/admin_dashboard_page.dart:39:64 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/admin/presentation/pages/admin_dashboard_page.dart:92:94 • deprecated_member_use
+warning • Unused import: '../../../../core/widgets/empty_state.dart' • illico_mobile/lib/features/admin/presentation/pages/admin_forfaits_page.dart:4:8 • unused_import
+warning • Unused import: '../../../../core/widgets/error_display.dart' • illico_mobile/lib/features/admin/presentation/pages/admin_forfaits_page.dart:5:8 • unused_import
+warning • Unused import: '../../../../core/widgets/empty_state.dart' • illico_mobile/lib/features/admin/presentation/pages/admin_livraisons_page.dart:4:8 • unused_import
+warning • Unused import: '../../../../core/widgets/error_display.dart' • illico_mobile/lib/features/admin/presentation/pages/admin_livraisons_page.dart:5:8 • unused_import
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/features/admin/presentation/pages/admin_livreurs_page.dart:31:45 • unnecessary_underscores
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/admin/presentation/pages/admin_livreurs_page.dart:56:59 • deprecated_member_use
+warning • Unused import: '../../../../core/widgets/empty_state.dart' • illico_mobile/lib/features/admin/presentation/pages/admin_points_page.dart:4:8 • unused_import
+warning • Unused import: '../../../../core/widgets/error_display.dart' • illico_mobile/lib/features/admin/presentation/pages/admin_points_page.dart:5:8 • unused_import
+warning • Unused import: '../../../../core/widgets/empty_state.dart' • illico_mobile/lib/features/admin/presentation/pages/admin_tarifs_page.dart:4:8 • unused_import
+warning • Unused import: '../../../../core/widgets/error_display.dart' • illico_mobile/lib/features/admin/presentation/pages/admin_tarifs_page.dart:5:8 • unused_import
+warning • Unused import: '../../../../core/widgets/empty_state.dart' • illico_mobile/lib/features/admin/presentation/pages/admin_transactions_page.dart:4:8 • unused_import
+warning • Unused import: '../../../../core/widgets/error_display.dart' • illico_mobile/lib/features/admin/presentation/pages/admin_transactions_page.dart:5:8 • unused_import
+warning • Unused import: '../../../../core/widgets/empty_state.dart' • illico_mobile/lib/features/admin/presentation/pages/admin_zones_page.dart:4:8 • unused_import
+warning • Unused import: '../../../../core/widgets/error_display.dart' • illico_mobile/lib/features/admin/presentation/pages/admin_zones_page.dart:5:8 • unused_import
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/admin/presentation/widgets/admin_shell.dart:67:73 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/admin/presentation/widgets/admin_shell.dart:85:54 • deprecated_member_use
+   info • The imported package 'http_parser' isn't a dependency of the importing package • illico_mobile/lib/features/auth/data/datasources/auth_remote_datasource.dart:2:8 • depend_on_referenced_packages
+   info • Field overrides a field inherited from 'LocationEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:8:26 • overridden_fields
+   info • Field overrides a field inherited from 'LocationEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:9:32 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:18:49 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:19:26 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:20:26 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:21:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:22:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:23:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:24:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:25:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:26:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:28:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:29:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:30:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:31:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:32:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:33:25 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:34:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:35:25 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:36:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_mobile/lib/features/auth/data/models/user_model.dart:38:35 • overridden_fields
+   info • Constructors for public widgets should have a named 'key' parameter • illico_mobile/lib/features/auth/presentation/pages/client_auth_page.dart:101:9 • use_key_in_widget_constructors
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/pages/client_auth_page.dart:389:48 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/pages/client_auth_page.dart:789:46 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/pages/client_auth_page.dart:792:48 • deprecated_member_use
+warning • Unused import: '../../../../core/utils/validators.dart' • illico_mobile/lib/features/auth/presentation/pages/client_register_page.dart:7:8 • unused_import
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/pages/client_register_page.dart:120:67 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/pages/livreur_auth_page.dart:209:46 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/pages/livreur_auth_page.dart:212:48 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/pages/livreur_auth_page.dart:550:35 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/pages/livreur_auth_page.dart:564:42 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/pages/livreur_auth_page.dart:626:44 • deprecated_member_use
+warning • Unused import: '../../../../core/config/app_config.dart' • illico_mobile/lib/features/auth/presentation/pages/login_page.dart:7:8 • unused_import
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/pages/login_page.dart:233:47 • deprecated_member_use
+warning • Unused import: 'dart:io' • illico_mobile/lib/features/auth/presentation/pages/profile_page.dart:1:8 • unused_import
+   info • Don't use 'BuildContext's across async gaps • illico_mobile/lib/features/auth/presentation/pages/profile_page.dart:94:28 • use_build_context_synchronously
+warning • The receiver can't be null, so the null-aware operator '?.' is unnecessary • illico_mobile/lib/features/auth/presentation/pages/profile_page.dart:229:85 • invalid_null_aware_operator
+warning • The receiver can't be null, so the null-aware operator '?.' is unnecessary • illico_mobile/lib/features/auth/presentation/pages/profile_page.dart:230:84 • invalid_null_aware_operator
+warning • The receiver can't be null, so the null-aware operator '?.' is unnecessary • illico_mobile/lib/features/auth/presentation/pages/profile_page.dart:231:89 • invalid_null_aware_operator
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/pages/role_selection_page.dart:211:46 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/pages/role_selection_page.dart:224:39 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/pages/role_selection_page.dart:248:45 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/pages/role_selection_page.dart:261:53 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/pages/role_selection_page.dart:271:55 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/pages/splash_page.dart:128:39 • deprecated_member_use
+   info • Constructors for public widgets should have a named 'key' parameter • illico_mobile/lib/features/auth/presentation/widgets/shared_widget.dart:17:9 • use_key_in_widget_constructors
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/widgets/shared_widget.dart:48:41 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/widgets/shared_widget.dart:71:35 • deprecated_member_use
+   info • Constructors for public widgets should have a named 'key' parameter • illico_mobile/lib/features/auth/presentation/widgets/shared_widget.dart:86:9 • use_key_in_widget_constructors
+   info • Constructors for public widgets should have a named 'key' parameter • illico_mobile/lib/features/auth/presentation/widgets/shared_widget.dart:174:9 • use_key_in_widget_constructors
+   info • Constructors for public widgets should have a named 'key' parameter • illico_mobile/lib/features/auth/presentation/widgets/shared_widget.dart:236:9 • use_key_in_widget_constructors
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/widgets/shared_widget.dart:253:42 • deprecated_member_use
+   info • Constructors for public widgets should have a named 'key' parameter • illico_mobile/lib/features/auth/presentation/widgets/shared_widget.dart:290:9 • use_key_in_widget_constructors
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/widgets/shared_widget.dart:297:40 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/widgets/shared_widget.dart:300:44 • deprecated_member_use
+   info • Constructors for public widgets should have a named 'key' parameter • illico_mobile/lib/features/auth/presentation/widgets/shared_widget.dart:324:9 • use_key_in_widget_constructors
+   info • Constructors for public widgets should have a named 'key' parameter • illico_mobile/lib/features/auth/presentation/widgets/shared_widget.dart:354:9 • use_key_in_widget_constructors
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/auth/presentation/widgets/shared_widget.dart:371:43 • deprecated_member_use
+   info • Field overrides a field inherited from 'PointAdresse' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:8:16 • overridden_fields
+   info • Field overrides a field inherited from 'PointAdresse' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:10:16 • overridden_fields
+   info • Field overrides a field inherited from 'PointAdresse' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:12:16 • overridden_fields
+   info • Field overrides a field inherited from 'PointAdresse' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:14:22 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:35:17 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:38:17 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:41:17 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:43:17 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:46:22 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:49:22 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:52:17 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:54:16 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:57:17 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:59:16 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:61:16 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:63:17 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:65:17 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:68:14 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:70:17 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:72:17 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:74:17 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:76:17 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:78:17 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:80:14 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:82:14 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:84:16 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:86:19 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_mobile/lib/features/livraison/data/models/livraison_model.dart:88:19 • overridden_fields
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livraison/presentation/pages/client_home_page.dart:394:43 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livraison/presentation/pages/client_home_page.dart:489:37 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livraison/presentation/pages/client_home_page.dart:522:43 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livraison/presentation/pages/create_livraison_page.dart:244:39 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livraison/presentation/pages/create_livraison_page.dart:332:37 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livraison/presentation/pages/create_livraison_page.dart:334:56 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • illico_mobile/lib/features/livraison/presentation/pages/create_livraison_page.dart:485:11 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livraison/presentation/pages/create_livraison_page.dart:718:185 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livraison/presentation/pages/create_livraison_page.dart:755:73 • deprecated_member_use
+warning • The value of the field '_otpLoading' isn't used • illico_mobile/lib/features/livraison/presentation/pages/livraison_detail_page.dart:30:8 • unused_field
+warning • The declaration '_validateOtp' isn't referenced • illico_mobile/lib/features/livraison/presentation/pages/livraison_detail_page.dart:51:16 • unused_element
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livraison/presentation/pages/livraison_list_page.dart:338:53 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livraison/presentation/pages/livraison_list_page.dart:348:37 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livraison/presentation/pages/livraison_list_page.dart:376:53 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livraison/presentation/pages/livraison_list_page.dart:408:47 • deprecated_member_use
+   info • Statements in an if should be enclosed in a block • illico_mobile/lib/features/livraison/presentation/providers/livraison_provider.dart:193:34 • curly_braces_in_flow_control_structures
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livreur/presentation/pages/available_deliveries_page.dart:75:48 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livreur/presentation/pages/livreur_map_page.dart:87:44 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livreur/presentation/pages/livreur_map_page.dart:112:50 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livreur/presentation/pages/livreur_map_page.dart:112:82 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livreur/presentation/pages/livreur_map_page.dart:115:52 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livreur/presentation/pages/livreur_map_page.dart:115:84 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livreur/presentation/pages/livreur_stats_page.dart:84:33 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livreur/presentation/pages/livreur_stats_page.dart:95:28 • deprecated_member_use
+   info • 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre • illico_mobile/lib/features/livreur/presentation/pages/missions_page.dart:35:17 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livreur/presentation/pages/missions_page.dart:122:68 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livreur/presentation/pages/missions_page.dart:191:71 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livreur/presentation/pages/missions_page.dart:229:68 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/livreur/presentation/pages/missions_page.dart:274:65 • deprecated_member_use
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/features/notification/presentation/pages/notifications_list_page.dart:38:43 • unnecessary_underscores
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/notification/presentation/pages/notifications_list_page.dart:89:69 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/notification/presentation/pages/notifications_list_page.dart:96:52 • deprecated_member_use
+   info • Use the null-aware marker '?' rather than a null check via an 'if' • illico_mobile/lib/features/point_illico/data/datasources/point_illico_remote_datasource.dart:30:37 • use_null_aware_elements
+warning • Unused import: '../../../../core/widgets/loading_button.dart' • illico_mobile/lib/features/point_illico/presentation/pages/point_colis_page.dart:9:8 • unused_import
+   info • Statements in an if should be enclosed in a block • illico_mobile/lib/features/point_illico/presentation/pages/point_colis_page.dart:97:19 • curly_braces_in_flow_control_structures
+   info • Statements in an if should be enclosed in a block • illico_mobile/lib/features/point_illico/presentation/pages/point_colis_page.dart:99:19 • curly_braces_in_flow_control_structures
+   info • Statements in an if should be enclosed in a block • illico_mobile/lib/features/point_illico/presentation/pages/point_colis_page.dart:105:19 • curly_braces_in_flow_control_structures
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/features/point_illico/presentation/pages/point_colis_page.dart:112:41 • unnecessary_underscores
+   info • Statements in an if should be enclosed in a block • illico_mobile/lib/features/point_illico/presentation/pages/point_colis_page.dart:371:19 • curly_braces_in_flow_control_structures
+   info • Field overrides a field inherited from 'VehiculeEntity' • illico_mobile/lib/features/vehicule/data/models/vehicule_model.dart:7:49 • overridden_fields
+   info • Field overrides a field inherited from 'VehiculeEntity' • illico_mobile/lib/features/vehicule/data/models/vehicule_model.dart:8:26 • overridden_fields
+   info • Field overrides a field inherited from 'VehiculeEntity' • illico_mobile/lib/features/vehicule/data/models/vehicule_model.dart:9:26 • overridden_fields
+   info • Field overrides a field inherited from 'VehiculeEntity' • illico_mobile/lib/features/vehicule/data/models/vehicule_model.dart:10:26 • overridden_fields
+   info • Field overrides a field inherited from 'VehiculeEntity' • illico_mobile/lib/features/vehicule/data/models/vehicule_model.dart:11:26 • overridden_fields
+   info • Field overrides a field inherited from 'VehiculeEntity' • illico_mobile/lib/features/vehicule/data/models/vehicule_model.dart:12:27 • overridden_fields
+   info • Field overrides a field inherited from 'VehiculeEntity' • illico_mobile/lib/features/vehicule/data/models/vehicule_model.dart:13:24 • overridden_fields
+   info • Unnecessary use of multiple underscores • illico_mobile/lib/features/vehicule/presentation/pages/vehicule_list_page.dart:46:45 • unnecessary_underscores
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/vehicule/presentation/pages/vehicule_list_page.dart:78:64 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/vehicule/presentation/pages/vehicule_list_page.dart:91:56 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_mobile/lib/features/vehicule/presentation/pages/vehicule_list_page.dart:91:92 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • illico_mobile/lib/features/vehicule/presentation/pages/vehicule_list_page.dart:160:11 • deprecated_member_use
+   info • Field overrides a field inherited from 'ZoneEntity' • illico_mobile/lib/features/zone/data/models/zone_model.dart:7:49 • overridden_fields
+   info • Field overrides a field inherited from 'ZoneEntity' • illico_mobile/lib/features/zone/data/models/zone_model.dart:8:26 • overridden_fields
+   info • Field overrides a field inherited from 'ZoneEntity' • illico_mobile/lib/features/zone/data/models/zone_model.dart:9:27 • overridden_fields
+   info • Field overrides a field inherited from 'ZoneEntity' • illico_mobile/lib/features/zone/data/models/zone_model.dart:10:26 • overridden_fields
+   info • Field overrides a field inherited from 'ZoneEntity' • illico_mobile/lib/features/zone/data/models/zone_model.dart:11:24 • overridden_fields
+warning • Unused import: 'package:illico_mobile/main.dart' • illico_mobile/test/widget_test.dart:11:8 • unused_import
+warning • Unused import: 'package:fpdart/fpdart.dart' • illico_web/lib/core/api/api_client.dart:5:8 • unused_import
+   info • Unnecessary use of multiple underscores • illico_web/lib/core/config/app_router.dart:83:22 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_web/lib/core/config/app_router.dart:90:22 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_web/lib/core/config/app_router.dart:97:22 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_web/lib/core/config/app_router.dart:104:22 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_web/lib/core/config/app_router.dart:111:22 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_web/lib/core/config/app_router.dart:127:26 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_web/lib/core/config/app_router.dart:133:26 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_web/lib/core/config/app_router.dart:139:26 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_web/lib/core/config/app_router.dart:145:26 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_web/lib/core/config/app_router.dart:151:26 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_web/lib/core/config/app_router.dart:157:26 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_web/lib/core/config/app_router.dart:163:26 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_web/lib/core/config/app_router.dart:169:26 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_web/lib/core/config/app_router.dart:175:26 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_web/lib/core/config/app_router.dart:181:26 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • illico_web/lib/core/config/app_router.dart:238:35 • unnecessary_underscores
+warning • The declaration '_$identity' isn't referenced • illico_web/lib/core/errors/failures.freezed.dart:11:3 • unused_element
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/core/widgets/empty_state.dart:26:42 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/core/widgets/statut_badge.dart:25:23 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/core/widgets/statut_badge.dart:27:42 • deprecated_member_use
+   info • Unnecessary use of multiple underscores • illico_web/lib/features/admin/presentation/pages/admin_colis_page.dart:75:37 • unnecessary_underscores
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_colis_page.dart:94:46 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_colis_page.dart:118:46 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_dashboard_page.dart:167:48 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_dashboard_page.dart:296:32 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_forfaits_page.dart:161:32 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_forfaits_page.dart:442:50 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_forfaits_page.dart:604:47 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_forfaits_page.dart:607:51 • deprecated_member_use
+   info • The variable name '_Label' isn't a lowerCamelCase identifier • illico_web/lib/features/admin/presentation/pages/admin_forfaits_page.dart:655:10 • non_constant_identifier_names
+  error • 'AdminLivraisonsPage.build' ('Widget Function(BuildContext)') isn't a valid override of 'ConsumerWidget.build' ('Widget Function(BuildContext, WidgetRef)') • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:289:10 • invalid_override
+  error • Undefined name 'ref' • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:290:19 • undefined_identifier
+  error • Undefined name '_selectedStatut' • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:293:9 • undefined_identifier
+  error • Undefined name '_selectedStatut' • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:293:36 • undefined_identifier
+  error • Undefined name '_selectedStatut' • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:294:56 • undefined_identifier
+  error • Undefined name 'ref' • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:304:17 • undefined_identifier
+  error • Undefined name 'ref' • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:312:65 • undefined_identifier
+  error • Undefined name '_statuts' • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:339:31 • undefined_identifier
+  error • Undefined name '_selectedStatut' • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:340:43 • undefined_identifier
+  error • Undefined name '_selectedStatut' • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:340:92 • undefined_identifier
+  error • The method 'setState' isn't defined for the type 'AdminLivraisonsPage' • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:347:29 • undefined_method
+  error • Undefined name '_selectedStatut' • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:347:44 • undefined_identifier
+  error • Undefined name 'ref' • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:365:19 • undefined_identifier
+   info • Unnecessary use of multiple underscores • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:375:37 • unnecessary_underscores
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:389:40 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:423:40 • deprecated_member_use
+  error • Undefined name 'ref' • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:439:55 • undefined_identifier
+  error • Expected to find ';' • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:477:11 • expected_token
+  error • Expected an identifier • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:477:12 • missing_identifier
+  error • Unexpected text ';' • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:477:12 • unexpected_token
+  error • Expected to find ')' • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:478:9 • expected_token
+  error • Expected to find '}' • illico_web/lib/features/admin/presentation/pages/admin_livraisons_page.dart:478:9 • expected_token
+   info • Unnecessary use of multiple underscores • illico_web/lib/features/admin/presentation/pages/admin_livreurs_page.dart:80:37 • unnecessary_underscores
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_livreurs_page.dart:169:54 • deprecated_member_use
+   info • Unnecessary use of multiple underscores • illico_web/lib/features/admin/presentation/pages/admin_points_page.dart:87:37 • unnecessary_underscores
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_points_page.dart:101:58 • deprecated_member_use
+   info • 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre • illico_web/lib/features/admin/presentation/pages/admin_points_page.dart:125:31 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_tarifs_page.dart:149:51 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_tarifs_page.dart:150:57 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_tarifs_page.dart:198:50 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_tarifs_page.dart:199:50 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_tarifs_page.dart:515:48 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_tarifs_page.dart:613:43 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_tarifs_page.dart:615:62 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_tarifs_page.dart:844:31 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_tarifs_page.dart:846:50 • deprecated_member_use
+   info • Unnecessary use of multiple underscores • illico_web/lib/features/admin/presentation/pages/admin_transactions_page.dart:75:37 • unnecessary_underscores
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_transactions_page.dart:94:46 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_transactions_page.dart:118:46 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_zones_page.dart:148:49 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_zones_page.dart:184:54 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_zones_page.dart:187:58 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_zones_page.dart:353:47 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_zones_page.dart:529:31 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/pages/admin_zones_page.dart:531:50 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/widgets/admin_shell.dart:67:73 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/admin/presentation/widgets/admin_shell.dart:85:54 • deprecated_member_use
+warning • The value of the local variable 'user' isn't used • illico_web/lib/features/auth/data/datasources/auth_remote_datasource.dart:63:13 • unused_local_variable
+warning • The value of the local variable 'actif' isn't used • illico_web/lib/features/auth/data/datasources/auth_remote_datasource.dart:64:13 • unused_local_variable
+   info • Field overrides a field inherited from 'LocationEntity' • illico_web/lib/features/auth/data/models/user_model.dart:8:26 • overridden_fields
+   info • Field overrides a field inherited from 'LocationEntity' • illico_web/lib/features/auth/data/models/user_model.dart:9:32 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_web/lib/features/auth/data/models/user_model.dart:18:49 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_web/lib/features/auth/data/models/user_model.dart:19:26 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_web/lib/features/auth/data/models/user_model.dart:20:26 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_web/lib/features/auth/data/models/user_model.dart:21:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_web/lib/features/auth/data/models/user_model.dart:22:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_web/lib/features/auth/data/models/user_model.dart:23:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_web/lib/features/auth/data/models/user_model.dart:24:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_web/lib/features/auth/data/models/user_model.dart:25:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_web/lib/features/auth/data/models/user_model.dart:26:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_web/lib/features/auth/data/models/user_model.dart:28:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_web/lib/features/auth/data/models/user_model.dart:29:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_web/lib/features/auth/data/models/user_model.dart:30:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_web/lib/features/auth/data/models/user_model.dart:31:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_web/lib/features/auth/data/models/user_model.dart:32:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_web/lib/features/auth/data/models/user_model.dart:33:25 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_web/lib/features/auth/data/models/user_model.dart:34:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_web/lib/features/auth/data/models/user_model.dart:35:25 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_web/lib/features/auth/data/models/user_model.dart:36:27 • overridden_fields
+   info • Field overrides a field inherited from 'UserEntity' • illico_web/lib/features/auth/data/models/user_model.dart:38:35 • overridden_fields
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/admin_auth_page.dart:146:57 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/admin_auth_page.dart:150:36 • deprecated_member_use
+   info • Statements in an if should be enclosed in a block • illico_web/lib/features/auth/presentation/pages/admin_auth_page.dart:202:37 • curly_braces_in_flow_control_structures
+   info • Statements in an if should be enclosed in a block • illico_web/lib/features/auth/presentation/pages/admin_auth_page.dart:204:37 • curly_braces_in_flow_control_structures
+   info • Statements in an if should be enclosed in a block • illico_web/lib/features/auth/presentation/pages/admin_auth_page.dart:235:37 • curly_braces_in_flow_control_structures
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/admin_auth_page.dart:368:35 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/admin_auth_page.dart:388:43 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/admin_auth_page.dart:398:43 • deprecated_member_use
+warning • Unused import: '../../../../core/utils/validators.dart' • illico_web/lib/features/auth/presentation/pages/client_register_page.dart:7:8 • unused_import
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/client_register_page.dart:120:67 • deprecated_member_use
+warning • Unused import: '../../../../core/config/app_config.dart' • illico_web/lib/features/auth/presentation/pages/login_page.dart:7:8 • unused_import
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/login_page.dart:233:47 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/point_auth_page.dart:96:60 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/point_auth_page.dart:99:62 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/point_auth_page.dart:469:48 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/point_auth_page.dart:472:50 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • illico_web/lib/features/auth/presentation/pages/point_auth_page.dart:707:15 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/point_auth_page.dart:843:46 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/point_auth_page.dart:913:35 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/point_auth_page.dart:936:35 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/point_auth_page.dart:952:53 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/point_auth_page.dart:958:45 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/splash_page.dart:123:39 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/web_landing_page.dart:119:35 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/web_landing_page.dart:144:35 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/web_landing_page.dart:146:54 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/web_landing_page.dart:188:53 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/web_landing_page.dart:224:33 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/web_landing_page.dart:435:49 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/web_landing_page.dart:451:39 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/pages/web_landing_page.dart:491:56 • deprecated_member_use
+   info • Constructors for public widgets should have a named 'key' parameter • illico_web/lib/features/auth/presentation/widgets/shared_widget.dart:17:9 • use_key_in_widget_constructors
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/widgets/shared_widget.dart:48:41 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/widgets/shared_widget.dart:71:35 • deprecated_member_use
+   info • Constructors for public widgets should have a named 'key' parameter • illico_web/lib/features/auth/presentation/widgets/shared_widget.dart:86:9 • use_key_in_widget_constructors
+   info • Constructors for public widgets should have a named 'key' parameter • illico_web/lib/features/auth/presentation/widgets/shared_widget.dart:174:9 • use_key_in_widget_constructors
+   info • Constructors for public widgets should have a named 'key' parameter • illico_web/lib/features/auth/presentation/widgets/shared_widget.dart:236:9 • use_key_in_widget_constructors
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/widgets/shared_widget.dart:253:42 • deprecated_member_use
+   info • Constructors for public widgets should have a named 'key' parameter • illico_web/lib/features/auth/presentation/widgets/shared_widget.dart:290:9 • use_key_in_widget_constructors
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/widgets/shared_widget.dart:297:40 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/widgets/shared_widget.dart:300:44 • deprecated_member_use
+   info • Constructors for public widgets should have a named 'key' parameter • illico_web/lib/features/auth/presentation/widgets/shared_widget.dart:324:9 • use_key_in_widget_constructors
+   info • Constructors for public widgets should have a named 'key' parameter • illico_web/lib/features/auth/presentation/widgets/shared_widget.dart:354:9 • use_key_in_widget_constructors
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/auth/presentation/widgets/shared_widget.dart:371:43 • deprecated_member_use
+   info • Field overrides a field inherited from 'PointAdresse' • illico_web/lib/features/livraison/data/models/livraison_model.dart:7:26 • overridden_fields
+   info • Field overrides a field inherited from 'PointAdresse' • illico_web/lib/features/livraison/data/models/livraison_model.dart:8:26 • overridden_fields
+   info • Field overrides a field inherited from 'PointAdresse' • illico_web/lib/features/livraison/data/models/livraison_model.dart:9:26 • overridden_fields
+   info • Field overrides a field inherited from 'PointAdresse' • illico_web/lib/features/livraison/data/models/livraison_model.dart:10:32 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:24:49 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:25:80 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:26:80 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:27:27 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:28:89 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:29:89 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:30:80 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:31:26 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:32:80 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:33:26 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:34:26 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:35:27 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:36:27 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:37:52 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:38:27 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:39:27 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:40:24 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:41:24 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:42:26 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:43:29 • overridden_fields
+   info • Field overrides a field inherited from 'LivraisonEntity' • illico_web/lib/features/livraison/data/models/livraison_model.dart:44:29 • overridden_fields
+warning • Unused import: '../../../notification/data/datasources/notification_remote_datasource.dart' • illico_web/lib/features/livraison/presentation/pages/client_home_page.dart:8:8 • unused_import
+warning • Unused import: '../../../../core/api/api_client.dart' • illico_web/lib/features/livraison/presentation/pages/client_home_page.dart:9:8 • unused_import
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/livraison/presentation/pages/client_home_page.dart:53:69 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/livraison/presentation/pages/client_home_page.dart:72:66 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/livraison/presentation/pages/client_home_page.dart:141:48 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/livraison/presentation/pages/client_home_page.dart:142:45 • deprecated_member_use
+   info • Statements in an if should be enclosed in a block • illico_web/lib/features/livraison/presentation/pages/livraison_detail_page.dart:103:7 • curly_braces_in_flow_control_structures
+   info • Statements in an if should be enclosed in a block • illico_web/lib/features/livraison/presentation/pages/livraison_detail_page.dart:105:7 • curly_braces_in_flow_control_structures
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/livraison/presentation/pages/livraison_detail_page.dart:132:43 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/livraison/presentation/pages/livraison_detail_page.dart:156:45 • deprecated_member_use
+   info • Unnecessary use of multiple underscores • illico_web/lib/features/livraison/presentation/pages/livraison_list_page.dart:49:47 • unnecessary_underscores
+warning • The declaration '_clientNom' isn't referenced • illico_web/lib/features/livraison/presentation/pages/livraison_list_page.dart:86:14 • unused_element
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/livraison/presentation/pages/livraison_list_page.dart:103:68 • deprecated_member_use
+warning • Unused import: '../../domain/usecases/create_livraison_usecase.dart' • illico_web/lib/features/livraison/presentation/providers/livraison_provider.dart:8:8 • unused_import
+   info • 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre • illico_web/lib/features/livreur/presentation/pages/missions_page.dart:31:15 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/livreur/presentation/pages/missions_page.dart:74:71 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/livreur/presentation/pages/missions_page.dart:112:68 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/livreur/presentation/pages/missions_page.dart:157:65 • deprecated_member_use
+   info • Use the null-aware marker '?' rather than a null check via an 'if' • illico_web/lib/features/point_illico/data/datasources/point_illico_remote_datasource.dart:30:37 • use_null_aware_elements
+warning • Unused import: '../../../../core/widgets/loading_button.dart' • illico_web/lib/features/point_illico/presentation/pages/point_colis_page.dart:10:8 • unused_import
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • illico_web/lib/features/point_illico/presentation/pages/point_colis_page.dart:61:15 • use_build_context_synchronously
+   info • Statements in an if should be enclosed in a block • illico_web/lib/features/point_illico/presentation/pages/point_colis_page.dart:135:19 • curly_braces_in_flow_control_structures
+   info • Statements in an if should be enclosed in a block • illico_web/lib/features/point_illico/presentation/pages/point_colis_page.dart:137:19 • curly_braces_in_flow_control_structures
+   info • Statements in an if should be enclosed in a block • illico_web/lib/features/point_illico/presentation/pages/point_colis_page.dart:143:19 • curly_braces_in_flow_control_structures
+   info • Unnecessary use of multiple underscores • illico_web/lib/features/point_illico/presentation/pages/point_colis_page.dart:150:41 • unnecessary_underscores
+   info • Statements in an if should be enclosed in a block • illico_web/lib/features/point_illico/presentation/pages/point_colis_page.dart:409:19 • curly_braces_in_flow_control_structures
+   info • Field overrides a field inherited from 'VehiculeEntity' • illico_web/lib/features/vehicule/data/models/vehicule_model.dart:7:49 • overridden_fields
+   info • Field overrides a field inherited from 'VehiculeEntity' • illico_web/lib/features/vehicule/data/models/vehicule_model.dart:8:26 • overridden_fields
+   info • Field overrides a field inherited from 'VehiculeEntity' • illico_web/lib/features/vehicule/data/models/vehicule_model.dart:9:26 • overridden_fields
+   info • Field overrides a field inherited from 'VehiculeEntity' • illico_web/lib/features/vehicule/data/models/vehicule_model.dart:10:26 • overridden_fields
+   info • Field overrides a field inherited from 'VehiculeEntity' • illico_web/lib/features/vehicule/data/models/vehicule_model.dart:11:26 • overridden_fields
+   info • Field overrides a field inherited from 'VehiculeEntity' • illico_web/lib/features/vehicule/data/models/vehicule_model.dart:12:27 • overridden_fields
+   info • Field overrides a field inherited from 'VehiculeEntity' • illico_web/lib/features/vehicule/data/models/vehicule_model.dart:13:24 • overridden_fields
+   info • Unnecessary use of multiple underscores • illico_web/lib/features/vehicule/presentation/pages/vehicule_list_page.dart:55:37 • unnecessary_underscores
+warning • The declaration '_deleteVehicule' isn't referenced • illico_web/lib/features/vehicule/presentation/pages/vehicule_list_page.dart:122:8 • unused_element
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • illico_web/lib/features/vehicule/presentation/pages/vehicule_list_page.dart:164:42 • deprecated_member_use
+   info • 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre • illico_web/lib/features/vehicule/presentation/pages/vehicule_list_page.dart:217:15 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • illico_web/lib/features/vehicule/presentation/pages/vehicule_list_page.dart:335:13 • deprecated_member_use
+   info • Field overrides a field inherited from 'ZoneEntity' • illico_web/lib/features/zone/data/models/zone_model.dart:7:49 • overridden_fields
+   info • Field overrides a field inherited from 'ZoneEntity' • illico_web/lib/features/zone/data/models/zone_model.dart:8:26 • overridden_fields
+   info • Field overrides a field inherited from 'ZoneEntity' • illico_web/lib/features/zone/data/models/zone_model.dart:9:27 • overridden_fields
+   info • Field overrides a field inherited from 'ZoneEntity' • illico_web/lib/features/zone/data/models/zone_model.dart:10:26 • overridden_fields
+   info • Field overrides a field inherited from 'ZoneEntity' • illico_web/lib/features/zone/data/models/zone_model.dart:11:24 • overridden_fields
+warning • Unused import: 'package:illico_web/main.dart' • illico_web/test/widget_test.dart:11:8 • unused_import
+
+406 issues found. (ran in 4.0s)

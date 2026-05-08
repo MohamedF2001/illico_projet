@@ -4,10 +4,17 @@ part 'livraison_model.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class PointAdresseModel extends PointAdresse {
+  @override final String nomContact;
   @override final String adresse;
+  @override final String telephoneContact;
   @override final List<double> coordinates;
-  const PointAdresseModel({required this.adresse, required this.coordinates})
-      : super(adresse: adresse, coordinates: coordinates);
+  const PointAdresseModel({
+    required this.nomContact,
+    required this.adresse,
+    required this.telephoneContact,
+    required this.coordinates
+  })
+      : super(nomContact: nomContact, adresse: adresse, telephoneContact: telephoneContact, coordinates: coordinates);
   factory PointAdresseModel.fromJson(Map<String, dynamic> j) => _$PointAdresseModelFromJson(j);
   Map<String, dynamic> toJson() => _$PointAdresseModelToJson(this);
 }
@@ -17,6 +24,7 @@ class LivraisonModel extends LivraisonEntity {
   @JsonKey(name: '_id') @override final String? id;
   @JsonKey(fromJson: _dynFromJson, toJson: _dynToJson) @override final dynamic client;
   @JsonKey(fromJson: _dynFromJson, toJson: _dynToJson) @override final dynamic livreur;
+  @override final String? codeSuivi;
   @JsonKey(fromJson: _pointFromJson, toJson: _pointToJson) @override final PointAdresse pointDepart;
   @JsonKey(fromJson: _pointFromJson, toJson: _pointToJson) @override final PointAdresse pointArrivee;
   @JsonKey(fromJson: _dynFromJson, toJson: _dynToJson) @override final dynamic vehicule;
@@ -37,6 +45,7 @@ class LivraisonModel extends LivraisonEntity {
 
   const LivraisonModel({
     this.id, this.client, this.livreur,
+    this.codeSuivi,
     required this.pointDepart, required this.pointArrivee,
     this.vehicule, required this.mode, this.pointIllico,
     this.statut = 'en_attente', required this.prixEstime,
@@ -46,6 +55,7 @@ class LivraisonModel extends LivraisonEntity {
     this.dateCreation, this.dateLivraison,
   }) : super(
     id: id, client: client, livreur: livreur,
+    codeSuivi: codeSuivi,
     pointDepart: pointDepart, pointArrivee: pointArrivee,
     vehicule: vehicule, mode: mode, pointIllico: pointIllico,
     statut: statut, prixEstime: prixEstime, prixFinal: prixFinal,
@@ -62,7 +72,15 @@ class LivraisonModel extends LivraisonEntity {
   static dynamic _dynToJson(dynamic v) => v is Map ? v : v?.toString();
   static PointAdresse _pointFromJson(dynamic v) {
     if (v is Map<String, dynamic>) return PointAdresseModel.fromJson(v);
-    return const PointAdresseModel(adresse: '', coordinates: [0, 0]);
+    return const PointAdresseModel(nomContact: '', adresse: '', telephoneContact: '', coordinates: [0, 0]);
   }
-  static dynamic _pointToJson(PointAdresse v) => v is PointAdresseModel ? v.toJson() : {'adresse': v.adresse, 'coordinates': v.coordinates};
+  static dynamic _pointToJson(PointAdresse v) {
+    if (v is PointAdresseModel) return v.toJson();
+    return {
+      'nomContact': v.nomContact,
+      'adresse': v.adresse,
+      'telephoneContact': v.telephoneContact,
+      'coordinates': v.coordinates
+    };
+  }
 }
