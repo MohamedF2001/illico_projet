@@ -5,13 +5,32 @@ import '../../../../core/config/app_theme.dart';
 import '../../../../core/utils/formatters.dart';
 import '../providers/livraison_provider.dart';
 
-class LivraisonsListPage extends ConsumerWidget {
+class LivraisonsListPage extends ConsumerStatefulWidget {
   const LivraisonsListPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LivraisonsListPage> createState() => _LivraisonsListPageState();
+}
+
+class _LivraisonsListPageState extends ConsumerState<LivraisonsListPage> {
+  String? _selectedStatut;
+
+  final Map<String, String> _statuts = {
+    'Tous': 'tous',
+    'En attente': 'en_attente',
+    'Affecté': 'affecté',
+    'Livré': 'livré',
+    'Annulé': 'annulé',
+  };
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(livraisonListProvider);
-    final livraisons = state.items;
+    var livraisons = state.items;
+
+    if (_selectedStatut != null && _selectedStatut != 'tous') {
+      livraisons = livraisons.where((l) => l.statut == _selectedStatut).toList();
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -44,17 +63,60 @@ class LivraisonsListPage extends ConsumerWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(20, 24, 20, 16),
-            child: Text(
-              'Historiques',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w900,
-                color: Colors.black,
-              ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Historiques',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black,
+                  ),
+                ),
+                Text(
+                  '${livraisons.length} colis',
+                  style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.w600),
+                ),
+              ],
             ),
           ),
+
+          // FILTRES DE STATUT
+          SizedBox(
+            height: 40,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              children: _statuts.entries.map((e) {
+                final isSelected = (_selectedStatut == null && e.value == 'tous') || _selectedStatut == e.value;
+                return GestureDetector(
+                  onTap: () => setState(() => _selectedStatut = e.value),
+                  child: Container(
+                    margin: const EdgeInsets.only(right: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppColors.primary : const Color(0xFFF1F1F1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      e.key,
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : Colors.black87,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          const SizedBox(height: 16),
+
           Expanded(
             child: state.isLoading && livraisons.isEmpty
                 ? const Center(child: CircularProgressIndicator())

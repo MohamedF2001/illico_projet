@@ -18,6 +18,7 @@ class ProfilePage extends ConsumerStatefulWidget {
 class _ProfilePageState extends ConsumerState<ProfilePage> {
   bool _isEditing = false;
   late TextEditingController _nomController;
+  late TextEditingController _prenomController;
   late TextEditingController _emailController;
   late TextEditingController _adresseController;
 
@@ -25,7 +26,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   void initState() {
     super.initState();
     final user = ref.read(authProvider).user;
-    _nomController = TextEditingController(text: user?.nom);
+    final names = (user?.nom ?? '').split(' ');
+    _nomController = TextEditingController(text: names.isNotEmpty ? names.first : '');
+    _prenomController = TextEditingController(text: names.length > 1 ? names.sublist(1).join(' ') : '');
     _emailController = TextEditingController(text: user?.email);
     _adresseController = TextEditingController(text: user?.adresse);
   }
@@ -33,6 +36,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   @override
   void dispose() {
     _nomController.dispose();
+    _prenomController.dispose();
     _emailController.dispose();
     _adresseController.dispose();
     super.dispose();
@@ -81,7 +85,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
   Future<void> _saveProfile() async {
     final success = await ref.read(authProvider.notifier).updateProfile({
-      'nom': _nomController.text,
+      'nom': '${_nomController.text} ${_prenomController.text}'.trim(),
       'email': _emailController.text,
       'adresse': _adresseController.text,
     });
@@ -173,6 +177,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       children: [
                         if (_isEditing) ...[
                           _buildEditField('Nom', _nomController),
+                          const SizedBox(height: 16),
+                          _buildEditField('Prénom', _prenomController),
                           const SizedBox(height: 16),
                           _buildEditField('Email', _emailController),
                           const SizedBox(height: 16),

@@ -90,6 +90,68 @@ class ClientHomePage extends ConsumerWidget {
             ),
             const SizedBox(height: 20),
 
+            // ── Quick Actions / Tracking ────────────────────
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => context.push('/tracking'),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.info.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: AppColors.info.withOpacity(0.2)),
+                      ),
+                      child: const Column(
+                        children: [
+                          Icon(Icons.location_on_rounded, color: AppColors.info),
+                          SizedBox(height: 8),
+                          Text(
+                            'Suivre un colis',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                              color: AppColors.info,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => context.push('/wallet'),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.accent.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: AppColors.accent.withOpacity(0.2)),
+                      ),
+                      child: const Column(
+                        children: [
+                          Icon(Icons.account_balance_wallet_rounded, color: AppColors.accent),
+                          SizedBox(height: 8),
+                          Text(
+                            'Mon Portefeuille',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                              color: AppColors.accent,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+
             // ── Promo Banner ──────────────────────────────
             Container(
               width: double.infinity,
