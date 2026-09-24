@@ -324,6 +324,10 @@ class ClientHomePage extends ConsumerWidget {
             icon: const Icon(Icons.notifications_none, color: Colors.black),
             onPressed: () => context.push('/notifications'),
           ),
+          IconButton(
+              onPressed: () => context.push('/tracking'),
+              icon: const Icon(Icons.search)
+          )
         ],
       ),
       body: SingleChildScrollView(

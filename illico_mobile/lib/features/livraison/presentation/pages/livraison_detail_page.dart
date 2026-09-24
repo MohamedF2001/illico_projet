@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../core/api/api_client.dart';
 import '../../../../core/errors/failures.dart';
@@ -114,7 +115,19 @@ class _LivraisonDetailPageState extends ConsumerState<LivraisonDetailPage> {
     final isLivreur = user?.role == 'Livreur';
 
     return Scaffold(
-      appBar: AppBar(title: Text('Suivi Livraison #${l.codeSuivi ?? l.id?.substring(l.id!.length - 6) ?? '-'}')),
+      appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                // Fallback : retour au home ou missions
+                context.go('/livreur/missions');
+              }
+            },
+          ),
+          title: Text('Suivi Livraison #${l.codeSuivi ?? l.id?.substring(l.id!.length - 6) ?? '-'}')),
       body: RefreshIndicator(
         onRefresh: _load,
         child: SingleChildScrollView(
@@ -216,7 +229,7 @@ class _LivraisonDetailPageState extends ConsumerState<LivraisonDetailPage> {
               ),
               const SizedBox(height: 12),
 
-              if (isDone && l.noteLivreur == null) ...[
+              if (isDone && l.noteLivreur == null && !isLivreur) ...[
                 _SectionCard(
                   title: 'Noter le livreur',
                   child: Column(
@@ -261,9 +274,15 @@ class _LivraisonDetailPageState extends ConsumerState<LivraisonDetailPage> {
               const SizedBox(height: 12),
 
               _SectionCard(
-                title: 'Détails du colis',
+                title: 'Détails',
                 child: Column(
                   children: [
+                    _InfoRow(
+                        icon: Icons.directions_bike_outlined,
+                        label: 'Véhicule',
+                        value: l.vehicule['type']
+                    ),
+                    SizedBox(height: 8,),
                     _InfoRow(
                         icon: Icons.inventory_2_outlined,
                         label: 'Nature',
