@@ -5,16 +5,20 @@ part 'livraison_model.g.dart';
 @JsonSerializable(explicitToJson: true)
 class PointAdresseModel extends PointAdresse {
   @override
+  final String nomContact;
+  @override
   final String adresse;
   @override
   final String telephoneContact;
   @override
   final List<double> coordinates;
   const PointAdresseModel({
+    required this.nomContact,
     required this.adresse,
     required this.telephoneContact,
     required this.coordinates,
   }) : super(
+          nomContact: nomContact,
           adresse: adresse,
           telephoneContact: telephoneContact,
           coordinates: coordinates,
@@ -35,6 +39,8 @@ class LivraisonModel extends LivraisonEntity {
   @JsonKey(fromJson: _dynFromJson, toJson: _dynToJson)
   @override
   final dynamic livreur;
+  @override
+  final String? codeSuivi;
   @JsonKey(fromJson: _pointFromJson, toJson: _pointToJson)
   @override
   final PointAdresse pointDepart;
@@ -85,6 +91,7 @@ class LivraisonModel extends LivraisonEntity {
     this.id,
     this.client,
     this.livreur,
+    this.codeSuivi,
     required this.pointDepart,
     required this.pointArrivee,
     this.vehicule,
@@ -109,6 +116,7 @@ class LivraisonModel extends LivraisonEntity {
           id: id,
           client: client,
           livreur: livreur,
+          codeSuivi: codeSuivi,
           pointDepart: pointDepart,
           pointArrivee: pointArrivee,
           vehicule: vehicule,
@@ -140,14 +148,16 @@ class LivraisonModel extends LivraisonEntity {
   static PointAdresse _pointFromJson(dynamic v) {
     if (v is Map<String, dynamic>) return PointAdresseModel.fromJson(v);
     return const PointAdresseModel(
-        adresse: '', telephoneContact: '', coordinates: [0, 0]);
+        nomContact: '', adresse: '', telephoneContact: '', coordinates: [0, 0]);
   }
 
-  static dynamic _pointToJson(PointAdresse v) => v is PointAdresseModel
-      ? v.toJson()
-      : {
-          'adresse': v.adresse,
-          'telephoneContact': v.telephoneContact,
-          'coordinates': v.coordinates
-        };
+  static dynamic _pointToJson(PointAdresse v) {
+    if (v is PointAdresseModel) return v.toJson();
+    return {
+      'nomContact': v.nomContact,
+      'adresse': v.adresse,
+      'telephoneContact': v.telephoneContact,
+      'coordinates': v.coordinates
+    };
+  }
 }

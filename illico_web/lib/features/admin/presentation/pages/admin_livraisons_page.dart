@@ -7,8 +7,23 @@ import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/error_display.dart';
 import '../../../livraison/presentation/providers/livraison_provider.dart';
 
-class AdminLivraisonsPage extends ConsumerWidget {
+class AdminLivraisonsPage extends ConsumerStatefulWidget {
   const AdminLivraisonsPage({super.key});
+
+  @override
+  ConsumerState<AdminLivraisonsPage> createState() => _AdminLivraisonsPageState();
+}
+
+class _AdminLivraisonsPageState extends ConsumerState<AdminLivraisonsPage> {
+  String? _selectedStatut;
+
+  final Map<String, String> _statuts = {
+    'Tous': 'tous',
+    'En attente': 'en_attente',
+    'Affecté': 'affecté',
+    'Livré': 'livré',
+    'Annulé': 'annulé',
+  };
 
   void _showAddLivraisonForm(BuildContext context, WidgetRef ref) {
     showDialog(
@@ -226,7 +241,6 @@ class _Info extends StatelessWidget {
 }
 */
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/config/app_theme.dart';
@@ -235,17 +249,35 @@ import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/error_display.dart';
 import '../../../livraison/presentation/providers/livraison_provider.dart';
 
-class AdminLivraisonsPage extends ConsumerWidget {
+class AdminLivraisonsPage extends ConsumerStatefulWidget {
   const AdminLivraisonsPage({super.key});
+
+  @override
+  ConsumerState<AdminLivraisonsPage> createState() =>
+      _AdminLivraisonsPageState();
+}
+
+class _AdminLivraisonsPageState extends ConsumerState<AdminLivraisonsPage> {
+  String? _selectedStatut;
+
+  final Map<String, String> _statuts = {
+    'Tous': 'tous',
+    'En attente': 'en_attente',
+    'Affecté': 'affecté',
+    'Livré': 'livré',
+    'Annulé': 'annulé',
+  };
 
   void _showAddLivraisonForm(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
-      builder: (ctx) => _AddLivraisonDialog(onAdded: (body) {
-        ref.read(livraisonFormProvider.notifier).create(body).then((success) {
-          if (success) ref.read(livraisonListProvider.notifier).load();
-        });
-      }),
+      builder: (ctx) => _AddLivraisonDialog(
+        onAdded: (body) {
+          ref.read(livraisonFormProvider.notifier).create(body).then((success) {
+            if (success) ref.read(livraisonListProvider.notifier).load();
+          });
+        },
+      ),
     );
   }
 
@@ -257,11 +289,13 @@ class AdminLivraisonsPage extends ConsumerWidget {
         content: const Text('Voulez-vous supprimer cette livraison ?'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Annuler')),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Annuler'),
+          ),
           TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Supprimer')),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Supprimer'),
+          ),
         ],
       ),
     );
@@ -271,16 +305,23 @@ class AdminLivraisonsPage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final state = ref.watch(livraisonListProvider);
+    var livraisons = state.items;
+
+    if (_selectedStatut != null && _selectedStatut != 'tous') {
+      livraisons = livraisons
+          .where((l) => l.statut == _selectedStatut)
+          .toList();
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Livraisons'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () =>
-                ref.read(livraisonListProvider.notifier).load(),
+            onPressed: () => ref.read(livraisonListProvider.notifier).load(),
           ),
           // ✅ FIX 1 : Utilisation de SizedBox au lieu de Padding + ConstrainedBox implicite
           SizedBox(
@@ -293,122 +334,208 @@ class AdminLivraisonsPage extends ConsumerWidget {
                 label: const Text('Ajouter'),
                 // ✅ Optionnel : style compact pour mieux s'adapter
                 style: ElevatedButton.styleFrom(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                 ),
               ),
             ),
           ),
         ],
       ),
-      body: state.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : state.error != null
-          ? ErrorDisplay(
-        failure: state.error!,
-        onRetry: () =>
-            ref.read(livraisonListProvider.notifier).load(),
-      )
-          : state.items.isEmpty
-          ? const EmptyState(
-        title: 'Aucune livraison',
-        icon: Icons.local_shipping_outlined,
-      )
-          : ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: state.items.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (ctx, i) {
-          final liv = state.items[i];
-          final color = _getStatusColor(liv.statut);
-          return Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: color.withOpacity(0.1),
-                          borderRadius:
-                          BorderRadius.circular(12),
-                        ),
-                        child: Icon(Icons.local_shipping_outlined,
-                            color: color),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '#${liv.id != null && liv.id!.length >= 6 ? liv.id!.substring(liv.id!.length - 6) : (liv.id ?? '-')}',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              liv.client is Map
-                                  ? (liv.client['nom'] ?? '-')
-                                  : (liv.client?.toString() ??
-                                  '-'),
-                              style: const TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.textSecondary),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
+      body: Column(
+        children: [
+          // FILTRES DE STATUT
+          Container(
+            height: 60,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            color: Colors.white,
+            child: Row(
+              children: [
+                const Text(
+                  'Filtrer par statut :',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: _statuts.entries.map((e) {
+                      final isSelected =
+                          (_selectedStatut == null && e.value == 'tous') ||
+                          _selectedStatut == e.value;
+                      return Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: color.withOpacity(0.1),
-                          borderRadius:
-                          BorderRadius.circular(6),
+                          vertical: 10,
+                          horizontal: 4,
                         ),
-                        child: Text(
-                          Formatters.statutLabel(liv.statut),
-                          style: TextStyle(
-                              color: color,
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold),
+                        child: ChoiceChip(
+                          label: Text(e.key),
+                          selected: isSelected,
+                          onSelected: (val) {
+                            setState(
+                              () => _selectedStatut = val ? e.value : 'tous',
+                            );
+                          },
                         ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete_outline,
-                            color: AppColors.danger, size: 20),
-                        onPressed: () =>
-                            _deleteLivraison(context, ref, liv.id!),
-                      ),
-                    ],
+                      );
+                    }).toList(),
                   ),
-                  const Divider(height: 24),
-                  Row(
-                    mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
-                    children: [
-                      _Info(
-                          label: 'Prix',
-                          value: Formatters.currency(liv.prixEstime)),
-                      _Info(
-                          label: 'Mode', value: liv.mode.toUpperCase()),
-                      _Info(
-                        label: 'Date',
-                        // ✅ FIX 2 : Gestion sécurisée de la date
-                        value: liv.dateCreation != null
-                            ? _safeFormatDate(liv.dateCreation!)
-                            : '-',
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          );
-        },
+          ),
+          const Divider(height: 1),
+          Expanded(
+            child: state.isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : state.error != null
+                ? ErrorDisplay(
+                    failure: state.error!,
+                    onRetry: () =>
+                        ref.read(livraisonListProvider.notifier).load(),
+                  )
+                : livraisons.isEmpty
+                ? const EmptyState(
+                    title: 'Aucune livraison',
+                    icon: Icons.local_shipping_outlined,
+                  )
+                : ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: livraisons.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (ctx, i) {
+                      final liv = livraisons[i];
+                      final color = _getStatusColor(liv.statut);
+                      return Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: color.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Icon(
+                                      Icons.local_shipping_outlined,
+                                      color: color,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Code: ${liv.codeSuivi ?? (liv.id != null && liv.id!.length >= 6 ? liv.id!.substring(liv.id!.length - 6) : (liv.id ?? '-'))}',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        Text(
+                                          liv.client is Map
+                                              ? (liv.client['nom'] ?? '-')
+                                              : (liv.client?.toString() ?? '-'),
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: AppColors.textSecondary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: color.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      Formatters.statutLabel(liv.statut),
+                                      style: TextStyle(
+                                        color: color,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.delete_outline,
+                                      color: AppColors.danger,
+                                      size: 20,
+                                    ),
+                                    onPressed: () =>
+                                        _deleteLivraison(context, ref, liv.id!),
+                                  ),
+                                ],
+                              ),
+                              const Divider(height: 24),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'TRAJET',
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'De: ${liv.pointDepart.nomContact} (${liv.pointDepart.adresse})',
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                        Text(
+                                          'À: ${liv.pointArrivee.nomContact} (${liv.pointArrivee.adresse})',
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  _Info(
+                                    label: 'Prix',
+                                    value: Formatters.currency(liv.prixEstime),
+                                  ),
+                                  const SizedBox(width: 24),
+                                  _Info(
+                                    label: 'Mode',
+                                    value: liv.mode.toUpperCase(),
+                                  ),
+                                  const SizedBox(width: 24),
+                                  _Info(
+                                    label: 'Date',
+                                    value: liv.dateCreation != null
+                                        ? _safeFormatDate(liv.dateCreation!)
+                                        : '-',
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ); // ← Fin du return Card
+                    }, // ← 1. Fermeture de l'itemBuilder (accollade + virgule)
+                  ), // ← 2. Fermeture du ListView.separated
+          ), // ← 3. Fermeture de l'Expanded (et point-virgule)
+        ],
       ),
     );
   }
@@ -469,14 +596,17 @@ class _AddLivraisonDialogState extends State<_AddLivraisonDialog> {
       mainAxisSize: MainAxisSize.min,
       children: [
         TextField(
-            controller: _clientCtrl,
-            decoration: const InputDecoration(labelText: 'ID Client')),
+          controller: _clientCtrl,
+          decoration: const InputDecoration(labelText: 'ID Client'),
+        ),
         TextField(
-            controller: _departCtrl,
-            decoration: const InputDecoration(labelText: 'Adresse Départ')),
+          controller: _departCtrl,
+          decoration: const InputDecoration(labelText: 'Adresse Départ'),
+        ),
         TextField(
-            controller: _arriveeCtrl,
-            decoration: const InputDecoration(labelText: 'Adresse Arrivée')),
+          controller: _arriveeCtrl,
+          decoration: const InputDecoration(labelText: 'Adresse Arrivée'),
+        ),
         TextField(
           controller: _poidsCtrl,
           decoration: const InputDecoration(labelText: 'Poids (kg)'),
@@ -486,19 +616,20 @@ class _AddLivraisonDialogState extends State<_AddLivraisonDialog> {
     ),
     actions: [
       TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Annuler')),
+        onPressed: () => Navigator.pop(context),
+        child: const Text('Annuler'),
+      ),
       ElevatedButton(
         onPressed: () {
           widget.onAdded({
             'client': _clientCtrl.text,
             'pointDepart': {
               'adresse': _departCtrl.text,
-              'coordinates': [0.0, 0.0]
+              'coordinates': [0.0, 0.0],
             },
             'pointArrivee': {
               'adresse': _arriveeCtrl.text,
-              'coordinates': [0.0, 0.0]
+              'coordinates': [0.0, 0.0],
             },
             'mode': 'express',
             'poids': double.tryParse(_poidsCtrl.text) ?? 1,
@@ -520,12 +651,14 @@ class _Info extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(label,
-          style:
-          const TextStyle(fontSize: 10, color: AppColors.textSecondary)),
-      Text(value,
-          style:
-          const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+      Text(
+        label,
+        style: const TextStyle(fontSize: 10, color: AppColors.textSecondary),
+      ),
+      Text(
+        value,
+        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+      ),
     ],
   );
 }

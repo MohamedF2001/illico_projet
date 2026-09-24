@@ -1,15 +1,23 @@
 part of 'livraison_model.dart';
 
 PointAdresseModel _$PointAdresseModelFromJson(Map<String, dynamic> j) => PointAdresseModel(
+  nomContact: (j['nomExpediteur'] ?? j['nomDestinataire'] ?? j['nomContact'] ?? '') as String,
   adresse: j['adresse'] as String? ?? '',
+  telephoneContact: j['telephoneContact'] as String? ?? '',
   coordinates: (j['coordinates'] as List<dynamic>?)?.map((e) => (e as num).toDouble()).toList() ?? [0.0, 0.0],
 );
-Map<String, dynamic> _$PointAdresseModelToJson(PointAdresseModel i) => {'adresse': i.adresse, 'coordinates': i.coordinates};
+Map<String, dynamic> _$PointAdresseModelToJson(PointAdresseModel i) => {
+  'nomContact': i.nomContact,
+  'adresse': i.adresse,
+  'telephoneContact': i.telephoneContact,
+  'coordinates': i.coordinates
+};
 
 LivraisonModel _$LivraisonModelFromJson(Map<String, dynamic> j) => LivraisonModel(
   id: j['_id'] as String?,
   client: j['client'],
   livreur: j['livreur'],
+  codeSuivi: j['codeSuivi'] as String?,
   pointDepart: LivraisonModel._pointFromJson(j['pointDepart']),
   pointArrivee: LivraisonModel._pointFromJson(j['pointArrivee']),
   vehicule: j['vehicule'],
@@ -30,6 +38,9 @@ LivraisonModel _$LivraisonModelFromJson(Map<String, dynamic> j) => LivraisonMode
 );
 Map<String, dynamic> _$LivraisonModelToJson(LivraisonModel i) => {
   if (i.id != null) '_id': i.id,
+  'client': LivraisonModel._dynToJson(i.client),
+  'livreur': LivraisonModel._dynToJson(i.livreur),
+  'codeSuivi': i.codeSuivi,
   'pointDepart': LivraisonModel._pointToJson(i.pointDepart),
   'pointArrivee': LivraisonModel._pointToJson(i.pointArrivee),
   'vehicule': LivraisonModel._dynToJson(i.vehicule),

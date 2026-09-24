@@ -21,6 +21,7 @@ import '../../features/livraison/presentation/pages/client_home_page.dart';
 import '../../features/livraison/presentation/pages/create_livraison_page.dart';
 import '../../features/livraison/presentation/pages/livraison_detail_page.dart';
 import '../../features/livraison/presentation/pages/livraison_list_page.dart';
+import '../../features/livraison/presentation/pages/tracking_page.dart';
 import '../../features/transaction/presentation/pages/wallet_page.dart';
 import '../../features/livreur/presentation/pages/missions_page.dart';
 import '../../features/livreur/presentation/pages/available_deliveries_page.dart';
@@ -139,6 +140,12 @@ final mobileRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/livraison/new',
         builder: (_, __) => const CreateLivraisonPage(),
+      ),
+
+      // Page de suivi (Tracking)
+      GoRoute(
+        path: '/tracking',
+        builder: (_, __) => const TrackingPage(),
       ),
 
       // Détail d'une livraison avec validation OTP et annulation

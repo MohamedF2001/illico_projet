@@ -10,6 +10,14 @@ class LivraisonRepositoryImpl implements LivraisonRepository {
   @override Future<Either<Failure, Map<String, dynamic>>> estimatePrice(Map<String, dynamic> body) => _ds.estimatePrice(body);
   @override Future<Either<Failure, LivraisonEntity>> create(Map<String, dynamic> body) => _ds.create(body);
   @override Future<Either<Failure, List<LivraisonEntity>>> getAll({Map<String, dynamic>? filters}) async { final r = await _ds.getAll(filters: filters); return r.map((l) => l.cast<LivraisonEntity>()); }
+  @override Future<Either<Failure, List<LivraisonEntity>>> getLivraisons({String? statut, String? mode, String? codeSuivi}) async {
+    final filters = <String, dynamic>{};
+    if (statut != null) filters['statut'] = statut;
+    if (mode != null) filters['mode'] = mode;
+    if (codeSuivi != null) filters['codeSuivi'] = codeSuivi;
+    final r = await _ds.getAll(filters: filters);
+    return r.map((l) => l.cast<LivraisonEntity>());
+  }
   @override Future<Either<Failure, LivraisonEntity>> getById(String id) => _ds.getById(id);
   @override Future<Either<Failure, Map<String, dynamic>>> validateOtp(String id, String otp) => _ds.validateOtp(id, otp);
   @override Future<Either<Failure, void>> delete(String id) => _ds.delete(id);

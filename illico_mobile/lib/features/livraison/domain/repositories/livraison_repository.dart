@@ -6,6 +6,7 @@ abstract class LivraisonRepository {
   Future<Either<Failure, Map<String, dynamic>>> estimatePrice(Map<String, dynamic> body);
   Future<Either<Failure, LivraisonEntity>> create(Map<String, dynamic> body);
   Future<Either<Failure, List<LivraisonEntity>>> getAll({Map<String, dynamic>? filters});
+  Future<Either<Failure, List<LivraisonEntity>>> getLivraisons({String? statut, String? mode, String? codeSuivi});
   Future<Either<Failure, LivraisonEntity>> getById(String id);
   Future<Either<Failure, Map<String, dynamic>>> validateOtp(String id, String otp);
   Future<Either<Failure, void>> delete(String id);

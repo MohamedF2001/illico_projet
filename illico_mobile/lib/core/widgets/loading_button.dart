@@ -8,7 +8,7 @@ class LoadingButton extends StatelessWidget {
   final IconData? icon;
   final Color? color;
 
-  const LoadingButton({
+  const  LoadingButton({
     super.key, required this.onPressed, required this.label,
     this.isLoading = false, this.icon, this.color,
   });

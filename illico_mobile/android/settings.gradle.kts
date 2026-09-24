@@ -1,4 +1,34 @@
 pluginManagement {
+    try {
+        val processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment")
+        val theEnvironmentField = processEnvironmentClass.getDeclaredField("theEnvironment")
+        theEnvironmentField.isAccessible = true
+        val map = theEnvironmentField.get(null) as MutableMap<String, String>
+        map.remove("ANDROID_PREFS_ROOT")
+
+        val theCaseInsensitiveEnvironmentField = processEnvironmentClass.getDeclaredField("theCaseInsensitiveEnvironment")
+        theCaseInsensitiveEnvironmentField.isAccessible = true
+        val ciMap = theCaseInsensitiveEnvironmentField.get(null) as MutableMap<String, String>
+        ciMap.remove("ANDROID_PREFS_ROOT")
+        println("Successfully removed ANDROID_PREFS_ROOT from process environment via reflection.")
+    } catch (e: Exception) {
+        println("Failed to remove ANDROID_PREFS_ROOT: ${e.message}")
+    }
+
+    val localPropertiesFile = file("local.properties")
+    if (localPropertiesFile.exists()) {
+        val text = localPropertiesFile.readText()
+        if (!text.contains("sdk.dir")) {
+            localPropertiesFile.writeText(text + "\nsdk.dir=C:/Users/frdmo/AppData/Local/Android/Sdk\n")
+        }
+    }
+    val debugProperties = java.util.Properties()
+    if (file("local.properties").exists()) {
+        file("local.properties").inputStream().use { debugProperties.load(it) }
+    }
+    println("DEBUG sdk.dir = " + debugProperties.getProperty("sdk.dir"))
+    println("DEBUG flutter.sdk = " + debugProperties.getProperty("flutter.sdk"))
+
     val flutterSdkPath =
         run {
             val properties = java.util.Properties()
